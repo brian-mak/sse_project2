@@ -1,0 +1,66 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Hide overflow to prevent scroll bars */
+}
+
+#title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: normal;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.3rem;
+    white-space: nowrap;
+}
+
+#video-background {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1;
+}
+
+#navigation {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem; /* Adjusted font size for small navigation links */
+    font-weight: normal;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.3rem;
+    white-space: nowrap;
+}
+
+#navigation a {
+    color: white;
+    text-decoration: none;
+    margin: 0 20px;
+    cursor: pointer;
+}
+
+#login-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 0.8rem;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.3rem;
+    white-space: nowrap;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
