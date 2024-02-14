@@ -49,7 +49,7 @@ body {
     cursor: pointer;
 }
 
-#login-button {
+#login-button, #logout-button {
     position: absolute;
     top: 20px;
     right: 20px;
