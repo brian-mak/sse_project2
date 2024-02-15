@@ -1,10 +1,8 @@
 from flask import Flask, request
 from os import environ as env
 import os
-import pyodbc, struct
-from azure import identity
+import pyodbc
 from dotenv import find_dotenv, load_dotenv
-import urllib
 import sys
 
 ENV_FILE = find_dotenv()
@@ -75,10 +73,6 @@ def update_user_log(info):
 
 
 def get_conn():
-    # credential = identity.DefaultAzureCredential(exclude_interactive_browser_credential=False)
-    # token_bytes = credential.get_token("https://database.windows.net/.default").token.encode("UTF-16-LE")
-    # token_struct = struct.pack(f'<I{len(token_bytes)}s', len(token_bytes), token_bytes)
-    # SQL_COPT_SS_ACCESS_TOKEN = 1256  # This connection option is defined by microsoft in msodbcsql.h
     conn = pyodbc.connect(connection_string)
     return conn
 
