@@ -1,5 +1,4 @@
 pyodbc
-uvicorn[standard]
-pydantic
 azure-identity
 flask
+python-dotenv

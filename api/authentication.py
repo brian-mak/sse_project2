@@ -6,6 +6,8 @@ from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, redirect, render_template, session, url_for
 
+import database
+
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
@@ -41,6 +43,12 @@ def home():
 def callback():
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
+    info = session["user"].get("userinfo")
+    user_info = {}
+    user_info["email"] = info.get("email")
+    user_info["name"] = info.get("name")
+    user_info["nickname"] = info.get("nickname")
+    database.update_user_log(user_info)
     return redirect("/")
 
 
