@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Plan Preferences</title>
+</head>
+<body>
+    <h2>Enter Your Workout Plan Preferences</h2>
+    <form id="preferencesForm" method="POST" action="/generate_plan">
+        <!-- Fitness Goal Dropdown -->
+        <label for="fitnessGoal">Fitness Goal:</label>
+        <select id="fitnessGoal" name="fitnessGoal">
+            <option value="weight_loss">Weight Loss</option>
+            <option value="muscle_gain">Muscle Gain</option>
+            <option value="endurance">Endurance Improvement</option>
+            <option value="flexibility">Flexibility</option>
+            <option value="general_fitness">General Fitness</option>
+        </select><br><br>
+        
+        <!-- Available Equipment (Checkboxes) -->
+        <fieldset>
+            <legend>Available Equipment:</legend>
+            <input type="checkbox" id="body_weight" name="equipment" value="body_weight">
+            <label for="body_weight">None (Bodyweight Exercises)</label><br>
+            <input type="checkbox" id="band" name="equipment" value="band">
+            <label for="band">Band</label><br>
+            <input type="checkbox" id="barbell" name="equipment" value="barbell">
+            <label for="barbell">Barbell</label><br>
+            <input type="checkbox" id="bosu_ball" name="equipment" value="bosu_ball">
+            <label for="bosu_ball">Bosu Ball</label><br>
+            <input type="checkbox" id="cable" name="equipment" value="cable">
+            <label for="cable">Cable</label><br>
+            <input type="checkbox" id="dumbbell" name="equipment" value="dumbbell">
+            <label for="dumbbell">Dumbbell</label><br>
+            <input type="checkbox" id="elliptical_machine" name="equipment" value="elliptical_machine">
+            <label for="elliptical_machine">Elliptical Machine</label><br>
+            <input type="checkbox" id="ez_barbell" name="equipment" value="ez_barbell">
+            <label for="ez_barbell">EZ Barbell</label><br>
+            <input type="checkbox" id="hammer" name="equipment" value="hammer">
+            <label for="hammer">Hammer</label><br>  
+            <input type="checkbox" id="kettlebell" name="equipment" value="kettlebell">
+            <label for="kettlebell">Kettlebell</label><br>
+            <input type="checkbox" id="leverage_machine" name="equipment" value="leverage_machine">
+            <label for="leverage_machine">Leverage Machine</label><br>         
+            <input type="checkbox" id="medicine_ball" name="equipment" value="medicine_ball">
+            <label for="medicine_ball">Medicine Ball</label><br>
+            <input type="checkbox" id="olympic_barbell" name="equipment" value="olympic_barbell">
+            <label for="olympic_barbell">Olympic Barbell</label><br>
+            <input type="checkbox" id="resistance_band" name="equipment" value="resistance_band">
+            <label for="resistance_band">Resistance Band</label><br>
+            <input type="checkbox" id="roller" name="equipment" value="roller">
+            <label for="roller">Roller</label><br>
+            <input type="checkbox" id="rope" name="equipment" value="rope">
+            <label for="rope">Rope</label><br>
+            <input type="checkbox" id="skierg_machine" name="equipment" value="skierg_machine">
+            <label for="skierg_machine">Skierg Machine</label><br>
+            <input type="checkbox" id="sled_machine" name="equipment" value="sled_machine">
+            <label for="sled_machine">Sled Machine</label><br>
+            <input type="checkbox" id="smith_machine" name="equipment" value="smith_machine">
+            <label for="smith_machine">Smith Machine</label><br>
+            <input type="checkbox" id="stability_ball" name="equipment" value="stability_ball">
+            <label for="stability_ball">Stability Ball</label><br>
+            <input type="checkbox" id="stationary_bike" name="equipment" value="stationary_bike">
+            <label for="stationary_bike">Stationary Bike</label><br>
+            <input type="checkbox" id="stepmill_machine" name="equipment" value="stepmill_machine">
+            <label for="stepmill_machine">Stepmill Machine</label><br>
+            <input type="checkbox" id="wheel_roller" name="equipment" value="wheel_roller">
+            <label for="wheel_roller">Wheel Roller</label><br>          
+        </fieldset><br>
+
+        <!-- Target Muscle Groups (Checkboxes) -->
+        <fieldset>
+            <legend>Target Muscle Groups:</legend>
+            <input type="checkbox" id="full_body" name="muscleGroups" value="full_body">
+            <label for="full_body">Full Body</label><br>
+            <input type="checkbox" id="upper_body" name="muscleGroups" value="upper_body">
+            <label for="upper_body">Upper Body - General</label><br>
+            <input type="checkbox" id="chest" name="muscleGroups" value="chest">
+            <label for="chest">Chest</label><br>
+            <input type="checkbox" id="back" name="muscleGroups" value="back">
+            <label for="back">Back</label><br>
+            <input type="checkbox" id="shoulders" name="muscleGroups" value="shoulders">
+            <label for="shoulders">Shoulders</label><br>
+            <input type="checkbox" id="biceps" name="muscleGroups" value="biceps">
+            <label for="biceps">Biceps</label><br>
+            <input type="checkbox" id="triceps" name="muscleGroups" value="triceps">
+            <label for="triceps">Triceps</label><br>
+            <input type="checkbox" id="forearms" name="muscleGroups" value="forearms">
+            <label for="forearms">Forearms</label><br>            
+            <input type="checkbox" id="lower_body" name="muscleGroups" value="lower_body">
+            <label for="lower_body">Lower Body - General</label><br>
+            <input type="checkbox" id="quads" name="muscleGroups" value="quads">
+            <label for="quads">Quads</label><br>
+            <input type="checkbox" id="hamstrings" name="muscleGroups" value="hamstrings">
+            <label for="hamstrings">Hamstrings</label><br>          
+            <input type="checkbox" id="calves" name="muscleGroups" value="calves">
+            <label for="calves">Calves</label><br>
+            <input type="checkbox" id="glutes" name="muscleGroups" value="glutes">
+            <label for="glutes">Glutes</label><br>
+            <input type="checkbox" id="hips" name="muscleGroups" value="hips">
+            <label for="hips">Hips</label><br>        
+            <input type="checkbox" id="abs" name="muscleGroups" value="abs">
+            <label for="abs">Abs</label><br>
+            <input type="checkbox" id="cardio" name="muscleGroups" value="cardio">
+            <label for="cardio">Cardio</label><br>
+        </fieldset><br>
+
+        <!-- Fitness Level Dropdown -->
+        <label for="fitnessLevel">Fitness Level:</label>
+        <select id="fitnessLevel" name="fitnessLevel">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+        </select><br><br>
+
+        <!-- Preferred Workout Duration Dropdown -->
+        <label for="duration">Preferred Duration (minutes):</label>
+        <select id="duration" name="duration">
+            <option value="30">30 minutes</option>
+            <option value="45">45 minutes</option>
+            <option value="60">60 minutes</option>
+            <option value="75">75 minutes</option>
+            <option value="90">90 minutes</option>
+            <option value="105">105 minutes</option>
+            <option value="120">120 minutes</option>
+        </select><br><br>
+
+        <button type="submit">Submit Preferences</button>
+    </form>
+</body>
+</html>
