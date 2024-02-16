@@ -102,10 +102,14 @@ def fetch_exercises(target_muscle_groups, available_equipment):
 
 @app.route('/')
 def home():
-    return render_template("userinput.html")
+    return render_template("index.html")
 
-@app.route('/generate_plan', methods=['POST'])
-def generate_plan():
+@app.route('/search_exercises')
+def search_exercises():
+    return render_template("search_exercises.html")
+
+@app.route('/exercises', methods=['POST'])
+def search_exercises_result():
 
     data = request.form.to_dict(flat=True)
     data['muscleGroups'] = request.form.getlist('muscleGroups')
