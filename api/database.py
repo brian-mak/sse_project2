@@ -76,5 +76,70 @@ def get_conn():
     conn = pyodbc.connect(connection_string)
     return conn
 
+
+def create_schema():
+    try:
+        conn = pyodbc.connect(connection_string)
+        cursor = conn.cursor()
+
+        # Create Workouts Table
+        cursor.execute("""
+            IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Workouts]') AND type in (N'U'))
+            BEGIN
+                CREATE TABLE Workouts (
+                    WorkoutID int NOT NULL PRIMARY KEY IDENTITY,
+                    Name varchar(255) NOT NULL,
+                    Description text,
+                    Equipment varchar(255),
+                    TargetMuscleGroup varchar(255),
+                    SecondaryMuscles varchar(255),
+                    Instructions text,
+                    GifUrl varchar(255)
+                );
+            END
+        """)
+
+        # Create SavedLists Table
+        cursor.execute("""
+            IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SavedLists]') AND type in (N'U'))
+            BEGIN
+                CREATE TABLE SavedLists (
+                    ListID int NOT NULL PRIMARY KEY IDENTITY,
+                    UserID int NOT NULL,
+                    Name varchar(255) NOT NULL,
+                    Description text,
+                    CreationDate datetime NOT NULL DEFAULT GETDATE(),
+                    FOREIGN KEY (UserID) REFERENCES Users(ID)
+                );
+            END
+        """)
+
+        # Create SavedListWorkouts Junction Table
+        cursor.execute("""
+            IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SavedListWorkouts]') AND type in (N'U'))
+            BEGIN
+                CREATE TABLE SavedListWorkouts (
+                    ListID int NOT NULL,
+                    WorkoutID int NOT NULL,
+                    PRIMARY KEY (ListID, WorkoutID),
+                    FOREIGN KEY (ListID) REFERENCES SavedLists(ListID),
+                    FOREIGN KEY (WorkoutID) REFERENCES Workouts(WorkoutID)
+                );
+            END
+        """)
+
+        conn.commit()
+        print("Database schema created/updated successfully.")
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+        print(f"Failed to create/update database schema: {e}")
+    finally:
+        if conn:  # Check if conn is not None
+            conn.close()
+
+
 if __name__ == "__main__":
+    create_schema()
     get_all_user()

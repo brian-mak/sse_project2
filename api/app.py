@@ -1,12 +1,17 @@
 from flask import Flask, render_template, request, jsonify
 import requests
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
+
 
 app = Flask(__name__)
 
 
 def get_rapid_api_key():
-    # Ideally, store and retrieve your API key securely
-    return '9ede2c0d5emsh11b19ac6345dfa4p1d949fjsnc2352cae16c3'
+    return os.environ.get('RAPID_API_KEY')
 
 
 def fetch_exercises(target_muscle_groups, available_equipment):
