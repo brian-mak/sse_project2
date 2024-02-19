@@ -45,7 +45,7 @@
             {% endfor %}
         </ol>
         {% if exercise.gifUrl %}
-        <img src="{{ exercise.gifUrl }}" alt="{{ exercise.name }} GIF" style="max-width: 100%; height: auto;">
+        <img src="{{ exercise.gifUrl }}" alt="{{ exercise.name }} GIF" style="max-width: 100%; height: auto;"><br>
         <button onclick="showSavedListsDropdown('{{ exercise.WorkoutID }}', this)">Add to Saved List</button>
         <!-- The dropdown and submit button will be added here dynamically -->
         {% endif %}
