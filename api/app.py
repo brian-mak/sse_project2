@@ -1,13 +1,17 @@
 from flask import Flask, render_template, request, jsonify
 import requests
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
+from os import environ as env
 import os
 
+import find_partner, authentication
 
-load_dotenv()
-
+ENV_FILE = find_dotenv()
+if ENV_FILE:
+    load_dotenv(ENV_FILE)
 
 app = Flask(__name__)
+app.secret_key = env.get("APP_SECRET_KEY")
 
 
 def get_rapid_api_key():
@@ -125,6 +129,13 @@ def search_exercises_result():
 
     exercises = fetch_exercises(target_muscle_groups, available_equipment)
     return render_template("exercises.html", exercises=exercises)
+
+app.add_url_rule('/find_partner', 'find_partner', find_partner.index)
+app.add_url_rule('/login', 'login', authentication.login)
+app.add_url_rule('/callback', 'callback', authentication.callback)
+app.add_url_rule('/logout', 'logout', authentication.logout)
+app.add_url_rule('/post_invitation', 'post_invitation', find_partner.post_invitation, methods=['POST'])
+
 
 if __name__ == "__main__":
     app.run(debug=True)
