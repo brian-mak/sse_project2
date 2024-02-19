@@ -32,7 +32,7 @@ oauth.register(
 # Controllers API
 @app.route("/")
 def home():
-    print(session.get("user"))
+    print(session)
     return render_template(
         "index.html",
         session=session.get("user"),
@@ -49,6 +49,7 @@ def callback():
     user_info["email"] = info.get("email")
     user_info["name"] = info.get("name")
     user_info["nickname"] = info.get("nickname")
+    user_info["user_id"] = info.get("sub")
     database.update_user_log(user_info)
     return redirect("/")
 

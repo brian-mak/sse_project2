@@ -26,6 +26,7 @@ def root():
         cursor.execute("""
             CREATE TABLE Users (
                 ID int NOT NULL PRIMARY KEY IDENTITY,
+                User_ID varchar(255) NOT NULL PRIMARY KEY,
                 Email varchar(255) NOT NULL,
                 Name varchar(255),
                 NickName varchar(255),
@@ -54,18 +55,19 @@ def update_user_log(info):
     email = info.get("email")
     name = info.get("name")
     nickname = info.get("nickname")
+    user_id = info.get("user_id")
 
     with get_conn() as conn:
         cursor = conn.cursor()
-        #check if email exists
-        cursor.execute("SELECT 1 FROM Users WHERE email = ?", email) 
+        #check if user id exists
+        cursor.execute("SELECT 1 FROM Users WHERE User_ID = ?", user_id) 
         existing_row = cursor.fetchone()
         if existing_row:
             # If email exists, update lastlogin
-            cursor.execute("UPDATE Users SET LastLogin = GETDATE() WHERE email = ?", email)
+            cursor.execute("UPDATE Users SET LastLogin = GETDATE() WHERE User_ID = ?", user_id)
         else:
             # If email does not exist, insert a new row
-            cursor.execute("INSERT INTO Users (Email, Name, NickName, LastLogin) VALUES (?, ?, ?, GETDATE())", email, name, nickname)
+            cursor.execute("INSERT INTO Users (Email, Name, NickName, User_ID, LastLogin) VALUES (?, ?, ?, ?, GETDATE())", email, name, nickname, user_id)
         
         conn.commit()
 
@@ -276,7 +278,7 @@ def create_partner_post():
         cursor.execute("""
             CREATE TABLE workout_posts (
                 id int NOT NULL PRIMARY KEY IDENTITY,
-                user_id int NOT NULL FOREIGN KEY REFERENCES Users(ID),
+                user_id varchar(255) NOT NULL FOREIGN KEY REFERENCES Users(User_ID),
                 workout_id int NOT NULL FOREIGN KEY REFERENCES Workouts(WorkoutID),
                 location varchar(255) NOT NULL,
                 start_time datetime,
@@ -308,7 +310,7 @@ def create_message_log():
             CREATE TABLE message_log (
                 id int NOT NULL PRIMARY KEY IDENTITY,
                 post_id int NOT NULL FOREIGN KEY REFERENCES workout_posts(id),
-                user_id int NOT NULL FOREIGN KEY REFERENCES Users(ID),
+                user_id varchar(255) NOT NULL FOREIGN KEY REFERENCES Users(ID),
                 sent_time datetime,
                 message text
             );
@@ -348,9 +350,9 @@ def post_invitation(new_invitation):
         cursor = conn.cursor()
         print("connected")
         cursor.execute("""
-                INSERT INTO workout_posts (user_id, workout_id, location, start_time, end_time, post_time, message) VALUES (?, ?, ?, ?, ?, GETDATE(), ?)
+                INSERT INTO message_log (user_id, workout_id, location, start_time, end_time, post_time, message) VALUES (?, ?, ?, ?, ?, GETDATE(), ?)
             """, (new_invitation['user_id'], new_invitation['workout_id'], new_invitation['location'], 
-                  new_invitation['start_time'], new_invitation['end_time'], new_invitation['message']))
+                  new_invitation['start_time'].strftime('%Y-%m-%d %H:%M:%S'), new_invitation['end_time'].strftime('%Y-%m-%d %H:%M:%S'), new_invitation['message']))
         conn.commit()
         print ("new post added")
     except Exception as e:
@@ -361,27 +363,68 @@ def post_invitation(new_invitation):
     return
 
 
-def get_user_id(email):
+def post_new_message(new_message):
     try:
         conn = get_conn()
         cursor = conn.cursor()
         print("connected")
         cursor.execute("""
-                SELECT ID FROM Users WHERE Email = ? """, email)
-        id = cursor.fetchall()
+                INSERT INTO workout_posts (user_id, post_id, receiver_id, sent_time, message) VALUES (?, ?, ?, GETDATE(), ?)
+            """, (new_message['user_id'], new_message['post_id'], new_message['receiver_id'], new_message['message']))
+        conn.commit()
+        print ("new message added")
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         print(exc_type, fname, exc_tb.tb_lineno)
         print(e)
-    return id
+    return
+
+
+def get_posts(user):
+    try:
+        conn = get_conn()
+        cursor = conn.cursor()
+        print("connected")
+        cursor.execute("""
+                SELECT * FROM workout_posts WHERE user_id = ?
+            """, (user))
+        posts = cursor.fetchall()
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+        print(e)
+    return posts
+
+
+def get_message(user):
+    try:
+        conn = get_conn()
+        cursor = conn.cursor()
+        print("connected")
+        cursor.execute("""
+                SELECT * FROM message_log WHERE user_id = ? OR receiver_id = ?
+            """, (user, user))
+        messages = cursor.fetchall()
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+        print(e)
+    return messages
+
+
+def ad_hoc():
+
+    conn = get_conn()
+    cursor = conn.cursor()
+    cursor.execute("ALTER TABLE message_log ADD receiver_id varchar(255) NOT NULL")
+    cursor.execute("ALTER TABLE message_log ADD CONSTRAINT FK_receiver_id FOREIGN KEY (receiver_id) REFERENCES Users(User_ID)")
+    
+    conn.commit()
+       
 
 
 if __name__ == "__main__":
-    conn = get_conn()
-    cursor = conn.cursor()
-
-    cursor.execute("""SELECT name
-                    FROM sys.tables""")
-    
-    conn.commit()
+    ad_hoc()
