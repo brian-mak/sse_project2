@@ -4,6 +4,7 @@ import os
 import pyodbc
 from dotenv import find_dotenv, load_dotenv
 import sys
+from retry import retry
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
@@ -73,7 +74,7 @@ def update_user_log(info):
 
     print(f"user {email} updated.")   
 
-
+@retry(Exception, tries=3, delay=1, backoff=2)
 def get_conn():
     conn = pyodbc.connect(connection_string)
     return conn
