@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Blueprint
 from os import environ as env
 import os
 import pyodbc
@@ -12,10 +12,10 @@ if ENV_FILE:
 
 connection_string = env.get("AZURE_SQL_CONNECTIONSTRING")
 
-app = Flask(__name__)
+db_bp = Blueprint('db', __name__)
 
 
-@app.get("/")
+@db_bp.get("/")
 def root():
     print("Root of User API")
     try:
@@ -144,7 +144,7 @@ def create_schema():
             conn.close()
 
 
-@app.route('/workouts/add', methods=['POST'])
+@db_bp.route('/workouts/add', methods=['POST'])
 def add_workout():
     data = request.get_json()
     try:
@@ -161,7 +161,7 @@ def add_workout():
 
 
 # List all workouts
-@app.route('/workouts', methods=['GET'])
+@db_bp.route('/workouts', methods=['GET'])
 def get_workouts():
     try:
         with get_conn() as conn:
@@ -174,7 +174,7 @@ def get_workouts():
 
 
 # Get details of a specific workout
-@app.route('/workouts/<int:workout_id>', methods=['GET'])
+@db_bp.route('/workouts/<int:workout_id>', methods=['GET'])
 def get_workout(workout_id):
     try:
         with get_conn() as conn:
@@ -189,7 +189,7 @@ def get_workout(workout_id):
         return jsonify({"success": False, "message": str(e)})
 
 
-@app.route('/workouts/update/<int:workout_id>', methods=['POST'])
+@db_bp.route('/workouts/update/<int:workout_id>', methods=['POST'])
 def update_workout(workout_id):
     data = request.get_json()
     try:
@@ -206,7 +206,7 @@ def update_workout(workout_id):
         return jsonify({"success": False, "message": str(e)})
 
 
-@app.route('/workouts/delete/<int:workout_id>', methods=['POST'])
+@db_bp.route('/workouts/delete/<int:workout_id>', methods=['POST'])
 def delete_workout(workout_id):
     try:
         with get_conn() as conn:
@@ -218,12 +218,13 @@ def delete_workout(workout_id):
         return jsonify({"success": False, "message": str(e)})
 
 
-@app.route('/saved_lists/create', methods=['POST'])
+@db_bp.route('/saved_lists/create', methods=['POST'])
 def create_saved_list():
     if request.json:
         user_id = request.json.get('user_id')
         list_name = request.json.get('list_name')
-        description = request.json.get('description')
+        #description = request.json.get('description')
+        description = "ABC"
     else:
         user_id = request.form.get('user_id')
         list_name = request.form.get('list_name')
@@ -254,7 +255,25 @@ def create_saved_list():
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-@app.route('/saved_lists/add_workout', methods=['POST'])
+@db_bp.route('/api/user/saved_lists', methods=['GET'])
+def get_saved_lists():
+    # Assuming you have a user_id to fetch lists for, perhaps from session or a request parameter
+    user_id = request.args.get('user_id')
+    if user_id is None:
+        return jsonify({"error": "User ID is required"}), 400
+    
+    try:
+        with get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM SavedLists WHERE UserID = ?", (user_id,))
+            lists = cursor.fetchall()
+            saved_lists = [{"list_id": row[0], "name": row[2], "description": row[3]} for row in lists]
+        return jsonify(saved_lists)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@db_bp.route('/saved_lists/add_workout', methods=['POST'])
 def add_workout_to_saved_list():
     list_id = request.form.get('list_id')
     workout_id = request.form.get('workout_id')
