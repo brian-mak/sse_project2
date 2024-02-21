@@ -1,0 +1,20 @@
+<body>
+    <div class="container">
+        <h1>Health Buddy BMI Calculator</h1>
+        <form id="bmi-form">
+            <label for="height">Height (in):</label><br>
+            <input type="number" id="height" name="height" step="0.01" min="0" required><br>
+            <label for="weight">Weight (lbs):</label><br>
+            <input type="number" id="weight" name="weight" step="0.1" min="0" required><br>
+            <button type="submit">Calculate BMI</button>
+        </form>
+        <div class="bmi-meter">
+            <div class="bmi-meter-inner">
+                <div class="bmi-meter-bar"></div>
+                <div class="bmi-meter-result"></div>
+            </div>
+        </div>
+        <div id="result-container"></div> <!-- BMI result will be displayed here -->
+    </div>
+    <script src="static/bmi_meter.js"></script>
+</body>
