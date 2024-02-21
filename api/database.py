@@ -315,7 +315,7 @@ def delete_saved_lists_table():
 def delete_saved_list_workouts_table():
     try:
         with get_conn() as conn:
-            cursor = conn.cursor()a
+            cursor = conn.cursor()
             cursor.execute("DROP TABLE IF EXISTS SavedListWorkouts")
             conn.commit()
             print("SavedListWorkouts table deleted successfully.")
@@ -343,4 +343,5 @@ def delete_message_log_table():
         print(f"Failed to delete message_log table: {e}")
 
 if __name__ == "__main__":
-    ad_hoc()
+    create_schema()
+    # ad_hoc()
