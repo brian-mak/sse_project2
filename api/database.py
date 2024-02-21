@@ -4,6 +4,7 @@ import os
 import pyodbc
 from dotenv import find_dotenv, load_dotenv
 import sys
+import requests
 from retry import retry
 
 ENV_FILE = find_dotenv()
@@ -13,6 +14,9 @@ if ENV_FILE:
 connection_string = env.get("AZURE_SQL_CONNECTIONSTRING")
 
 db_bp = Blueprint('db', __name__)
+
+def get_rapid_api_key():
+    return os.environ.get('RAPID_API_KEY')
 
 @db_bp.get("/")
 def root():
@@ -252,6 +256,43 @@ def get_saved_lists():
         return jsonify(saved_lists)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@db_bp.route('/api/saved_lists/<int:list_id>/exercises', methods=['GET'])
+def get_exercises_for_list(list_id):
+    try:
+        with get_conn() as conn:
+            cursor = conn.cursor()
+            # Fetch workout names associated with the saved list
+            cursor.execute("SELECT WorkoutName FROM SavedListWorkouts WHERE ListID = ?", (list_id,))
+            workout_names = [row[0] for row in cursor.fetchall()]
+
+        # Fetch exercise details from the ExerciseDB API
+        exercises_details = []
+        for name in workout_names:
+            details = fetch_exercise_details_from_exercisedb(name)
+            if details:
+                exercises_details.append(details)
+
+        print(jsonify(exercises_details))
+        return jsonify(exercises_details)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Function to fetch exercise details from the ExerciseDB API
+def fetch_exercise_details_from_exercisedb(exercise_name):
+    api_key = get_rapid_api_key()
+    url = "https://exercisedb.p.rapidapi.com/exercises/name/" + exercise_name
+    headers = {
+        "X-RapidAPI-Key": api_key,
+        "X-RapidAPI-Host": "exercisedb.p.rapidapi.com"
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Failed to fetch exercises: {response.status_code}")
+        return None
     
 
 @db_bp.route('/saved_lists/add_workout', methods=['POST'])

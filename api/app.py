@@ -111,6 +111,40 @@ def fetch_exercises(target_muscle_groups, available_equipment):
         print(f"Failed to fetch exercises: {response.status_code}")
         return []
 
+
+# @app.route()
+# def fetch_exercises_details(exercise_name):
+#     api_key = get_rapid_api_key()
+#     url = "https://exercisedb.p.rapidapi.com/exercises"
+
+#     headers = {
+#         "X-RapidAPI-Key": api_key,
+#         "X-RapidAPI-Host": "exercisedb.p.rapidapi.com"
+#     }
+    
+#     params = {"name": exercise_name}
+#     response = requests.get(url, headers=headers, params=params)
+
+#     user_id = request.args.get('user_id')
+
+#     if response.status_code == 200:
+#         all_exercises = response.json()
+
+#         details_of_exercises = [{
+#             'name': exercise.get('name'),
+#             'equipment': exercise.get('equipment'),
+#             'targetMuscleGroup': exercise.get('target'),
+#             'secondaryMuscles': exercise.get('secondaryMuscles', 'Not specified'),
+#             'instructions': exercise.get('instructions', 'Please refer to external sources for instructions'),
+#             'gifUrl': exercise.get('gifUrl', 'No GIF available')
+#         } for exercise in all_exercises]
+
+#         return details_of_exercises
+#     else:
+#         print(f"Failed to fetch exercises: {response.status_code}")
+#         return []
+    
+
 @app.route('/')
 def home():
     return render_template("index.html")
