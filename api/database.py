@@ -95,21 +95,20 @@ def create_schema():
         cursor = conn.cursor()
 
         # Create Workouts Table
-        cursor.execute("""
-            IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Workouts]') AND type in (N'U'))
-            BEGIN
-                CREATE TABLE Workouts (
-                    WorkoutID int NOT NULL PRIMARY KEY IDENTITY,
-                    Name varchar(255) NOT NULL,
-                    Description text,
-                    Equipment varchar(255),
-                    TargetMuscleGroup varchar(255),
-                    SecondaryMuscles varchar(255),
-                    Instructions text,
-                    GifUrl varchar(255)
-                );
-            END
-        """)
+        # cursor.execute("""
+        #     IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Workouts]') AND type in (N'U'))
+        #     BEGIN
+        #         CREATE TABLE Workouts (
+        #             WorkoutID int NOT NULL PRIMARY KEY IDENTITY,
+        #             Name varchar(255) NOT NULL,
+        #             Equipment varchar(255),
+        #             TargetMuscleGroup varchar(255),
+        #             SecondaryMuscles varchar(255),
+        #             Instructions text,
+        #             GifUrl varchar(255)
+        #         );
+        #     END
+        # """)
 
         # Create SavedLists Table
         cursor.execute("""
@@ -119,7 +118,6 @@ def create_schema():
                     ListID int NOT NULL PRIMARY KEY IDENTITY,
                     UserID varchar(255) NOT NULL,
                     Name varchar(255) NOT NULL,
-                    Description text,
                     CreationDate datetime NOT NULL DEFAULT GETDATE(),
                     FOREIGN KEY (UserID) REFERENCES Users(User_ID)
                 );
@@ -132,10 +130,9 @@ def create_schema():
             BEGIN
                 CREATE TABLE SavedListWorkouts (
                     ListID int NOT NULL,
-                    WorkoutID int NOT NULL,
-                    PRIMARY KEY (ListID, WorkoutID),
+                    WorkoutName varchar(255) NOT NULL,
+                    PRIMARY KEY (ListID, WorkoutName),
                     FOREIGN KEY (ListID) REFERENCES SavedLists(ListID),
-                    FOREIGN KEY (WorkoutID) REFERENCES Workouts(WorkoutID)
                 );
             END
         """)
@@ -159,9 +156,9 @@ def add_workout():
         with get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO Workouts (Name, Description, Equipment, TargetMuscleGroup, SecondaryMuscles, Instructions, GifUrl)
+                INSERT INTO Workouts (Name, Equipment, TargetMuscleGroup, SecondaryMuscles, Instructions, GifUrl)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (data['name'], data['description'], data['equipment'], data['targetMuscleGroup'], data['secondaryMuscles'], data['instructions'], data['gifUrl']))
+            """, (data['name'], data['equipment'], data['targetMuscleGroup'], data['secondaryMuscles'], data['instructions'], data['gifUrl']))
             conn.commit()
         return jsonify({"success": True, "message": "Workout added successfully."})
     except Exception as e:
@@ -205,9 +202,9 @@ def update_workout(workout_id):
             cursor = conn.cursor()
             cursor.execute("""
                 UPDATE Workouts
-                SET Name = ?, Description = ?, Equipment = ?, TargetMuscleGroup = ?, SecondaryMuscles = ?, Instructions = ?, GifUrl = ?
+                SET Name = ?, Equipment = ?, TargetMuscleGroup = ?, SecondaryMuscles = ?, Instructions = ?, GifUrl = ?
                 WHERE WorkoutID = ?
-            """, (data['name'], data['description'], data['equipment'], data['targetMuscleGroup'], data['secondaryMuscles'], data['instructions'], data['gifUrl'], workout_id))
+            """, (data['name'], data['equipment'], data['targetMuscleGroup'], data['secondaryMuscles'], data['instructions'], data['gifUrl'], workout_id))
             conn.commit()
         return jsonify({"success": True, "message": "Workout updated successfully."})
     except Exception as e:
@@ -231,12 +228,9 @@ def create_saved_list():
     if request.json:
         user_id = request.json.get('user_id')
         list_name = request.json.get('list_name')
-        #description = request.json.get('description')
-        description = "ABC"
     else:
         user_id = request.form.get('user_id')
         list_name = request.form.get('list_name')
-        description = request.form.get('description')
 
     if not user_id or not list_name:
         return jsonify({"success": False, "message": "Missing required fields."}), 400
@@ -253,8 +247,8 @@ def create_saved_list():
             
             # Proceed with inserting the new saved list
             cursor.execute("""
-                INSERT INTO SavedLists (UserID, Name, Description) VALUES (?, ?, ?)
-            """, (user_id, list_name, description))
+                INSERT INTO SavedLists (UserID, Name) VALUES (?, ?, ?)
+            """, (user_id, list_name))
             conn.commit()
         return jsonify({"success": True, "message": "Saved list created successfully."})
     except pyodbc.IntegrityError as e:
@@ -275,7 +269,7 @@ def get_saved_lists():
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM SavedLists WHERE UserID = ?", (user_id,))
             lists = cursor.fetchall()
-            saved_lists = [{"list_id": row[0], "name": row[2], "description": row[3]} for row in lists]
+            saved_lists = [{"list_id": row[0], "name": row[2]} for row in lists]
         return jsonify(saved_lists)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
