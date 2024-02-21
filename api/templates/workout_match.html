@@ -26,7 +26,7 @@
 
     <h2>Available Invitations</h2>
     <ul>
-        {% if invitations %}
+        {% if have_posts %}
             {% for invitation in invitations %}
             <li>
                 <strong>{{ invitation.name }}</strong> is looking for a workout partner for <em>{{ invitation.workout_type }}</em> at {{ invitation.location }}.
@@ -38,7 +38,7 @@
             </li>
             {% endfor %}
         {% else %}
-        <h3>There is no people looking for workout partner now!</h3>
+        <h3>{{ message }}</h3>
         {% endif %}
     </ul>
 

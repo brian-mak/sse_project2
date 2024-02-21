@@ -1,13 +1,30 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
+import requests
 import sys, os
+from os import environ as env
 import database
 from datetime import datetime
 
 
-api_url = os.getenv('BOOK_API_URL', 'http://book-api-server-dns.cye8ahgvh7b6dkea.uksouth.azurecontainer.io:5000/books')
+api_url = os.getenv('FIND_PARTNER_API')
 
 
-@app.route('/post_invitation', methods=['GET'])
+app = Flask(__name__)
+app.secret_key = env.get("APP_SECRET_KEY")
+
+
+def index():
+    response = requests.get(api_url).json()
+    have_posts = False
+    if response["success"] == False:
+        message = "We are still trying to locate people looking for workout partner. Please try again later."
+    elif len(response['data']) == 0:
+        message = "There is no people looking for workout partner currently."
+    else:
+        have_posts = True
+    return render_template("workout_match.html", have_posts = have_posts, invitation = response['data'], message = message)
+
+
 def post_invitation():
     input = request.form
     try:
