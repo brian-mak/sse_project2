@@ -2,9 +2,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById('bmi-form');
     const bmiMeterBar = document.querySelector('.bmi-meter-bar');
     const bmiMeterResult = document.querySelector('.bmi-meter-result');
+    const resultContainer = document.querySelector('#result-container');
 
     form.addEventListener('submit', function(event) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent the default form submission behavior
 
         const height = parseFloat(document.getElementById('height').value);
         const weight = parseFloat(document.getElementById('weight').value);
@@ -22,6 +23,8 @@ document.addEventListener("DOMContentLoaded", function() {
             const bmi = data.bmi;
             // Update the BMI meter
             updateBMIMeter(bmi);
+            // Display the BMI result
+            displayBMIResult(bmi);
         })
         .catch(error => console.error('Error:', error));
     });
@@ -30,9 +33,11 @@ document.addEventListener("DOMContentLoaded", function() {
         // Set the width of the BMI meter bar based on the BMI value
         const meterWidth = Math.min(bmi * 10, 100); // Cap at 100%
         bmiMeterBar.style.transform = `translateX(${meterWidth - 100}%)`;
+    }
 
-        // Display the BMI value
-        bmiMeterResult.textContent = `BMI: ${bmi.toFixed(2)}`;
+    function displayBMIResult(bmi) {
+        // Display the BMI value below the form
+        resultContainer.innerHTML = `BMI: ${bmi.toFixed(2)}`;
     }
 });
 
