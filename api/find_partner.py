@@ -7,8 +7,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    workout_invitations = database.get_all_invitations()
-    return render_template('workout_match.html', invitations=workout_invitations)
+    workout_invitations = database.get_all_user()
+    return jsonify(workout_invitations)
 
 
 @app.route('/post_invitation', methods=['POST'])
@@ -25,31 +25,47 @@ def post_invitation():
             'message': input.get("message")
         }
         database.post_invitation(new_invitation)
+        return ('Workout Invitation Posted')
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
-        flash(f"{exc_type} {fname} {exc_tb.tb_lineno}")
+        return (f"Post workout invitation failed. Error: {exc_type} {fname} {exc_tb.tb_lineno}")
+    
 
-    return redirect(url_for("index"))
- 
-
-@app.route('/send_message/<int:invitation_id>', methods=['POST'])
-def send_message(invitation_id):
-    input = request.form
-    print(input)
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    query_params = request.args
     try:
-        new_message = {
-            'user_id': session["user"]["userinfo"]["sub"],
-            'post_id': 1, #input.get("workout_type"),
-            'message': input.get("message")
-        }
-        database.post_new_message(new_message)
+        # new_message = {
+        #     'user_id': session["user"]["userinfo"]["sub"],
+        #     'post_id': post_id,
+        #     'receiver_id': receiver_id,
+        #     'message': ("message")
+        # }
+        database.post_new_message(query_params)
+        return ('Message Sent')
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         print(exc_type, fname, exc_tb.tb_lineno)
-        flash(f"{exc_type} {fname} {exc_tb.tb_lineno}")
+        return (f"Send message failed. Error: {exc_type} {fname} {exc_tb.tb_lineno}")
+
+
+@app.route('/get_post', methods=['POST'])
+def get_post():
+    query_params = request.args
+    try:
+        user_id = query_params.get('user_id')
+        if user_id == None:
+            return ('Invalid Input: User_ID empty')
+        posts = database.get_posts(user_id)
+        return (jsonify(posts))
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+        return (f"Send message failed. Error: {exc_type} {fname} {exc_tb.tb_lineno}")
+    
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

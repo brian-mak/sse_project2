@@ -49,7 +49,15 @@ def get_all_user():
     with get_conn() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Users")
-        print(cursor.fetchall())
+        rows = cursor.fetchall()    
+
+        columns = [column[0] for column in cursor.description]
+        
+        data = []
+        for row in rows:
+            data.append(dict(zip(columns, row)))
+
+    return data
 
 
 def update_user_log(info):
@@ -417,14 +425,9 @@ def get_message(user):
 
 
 def ad_hoc():
-
     conn = get_conn()
-    cursor = conn.cursor()
-    cursor.execute("ALTER TABLE message_log ADD receiver_id varchar(255) NOT NULL")
-    cursor.execute("ALTER TABLE message_log ADD CONSTRAINT FK_receiver_id FOREIGN KEY (receiver_id) REFERENCES Users(User_ID)")
-    
-    conn.commit()
-       
+    print('connected')
+    return   
 
 
 if __name__ == "__main__":
