@@ -60,8 +60,9 @@
         }
 
         function fetchSavedLists() {
-            // Assuming you have an API endpoint to get the user's saved lists
-            fetch('/db/api/user/saved_lists')
+            const userId = '{{ user_id }}';
+            // Update the fetch URL to include the user_id as a query parameter
+            fetch(`/db/api/user/saved_lists?user_id=${userId}`)
                 .then(response => response.json())
                 .then(lists => {
                     const container = document.getElementById('savedListsContainer');
