@@ -117,7 +117,7 @@ def home():
 
 @app.route('/search_exercises')
 def search_exercises():
-    return render_template("search_exercises.html", user_id=user_id)
+    return render_template("search_exercises.html")
 
 @app.route('/saved_lists')
 def saved_lists():
@@ -125,6 +125,7 @@ def saved_lists():
     user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
     return render_template("saved_lists.html", user_id=user_id)
 
+@app.route('/exercises', methods=['POST'])
 def search_exercises_result():
     # Retrieving user information from the session
     user_info = session.get('user')

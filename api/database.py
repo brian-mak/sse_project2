@@ -109,11 +109,11 @@ def create_schema():
             BEGIN
                 CREATE TABLE SavedLists (
                     ListID int NOT NULL PRIMARY KEY IDENTITY,
-                    UserID int NOT NULL,
+                    UserID varchar(255) NOT NULL,
                     Name varchar(255) NOT NULL,
                     Description text,
                     CreationDate datetime NOT NULL DEFAULT GETDATE(),
-                    FOREIGN KEY (UserID) REFERENCES Users(ID)
+                    FOREIGN KEY (UserID) REFERENCES Users(User_ID)
                 );
             END
         """)
@@ -445,6 +445,111 @@ def ad_hoc():
     conn.commit()
        
 
+def drop_saved_lists_table():
+    conn = None
+    try:
+        conn = pyodbc.connect(connection_string)
+        cursor = conn.cursor()
+
+        # Drop the SavedListWorkouts table first to remove dependencies
+        cursor.execute("""
+            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SavedListWorkouts]') AND type in (N'U'))
+            BEGIN
+                DROP TABLE SavedListWorkouts;
+            END
+        """)
+        conn.commit()
+
+        # Now, drop the SavedLists table
+        cursor.execute("""
+            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SavedLists]') AND type in (N'U'))
+            BEGIN
+                DROP TABLE SavedLists;
+            END
+        """)
+        conn.commit()
+
+        print("SavedLists table dropped successfully.")
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+        print(f"Failed to drop SavedLists table: {e}")
+    finally:
+        if conn:
+            conn.close()
+
+
+def drop_tables():
+    conn = None
+    try:
+        conn = pyodbc.connect(connection_string)
+        cursor = conn.cursor()
+
+        # Drop the SavedListWorkouts table first to remove dependencies
+        cursor.execute("""
+            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SavedListWorkouts]') AND type in (N'U'))
+            BEGIN
+                DROP TABLE SavedListWorkouts;
+            END
+        """)
+        conn.commit()
+
+        # Since SavedLists might have dependencies, drop it next
+        cursor.execute("""
+            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SavedLists]') AND type in (N'U'))
+            BEGIN
+                DROP TABLE SavedLists;
+            END
+        """)
+        conn.commit()
+
+        # Finally, drop the Workouts table
+        cursor.execute("""
+            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Workouts]') AND type in (N'U'))
+            BEGIN
+                DROP TABLE Workouts;
+            END
+        """)
+        conn.commit()
+
+        print("SavedListWorkouts, SavedLists, and Workouts tables dropped successfully.")
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+        print(f"Failed to drop tables: {e}")
+    finally:
+        if conn:
+            conn.close()
+
+
+def drop_workout_posts_table():
+    conn = None
+    try:
+        conn = get_conn()  # Assuming get_conn() is your function to establish a database connection
+        cursor = conn.cursor()
+
+        # Drop the workout_posts table
+        cursor.execute("""
+            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[workout_posts]') AND type in (N'U'))
+            BEGIN
+                DROP TABLE workout_posts;
+            END
+        """)
+        conn.commit()
+
+        print("workout_posts table dropped successfully.")
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(f"Failed to drop workout_posts table: {e}")
+    finally:
+        if conn:
+            conn.close()
+
 
 if __name__ == "__main__":
-    ad_hoc()
+    drop_workout_posts_table()
+    drop_tables()
+    #ad_hoc()
