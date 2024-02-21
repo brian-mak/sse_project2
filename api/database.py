@@ -300,111 +300,66 @@ def ad_hoc():
     print('connected')
     return   
 
-def drop_saved_lists_table():
-    conn = None
+def delete_users_table():
     try:
-        conn = pyodbc.connect(connection_string)
-        cursor = conn.cursor()
-
-        # Drop the SavedListWorkouts table first to remove dependencies
-        cursor.execute("""
-            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SavedListWorkouts]') AND type in (N'U'))
-            BEGIN
-                DROP TABLE SavedListWorkouts;
-            END
-        """)
-        conn.commit()
-
-        # Now, drop the SavedLists table
-        cursor.execute("""
-            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SavedLists]') AND type in (N'U'))
-            BEGIN
-                DROP TABLE SavedLists;
-            END
-        """)
-        conn.commit()
-
-        print("SavedLists table dropped successfully.")
+        with get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DROP TABLE IF EXISTS Users")
+            conn.commit()
+            print("Users table deleted successfully.")
     except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
-        print(f"Failed to drop SavedLists table: {e}")
-    finally:
-        if conn:
-            conn.close()
+        print(f"Failed to delete Users table: {e}")
 
-
-def drop_tables():
-    conn = None
+def delete_workouts_table():
     try:
-        conn = pyodbc.connect(connection_string)
-        cursor = conn.cursor()
-
-        # Drop the SavedListWorkouts table first to remove dependencies
-        cursor.execute("""
-            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SavedListWorkouts]') AND type in (N'U'))
-            BEGIN
-                DROP TABLE SavedListWorkouts;
-            END
-        """)
-        conn.commit()
-
-        # Since SavedLists might have dependencies, drop it next
-        cursor.execute("""
-            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SavedLists]') AND type in (N'U'))
-            BEGIN
-                DROP TABLE SavedLists;
-            END
-        """)
-        conn.commit()
-
-        # Finally, drop the Workouts table
-        cursor.execute("""
-            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Workouts]') AND type in (N'U'))
-            BEGIN
-                DROP TABLE Workouts;
-            END
-        """)
-        conn.commit()
-
-        print("SavedListWorkouts, SavedLists, and Workouts tables dropped successfully.")
+        with get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DROP TABLE IF EXISTS Workouts")
+            conn.commit()
+            print("Workouts table deleted successfully.")
     except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
-        print(f"Failed to drop tables: {e}")
-    finally:
-        if conn:
-            conn.close()
+        print(f"Failed to delete Workouts table: {e}")
 
-
-def drop_workout_posts_table():
-    conn = None
+def delete_saved_lists_table():
     try:
-        conn = get_conn()  # Assuming get_conn() is your function to establish a database connection
-        cursor = conn.cursor()
-
-        # Drop the workout_posts table
-        cursor.execute("""
-            IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[workout_posts]') AND type in (N'U'))
-            BEGIN
-                DROP TABLE workout_posts;
-            END
-        """)
-        conn.commit()
-
-        print("workout_posts table dropped successfully.")
+        with get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DROP TABLE IF EXISTS SavedLists")
+            conn.commit()
+            print("SavedLists table deleted successfully.")
     except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(f"Failed to drop workout_posts table: {e}")
-    finally:
-        if conn:
-            conn.close()
+        print(f"Failed to delete SavedLists table: {e}")
+
+def delete_saved_list_workouts_table():
+    try:
+        with get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DROP TABLE IF EXISTS SavedListWorkouts")
+            conn.commit()
+            print("SavedListWorkouts table deleted successfully.")
+    except Exception as e:
+        print(f"Failed to delete SavedListWorkouts table: {e}")
+
+def delete_workout_posts_table():
+    try:
+        with get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DROP TABLE IF EXISTS workout_posts")
+            conn.commit()
+            print("workout_posts table deleted successfully.")
+    except Exception as e:
+        print(f"Failed to delete workout_posts table: {e}")
+
+def delete_message_log_table():
+    try:
+        with get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DROP TABLE IF EXISTS message_log")
+            conn.commit()
+            print("message_log table deleted successfully.")
+    except Exception as e:
+        print(f"Failed to delete message_log table: {e}")
 
 
 if __name__ == "__main__":
-    drop_workout_posts_table()
-    drop_tables()
-    #ad_hoc()
+    ad_hoc()
