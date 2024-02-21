@@ -256,8 +256,8 @@ def get_saved_lists():
 
 @db_bp.route('/saved_lists/add_workout', methods=['POST'])
 def add_workout_to_saved_list():
-    list_id = request.form.get('list_id')
-    workout_name = request.form.get('workout_name')
+    list_id = request.json.get('list_id')
+    workout_name = request.json.get('workout_name')
     try:
         with get_conn() as conn:
             cursor = conn.cursor()

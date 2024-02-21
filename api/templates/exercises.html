@@ -64,11 +64,11 @@
                     dropdown.id = `dropdown-${workoutName}`;
                     data.forEach(lst => {
                         const option = document.createElement('option');
-                        option.value = lst.listId;
+                        option.value = lst.list_id;
                         option.textContent = lst.name;
                         dropdown.appendChild(option);
                     });
-                    
+
                     const submitButton = document.createElement('button');
                     submitButton.textContent = 'Add';
                     submitButton.onclick = () => addWorkoutToSavedList(workoutName, dropdown.value);
