@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, session, jsonify
 import requests
 from dotenv import find_dotenv, load_dotenv
 from os import environ as env
 import os
 
 import find_partner, authentication
+from database import db_bp
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
@@ -13,6 +14,7 @@ if ENV_FILE:
 app = Flask(__name__)
 app.secret_key = env.get("APP_SECRET_KEY")
 
+app.register_blueprint(db_bp, url_prefix='/db')
 
 def get_rapid_api_key():
     return os.environ.get('RAPID_API_KEY')
@@ -117,8 +119,17 @@ def home():
 def search_exercises():
     return render_template("search_exercises.html")
 
+@app.route('/saved_lists')
+def saved_lists():
+    user_info = session.get('user')
+    user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
+    return render_template("saved_lists.html", user_id=user_id)
+
 @app.route('/exercises', methods=['POST'])
 def search_exercises_result():
+    # Retrieving user information from the session
+    user_info = session.get('user')
+    user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
 
     data = request.form.to_dict(flat=True)
     data['muscleGroups'] = request.form.getlist('muscleGroups')
@@ -128,7 +139,8 @@ def search_exercises_result():
     available_equipment = [equipment.lower() for equipment in data['equipment']]
 
     exercises = fetch_exercises(target_muscle_groups, available_equipment)
-    return render_template("exercises.html", exercises=exercises)
+    return render_template("exercises.html", exercises=exercises, user_id=user_id)
+
 
 app.add_url_rule('/find_partner', 'find_partner', find_partner.index)
 app.add_url_rule('/login', 'login', authentication.login)

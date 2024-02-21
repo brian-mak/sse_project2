@@ -54,8 +54,8 @@
 </body>
 <script>
     function showSavedListsDropdown(workoutId, buttonElement) {
-        const userId = 'USER_ID';  // Replace with logic to get current user's ID
-        fetch(`/user/saved_lists?user_id=${userId}`)
+        const userId = '{{ user_id }}';  // Replace with logic to get current user's ID
+        fetch(`/db/api/user/saved_lists?user_id=${userId}`)
             .then(response => response.json())
             .then(data => {
                 // Create dropdown if it doesn't already exist
@@ -82,7 +82,7 @@
     }
     
     function addWorkoutToSavedList(workoutId, listId) {
-        fetch('/saved_lists/add_workout', {
+        fetch('/db/saved_lists/add_workout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
