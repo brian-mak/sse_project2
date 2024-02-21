@@ -237,7 +237,7 @@ def create_saved_list():
             
             # Proceed with inserting the new saved list
             cursor.execute("""
-                INSERT INTO SavedLists (UserID, Name) VALUES (?, ?, ?)
+                INSERT INTO SavedLists (UserID, Name) VALUES (?, ?)
             """, (user_id, list_name))
             conn.commit()
         return jsonify({"success": True, "message": "Saved list created successfully."})
@@ -343,5 +343,4 @@ def delete_message_log_table():
         print(f"Failed to delete message_log table: {e}")
 
 if __name__ == "__main__":
-    create_schema()
-    # ad_hoc()
+    ad_hoc()
