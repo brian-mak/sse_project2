@@ -8,7 +8,7 @@ def index():
     query_params = request.args
     try:
         # return database.get_posts()
-        return jsonify({"success": True, "message": "hello-world"})
+        return jsonify({"success": True, "message": "hello-world", "data": {}})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
 

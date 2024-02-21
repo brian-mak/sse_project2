@@ -37,7 +37,7 @@ def post_invitation():
             'message': input.get("message")
         }
         response = requests.get(api_url, params=query_params)
-        if response['success'] == false:
+        if response['success'] == False:
             return (f"Post workout invitation failed. Error: {response['message']}")    
         return response
     except Exception as e:

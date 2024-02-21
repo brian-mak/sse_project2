@@ -26,21 +26,15 @@ def root():
         # Table should be created ahead of time in production app.
         cursor.execute("""
             CREATE TABLE Users (
-                ID int NOT NULL PRIMARY KEY IDENTITY,
+                ID int NOT NULL IDENTITY,
                 User_ID varchar(255) NOT NULL PRIMARY KEY,
                 Email varchar(255) NOT NULL,
                 Name varchar(255),
                 NickName varchar(255),
-                LastLogin datetime
             );
         """)
-
         conn.commit()
     except Exception as e:
-        # Table may already exist
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
         print(e)
     return "User API"
 
@@ -71,13 +65,9 @@ def update_user_log(info):
         #check if user id exists
         cursor.execute("SELECT 1 FROM Users WHERE User_ID = ?", user_id) 
         existing_row = cursor.fetchone()
-        if existing_row:
+        if not existing_row:
             # If email exists, update lastlogin
-            cursor.execute("UPDATE Users SET LastLogin = GETDATE() WHERE User_ID = ?", user_id)
-        else:
-            # If email does not exist, insert a new row
-            cursor.execute("INSERT INTO Users (Email, Name, NickName, User_ID, LastLogin) VALUES (?, ?, ?, ?, GETDATE())", email, name, nickname, user_id)
-        
+            cursor.execute("INSERT INTO Users (Email, Name, NickName, User_ID) VALUES (?, ?, ?, ?)", email, name, nickname, user_id)
         conn.commit()
 
     print(f"user {email} updated.")   
@@ -356,4 +346,4 @@ def delete_message_log_table():
 
 
 if __name__ == "__main__":
-    ad_hoc()
+    root()

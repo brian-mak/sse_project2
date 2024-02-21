@@ -31,11 +31,11 @@ def create_partner_post():
             CREATE TABLE workout_posts (
                 id int NOT NULL PRIMARY KEY IDENTITY,
                 user_id varchar(255) NOT NULL FOREIGN KEY REFERENCES Users(User_ID),
-                workout_id int NOT NULL FOREIGN KEY REFERENCES Workouts(WorkoutID),
+                workout_id int NOT NULL,
                 location varchar(255) NOT NULL,
-                start_time datetime,
-                end_time datetime,
-                post_time datetime,
+                start_time datetime NOT NULL,
+                end_time datetime NOT NULL,
+                post_time datetime NOT NULL,
                 message text
             );
         """)
@@ -102,8 +102,8 @@ def post_invitation(new_invitation):
         cursor = conn.cursor()
         print("connected")
         cursor.execute("""
-                INSERT INTO message_log (user_id, workout_id, location, start_time, end_time, post_time, message) VALUES (?, ?, ?, ?, ?, GETDATE(), ?)
-            """, (new_invitation['user_id'], new_invitation['workout_id'], new_invitation['location'], 
+                INSERT INTO message_log (user_id, workout, location, start_time, end_time, post_time, message) VALUES (?, ?, ?, ?, ?, GETDATE(), ?)
+            """, (new_invitation['user_id'], new_invitation['workout'], new_invitation['location'], 
                   new_invitation['start_time'].strftime('%Y-%m-%d %H:%M:%S'), new_invitation['end_time'].strftime('%Y-%m-%d %H:%M:%S'), new_invitation['message']))
         conn.commit()
         return jsonify({"success": True, "message": "Post added successfully."})
@@ -167,3 +167,20 @@ def get_message(user):
         print(exc_type, fname, exc_tb.tb_lineno)
         print(e)
     return messages
+
+
+def ad_hoc():
+    try:
+        conn = get_conn()
+        cursor = conn.cursor()
+        print("connected")
+        cursor.execute("""
+                ALTER TABLE workout_posts DROP COLUMN workout_id """)
+        cursor.execute("""ALTER TABLE workout_posts ADD workout_name varchar(255)""")
+        conn.commit()
+    except Exception as e:
+        print(str(e))
+
+
+if __name__ == "__main__":
+    ad_hoc()
