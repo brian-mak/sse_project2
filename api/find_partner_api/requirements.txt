@@ -1,1 +1,4 @@
 flask
+pyodbc
+python-dotenv
+retry

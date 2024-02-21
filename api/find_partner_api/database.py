@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, Blueprint
+from flask import jsonify
 from os import environ as env
 import os
 import pyodbc
