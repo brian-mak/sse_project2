@@ -46,22 +46,22 @@
         </ol>
         {% if exercise.gifUrl %}
         <img src="{{ exercise.gifUrl }}" alt="{{ exercise.name }} GIF" style="max-width: 100%; height: auto;"><br>
-        <button onclick="showSavedListsDropdown('{{ exercise.name }}', this)">Add to Saved List</button>
+        <button onclick="showSavedListsDropdown('{{ exercise.id }}', '{{ exercise.name }}', this)">Add to Saved List</button>
         <!-- The dropdown and submit button will be added here dynamically -->
         {% endif %}
     </div>
     {% endfor %}
 </body>
 <script>
-    function showSavedListsDropdown(workoutName, buttonElement) {
+    function showSavedListsDropdown(workoutID, workoutName, buttonElement) {
         const userId = '{{ user_id }}';  // Replace with logic to get current user's ID
         fetch(`/db/api/user/saved_lists?user_id=${userId}`)
             .then(response => response.json())
             .then(data => {
                 // Create dropdown if it doesn't already exist
-                if (!document.getElementById(`dropdown-${workoutName}`)) {
+                if (!document.getElementById(`dropdown-${workoutID}`)) {
                     const dropdown = document.createElement('select');
-                    dropdown.id = `dropdown-${workoutName}`;
+                    dropdown.id = `dropdown-${workoutID}`;
                     data.forEach(lst => {
                         const option = document.createElement('option');
                         option.value = lst.list_id;
@@ -71,7 +71,7 @@
 
                     const submitButton = document.createElement('button');
                     submitButton.textContent = 'Add';
-                    submitButton.onclick = () => addWorkoutToSavedList(workoutName, dropdown.value);
+                    submitButton.onclick = () => addWorkoutToSavedList(workoutID, workoutName, dropdown.value);
                     
                     // Insert dropdown and button after the "Add to Saved List" button
                     buttonElement.after(submitButton);
@@ -81,7 +81,7 @@
             .catch(error => console.error('Error fetching saved lists:', error));
     }
     
-    function addWorkoutToSavedList(workoutName, listId) {
+    function addWorkoutToSavedList(workoutID, workoutName, listId) {
         fetch('/db/saved_lists/add_workout', {
             method: 'POST',
             headers: {
@@ -89,6 +89,7 @@
             },
             body: JSON.stringify({
                 list_id: listId,
+                workout_id: workoutID,
                 workout_name: workoutName,
             }),
         })

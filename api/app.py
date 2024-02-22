@@ -99,6 +99,7 @@ def fetch_exercises(target_muscle_groups, available_equipment):
 
         details_of_exercises = [{
             'name': exercise.get('name'),
+            'id' : exercise.get('id'),
             'equipment': exercise.get('equipment'),
             'targetMuscleGroup': exercise.get('target'),
             'secondaryMuscles': exercise.get('secondaryMuscles', 'Not specified'),

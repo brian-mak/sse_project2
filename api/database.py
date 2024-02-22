@@ -120,8 +120,9 @@ def create_schema():
             BEGIN
                 CREATE TABLE SavedListWorkouts (
                     ListID int NOT NULL,
+                    WorkoutID varchar(255) NOT NULL,
                     WorkoutName varchar(255) NOT NULL,
-                    PRIMARY KEY (ListID, WorkoutName),
+                    PRIMARY KEY (ListID, WorkoutID),
                     FOREIGN KEY (ListID) REFERENCES SavedLists(ListID),
                 );
             END
@@ -263,18 +264,17 @@ def get_exercises_for_list(list_id):
     try:
         with get_conn() as conn:
             cursor = conn.cursor()
-            # Fetch workout names associated with the saved list
-            cursor.execute("SELECT WorkoutName FROM SavedListWorkouts WHERE ListID = ?", (list_id,))
-            workout_names = [row[0] for row in cursor.fetchall()]
+            # Fetch workout IDs associated with the saved list
+            cursor.execute("SELECT WorkoutID FROM SavedListWorkouts WHERE ListID = ?", (list_id,))
+            workout_ids = [row[0] for row in cursor.fetchall()]
 
-        print(workout_names)
+        print(workout_ids)
 
-        unique_workout_names = list(set(workout_names))
         # Fetch exercise details from the ExerciseDB API
         exercises_details = []
-        for name in unique_workout_names:
-            details = fetch_exercise_details_from_exercisedb(name)
-            if details not in exercises_details:
+        for id in workout_ids:
+            details = fetch_exercise_details_from_exercisedb(id)
+            if details:
                 exercises_details.append(details)
 
         print(exercises_details)
@@ -283,9 +283,9 @@ def get_exercises_for_list(list_id):
         return jsonify({"error": str(e)}), 500
 
 # Function to fetch exercise details from the ExerciseDB API
-def fetch_exercise_details_from_exercisedb(exercise_name):
+def fetch_exercise_details_from_exercisedb(workout_id):
     api_key = get_rapid_api_key()
-    url = "https://exercisedb.p.rapidapi.com/exercises/name/" + exercise_name
+    url = "https://exercisedb.p.rapidapi.com/exercises/exercise/" + workout_id
     headers = {
         "X-RapidAPI-Key": api_key,
         "X-RapidAPI-Host": "exercisedb.p.rapidapi.com"
@@ -302,11 +302,12 @@ def fetch_exercise_details_from_exercisedb(exercise_name):
 @db_bp.route('/saved_lists/add_workout', methods=['POST'])
 def add_workout_to_saved_list():
     list_id = request.json.get('list_id')
+    workout_id = request.json.get('workout_id')
     workout_name = request.json.get('workout_name')
     try:
         with get_conn() as conn:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO SavedListWorkouts (ListID, WorkoutName) VALUES (?, ?)", (list_id, workout_name))
+            cursor.execute("INSERT INTO SavedListWorkouts (ListID, WorkoutID, WorkoutName) VALUES (?, ?, ?)", (list_id, workout_id, workout_name))
             conn.commit()
         return jsonify({"success": True, "message": "Workout added to saved list successfully."})
     except Exception as e:
@@ -317,14 +318,14 @@ def add_workout_to_saved_list():
 def remove_workout_from_saved_list():
     data = request.get_json()
     list_id = data.get('list_id')
-    workout_name = data.get('workout_name')
-    if not list_id or not workout_name:
-        return jsonify({"success": False, "message": "Missing list_id or workout_name"}), 400
+    workout_id = data.get('workout_id')
+    if not list_id or not workout_id:
+        return jsonify({"success": False, "message": "Missing list_id or workout_id"}), 400
 
     try:
         with get_conn() as conn:
             cursor = conn.cursor()
-            cursor.execute("DELETE FROM SavedListWorkouts WHERE ListID = ? AND WorkoutName = ?", (list_id, workout_name))
+            cursor.execute("DELETE FROM SavedListWorkouts WHERE ListID = ? AND WorkoutID = ?", (list_id, workout_id))
             conn.commit()
         return jsonify({"success": True, "message": "Workout removed from saved list successfully."})
     except Exception as e:
