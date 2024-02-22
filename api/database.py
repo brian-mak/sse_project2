@@ -274,7 +274,7 @@ def get_exercises_for_list(list_id):
         exercises_details = []
         for name in unique_workout_names:
             details = fetch_exercise_details_from_exercisedb(name)
-            if details:
+            if details not in exercises_details:
                 exercises_details.append(details)
 
         print(exercises_details)
@@ -311,6 +311,25 @@ def add_workout_to_saved_list():
         return jsonify({"success": True, "message": "Workout added to saved list successfully."})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
+    
+
+@db_bp.route('/saved_lists/remove_workout', methods=['POST'])
+def remove_workout_from_saved_list():
+    data = request.get_json()
+    list_id = data.get('list_id')
+    workout_name = data.get('workout_name')
+    if not list_id or not workout_name:
+        return jsonify({"success": False, "message": "Missing list_id or workout_name"}), 400
+
+    try:
+        with get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM SavedListWorkouts WHERE ListID = ? AND WorkoutName = ?", (list_id, workout_name))
+            conn.commit()
+        return jsonify({"success": True, "message": "Workout removed from saved list successfully."})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
 
 def ad_hoc():
     conn = get_conn()

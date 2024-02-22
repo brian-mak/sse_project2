@@ -11,14 +11,32 @@
             flex-direction: column;
             align-items: center;
         }
-        .list-form, .list-display {
+        .list-form, .list-display, .exercises-display {
+            margin-bottom: 20px;
+        }
+        .list-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* Adjust based on your preference */
             margin-bottom: 20px;
         }
         .list {
             background-color: #f0f0f0;
             padding: 10px;
-            margin-top: 10px;
             border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .list:hover {
+            background-color: #e0e0e0; /* Change color on hover */
+        }
+        .exercises-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 40px;
+            width: 50em;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -30,10 +48,14 @@
     </div>
 
     <h2>Your Saved Lists</h2>
-    <div id="savedListsContainer">
+    <div id="savedListsContainer" class="list-container">
         <!-- Saved lists will be displayed here -->
     </div>
 
+    <div id="exercisesContainer" class="exercises-container">
+        <!-- Exercises will be displayed here -->
+    </div>
+    
     <script>
         function createSavedList() {
             const listName = document.getElementById('newListName').value;
@@ -59,29 +81,32 @@
             }
         }
 
+        function capitalizeWords(str) {
+            return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        }
+
         function fetchExercisesForList(listId) {
             fetch(`/db/api/saved_lists/${listId}/exercises`)
             .then(response => response.json())
             .then(data => {
                 const exercises = data.flat(); // Flatten the nested array structure
-                const container = document.getElementById('savedListsContainer');
+                const container = document.getElementById('exercisesContainer');
                 container.innerHTML = ''; // Clear the container for exercises
                 console.log(exercises); // Debugging to view the structure
                 exercises.forEach(exercise => {
-                    // Display each exercise in the format used in exercises.html
                     const exerciseDiv = document.createElement('div');
                     exerciseDiv.className = 'exercise';
                     exerciseDiv.innerHTML = `
-                        <h3>${exercise.name}</h3>
-                        <p><strong>Equipment Required:</strong> ${exercise.equipment}</p>
-                        <p><strong>Target Muscle Group:</strong> ${exercise.target}</p>
-                        <p><strong>Secondary Muscles:</strong> ${exercise.secondaryMuscles.join(', ')}</p>
+                        <h3>${capitalizeWords(exercise.name)}</h3>
+                        <p><strong>Equipment Required:</strong> ${capitalizeWords(exercise.equipment)}</p>
+                        <p><strong>Target Muscle Group:</strong> ${capitalizeWords(exercise.target)}</p>
+                        <p><strong>Secondary Muscles:</strong> ${exercise.secondaryMuscles.map(muscle => capitalizeWords(muscle)).join(', ')}</p>
                         <p><strong>Instructions:</strong></p>
                         <ol class="instructions">
                             ${exercise.instructions.map(instruction => `<li>${instruction}</li>`).join('')}
                         </ol>
-                        ${exercise.gifUrl ? `<img src="${exercise.gifUrl}" alt="${exercise.name} GIF" style="max-width: 100%; height: auto;">` : ''}
-                        <button onclick="removeExerciseFromSavedList('${listId}', '${exercise.id}')">Remove from Saved List</button>
+                        ${exercise.gifUrl ? `<img src="${exercise.gifUrl}" alt="${capitalizeWords(exercise.name)} GIF" style="max-width: 100%; height: auto;">` : ''}
+                        <br><button onclick="removeExerciseFromSavedList('${listId}', '${exercise.name.replace(/'/g, "\\'")}')">Remove from Saved List</button><br>
                     `;
                     container.appendChild(exerciseDiv);
                 });
@@ -89,37 +114,23 @@
             .catch(error => console.error('Error:', error));
         }
 
-        // function fetchExercisesForList(listId) {
-            
-        //     fetch(`/db/api/saved_lists/${listId}/exercises`)
-        //     .then(response => response.json())
-        //     .then(exercises => {
-        //         // exercises = [[{'bodyPart': 'chest', 'equipment': 'kettlebell', 'gifUrl': 'https://v2.exercisedb.io/image/yTgNBK3XIYfbtg', 'id': '0519', 'name': 'kettlebell alternating press on floor', 'target': 'pectorals', 'secondaryMuscles': ['shoulders', 'triceps'], 'instructions': ['Start by lying on your back on the floor with your knees bent and feet flat on the ground.', 'Hold a kettlebell in each hand, with your palms facing towards your feet and your arms extended straight up towards the ceiling.', 'Lower one kettlebell down towards your shoulder while keeping the other kettlebell extended straight up.', 'Press the lowered kettlebell back up to the starting position while simultaneously lowering the other kettlebell down towards your shoulder.', 'Continue alternating the press motion with each kettlebell for the desired number of repetitions.']}], [{'bodyPart': 'chest', 'equipment': 'kettlebell', 'gifUrl': 'https://v2.exercisedb.io/image/WQ1usU-fCWqN5i', 'id': '0531', 'name': 'kettlebell extended range one arm press on floor', 'target': 'pectorals', 'secondaryMuscles': ['triceps', 'shoulders'], 'instructions': ['Start by lying on your back on the floor with your knees bent and feet flat on the ground.', 'Hold a kettlebell in one hand, with your palm facing towards your feet.', 'Extend your arm straight up towards the ceiling, keeping your elbow locked and your wrist straight.', 'Slowly lower the kettlebell back down to the starting position, maintaining control throughout the movement.', 'Repeat for the desired number of repetitions, then switch to the other arm.']}]];
-        //         const container = document.getElementById('savedListsContainer');
-        //         container.innerHTML = ''; // Clear the container or create a new container for exercises
-        //         console.log(exercises);
-        //         exercises.forEach(exercise => {
-        //             // Display each exercise in the format used in exercises.html
-        //             const exerciseDiv = document.createElement('div');
-        //             exerciseDiv.className = 'exercise';
-        //             exerciseDiv.innerHTML = `
-        //                 <h3>${exercise.name}</h3>
-        //                 <p><strong>Equipment Required:</strong> ${exercise.equipment}</p>
-        //                 <p><strong>Target Muscle Group:</strong> ${exercise.target}</p>
-        //                 // `;
-        //             //     <p><strong>Secondary Muscles:</strong> ${exercise.secondaryMuscles.join(', ')}</p>
-        //             //     <p><strong>Instructions:</strong></p>
-        //             //     <ol class="instructions">
-        //             //         ${exercise.instructions.map(instruction => `<li>${instruction}</li>`).join('')}
-        //             //     </ol>
-        //             //     ${exercise.gifUrl ? `<img src="${exercise.gifUrl}" alt="${exercise.name} GIF" style="max-width: 100%; height: auto;">` : ''}
-        //             //     <button onclick="removeExerciseFromSavedList('${listId}', '${exercise.WorkoutID}')">Remove from Saved List</button>
-        //             // `;
-        //             container.appendChild(exerciseDiv);
-        //         });
-        //     })
-        //     .catch(error => console.error('Error:', error));
-        // }
+        function removeExerciseFromSavedList(listId, workoutName) {
+            fetch('/db/saved_lists/remove_workout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ list_id: listId, workout_name: workoutName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Exercise removed successfully!');
+                    fetchExercisesForList(listId); // Refresh the exercises displayed
+                } else {
+                    alert('Failed to remove exercise: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
 
         function makeListClickable() {
             const lists = document.querySelectorAll('.list');
