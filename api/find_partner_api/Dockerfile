@@ -19,6 +19,7 @@ EXPOSE 5000
 # Define environment variable
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
+ENV AZURE_SQL_CONNECTIONSTRING=Driver={ODBC Driver 18 for SQL Server};Server=tcp:fitness-planner.database.windows.net,1433;Database=Fitness Planner;Uid=CloudSA063070df;Pwd=!Gy59dt#b:rF.TS;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30 
 
 # Connect to Repo
 LABEL org.opencontainers.image.source=https://github.com/lem123ic/sse_project2 

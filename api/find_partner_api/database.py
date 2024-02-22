@@ -102,8 +102,8 @@ def post_invitation(new_invitation):
         cursor = conn.cursor()
         print("connected")
         cursor.execute("""
-                INSERT INTO message_log (user_id, workout, location, start_time, end_time, post_time, message) VALUES (?, ?, ?, ?, ?, GETDATE(), ?)
-            """, (new_invitation['user_id'], new_invitation['workout'], new_invitation['location'], 
+                INSERT INTO message_log (user_id, workout_name, location, start_time, end_time, post_time, message) VALUES (?, ?, ?, ?, ?, GETDATE(), ?)
+            """, (new_invitation['user_id'], new_invitation['workout_name'], new_invitation['location'], 
                   new_invitation['start_time'].strftime('%Y-%m-%d %H:%M:%S'), new_invitation['end_time'].strftime('%Y-%m-%d %H:%M:%S'), new_invitation['message']))
         conn.commit()
         return jsonify({"success": True, "message": "Post added successfully."})

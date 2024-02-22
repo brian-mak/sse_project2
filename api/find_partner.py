@@ -30,7 +30,7 @@ def post_invitation():
     try:
         query_params = {
             'user_id': session["user"]["userinfo"]["sub"],
-            'workout_id': 1, #input.get("workout_type"),
+            'workout_name': input.get("workout_type"),
             'location': input.get("location"),
             'start_time': datetime.strptime(input.get("start_time"), '%Y-%m-%dT%H:%M'),
             'end_time': datetime.strptime(input.get("end_time"), '%Y-%m-%dT%H:%M'),
