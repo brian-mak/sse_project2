@@ -267,14 +267,17 @@ def get_exercises_for_list(list_id):
             cursor.execute("SELECT WorkoutName FROM SavedListWorkouts WHERE ListID = ?", (list_id,))
             workout_names = [row[0] for row in cursor.fetchall()]
 
+        print(workout_names)
+
+        unique_workout_names = list(set(workout_names))
         # Fetch exercise details from the ExerciseDB API
         exercises_details = []
-        for name in workout_names:
+        for name in unique_workout_names:
             details = fetch_exercise_details_from_exercisedb(name)
             if details:
                 exercises_details.append(details)
 
-        print(jsonify(exercises_details))
+        print(exercises_details)
         return jsonify(exercises_details)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -289,6 +292,7 @@ def fetch_exercise_details_from_exercisedb(exercise_name):
     }
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
+        print(response.json)
         return response.json()
     else:
         print(f"Failed to fetch exercises: {response.status_code}")

@@ -62,9 +62,11 @@
         function fetchExercisesForList(listId) {
             fetch(`/db/api/saved_lists/${listId}/exercises`)
             .then(response => response.json())
-            .then(exercises => {
+            .then(data => {
+                const exercises = data.flat(); // Flatten the nested array structure
                 const container = document.getElementById('savedListsContainer');
-                container.innerHTML = ''; // Clear the container or create a new container for exercises
+                container.innerHTML = ''; // Clear the container for exercises
+                console.log(exercises); // Debugging to view the structure
                 exercises.forEach(exercise => {
                     // Display each exercise in the format used in exercises.html
                     const exerciseDiv = document.createElement('div');
@@ -72,20 +74,52 @@
                     exerciseDiv.innerHTML = `
                         <h3>${exercise.name}</h3>
                         <p><strong>Equipment Required:</strong> ${exercise.equipment}</p>
-                        <p><strong>Target Muscle Group:</strong> ${exercise.targetMuscleGroup}</p>
+                        <p><strong>Target Muscle Group:</strong> ${exercise.target}</p>
                         <p><strong>Secondary Muscles:</strong> ${exercise.secondaryMuscles.join(', ')}</p>
                         <p><strong>Instructions:</strong></p>
                         <ol class="instructions">
                             ${exercise.instructions.map(instruction => `<li>${instruction}</li>`).join('')}
                         </ol>
                         ${exercise.gifUrl ? `<img src="${exercise.gifUrl}" alt="${exercise.name} GIF" style="max-width: 100%; height: auto;">` : ''}
-                        <button onclick="removeExerciseFromSavedList('${listId}', '${exercise.WorkoutID}')">Remove from Saved List</button>
+                        <button onclick="removeExerciseFromSavedList('${listId}', '${exercise.id}')">Remove from Saved List</button>
                     `;
                     container.appendChild(exerciseDiv);
                 });
             })
             .catch(error => console.error('Error:', error));
         }
+
+        // function fetchExercisesForList(listId) {
+            
+        //     fetch(`/db/api/saved_lists/${listId}/exercises`)
+        //     .then(response => response.json())
+        //     .then(exercises => {
+        //         // exercises = [[{'bodyPart': 'chest', 'equipment': 'kettlebell', 'gifUrl': 'https://v2.exercisedb.io/image/yTgNBK3XIYfbtg', 'id': '0519', 'name': 'kettlebell alternating press on floor', 'target': 'pectorals', 'secondaryMuscles': ['shoulders', 'triceps'], 'instructions': ['Start by lying on your back on the floor with your knees bent and feet flat on the ground.', 'Hold a kettlebell in each hand, with your palms facing towards your feet and your arms extended straight up towards the ceiling.', 'Lower one kettlebell down towards your shoulder while keeping the other kettlebell extended straight up.', 'Press the lowered kettlebell back up to the starting position while simultaneously lowering the other kettlebell down towards your shoulder.', 'Continue alternating the press motion with each kettlebell for the desired number of repetitions.']}], [{'bodyPart': 'chest', 'equipment': 'kettlebell', 'gifUrl': 'https://v2.exercisedb.io/image/WQ1usU-fCWqN5i', 'id': '0531', 'name': 'kettlebell extended range one arm press on floor', 'target': 'pectorals', 'secondaryMuscles': ['triceps', 'shoulders'], 'instructions': ['Start by lying on your back on the floor with your knees bent and feet flat on the ground.', 'Hold a kettlebell in one hand, with your palm facing towards your feet.', 'Extend your arm straight up towards the ceiling, keeping your elbow locked and your wrist straight.', 'Slowly lower the kettlebell back down to the starting position, maintaining control throughout the movement.', 'Repeat for the desired number of repetitions, then switch to the other arm.']}]];
+        //         const container = document.getElementById('savedListsContainer');
+        //         container.innerHTML = ''; // Clear the container or create a new container for exercises
+        //         console.log(exercises);
+        //         exercises.forEach(exercise => {
+        //             // Display each exercise in the format used in exercises.html
+        //             const exerciseDiv = document.createElement('div');
+        //             exerciseDiv.className = 'exercise';
+        //             exerciseDiv.innerHTML = `
+        //                 <h3>${exercise.name}</h3>
+        //                 <p><strong>Equipment Required:</strong> ${exercise.equipment}</p>
+        //                 <p><strong>Target Muscle Group:</strong> ${exercise.target}</p>
+        //                 // `;
+        //             //     <p><strong>Secondary Muscles:</strong> ${exercise.secondaryMuscles.join(', ')}</p>
+        //             //     <p><strong>Instructions:</strong></p>
+        //             //     <ol class="instructions">
+        //             //         ${exercise.instructions.map(instruction => `<li>${instruction}</li>`).join('')}
+        //             //     </ol>
+        //             //     ${exercise.gifUrl ? `<img src="${exercise.gifUrl}" alt="${exercise.name} GIF" style="max-width: 100%; height: auto;">` : ''}
+        //             //     <button onclick="removeExerciseFromSavedList('${listId}', '${exercise.WorkoutID}')">Remove from Saved List</button>
+        //             // `;
+        //             container.appendChild(exerciseDiv);
+        //         });
+        //     })
+        //     .catch(error => console.error('Error:', error));
+        // }
 
         function makeListClickable() {
             const lists = document.querySelectorAll('.list');
@@ -108,12 +142,13 @@
                     lists.forEach(list => {
                         const div = document.createElement('div');
                         div.className = 'list';
+                        div.setAttribute('data-list-id', list.list_id); // Make sure to set this attribute for clicking to work
                         div.textContent = list.name; // Assuming each list has a 'name' property
                         container.appendChild(div);
                     });
+                    makeListClickable(); // Call makeListClickable here, after the lists have been added
                 })
                 .catch(error => console.error('Error fetching saved lists:', error));
-                makeListClickable();
         }
 
         // Load saved lists when the page loads
