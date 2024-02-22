@@ -7,8 +7,9 @@ WORKDIR /usr/src/app
 # Copy the current directory contents into the container at /usr/src/app
 COPY . /usr/src/app
 
-# Update package repositories and install ODBC driver
-RUN apt-get update && apt-get install -y unixodbc unixodbc-dev odbc-postgresql
+# Install odbc packages and the .deb file using dpkg
+RUN apt-get update && apt-get install -y unixodbc && apt-get install -y odbcinst
+RUN DEBIAN_FRONTEND=noninteractive ACCEPT_EULA=Y dpkg -i msodbcsql18_18.3.2.1-1_amd64.deb
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
@@ -19,7 +20,7 @@ EXPOSE 5000
 # Define environment variable
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
-ENV AZURE_SQL_CONNECTIONSTRING=Driver={ODBC Driver 18 for SQL Server};Server=tcp:fitness-planner.database.windows.net,1433;Database=Fitness Planner;Uid=CloudSA063070df;Pwd=!Gy59dt#b:rF.TS;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30 
+ENV AZURE_SQL_CONNECTIONSTRING="Driver={ODBC Driver 18 for SQL Server};Server=tcp:fitness-planner.database.windows.net,1433;Database=Fitness Planner;Uid=CloudSA063070df;Pwd=!Gy59dt#b:rF.TS;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30"
 
 # Connect to Repo
 LABEL org.opencontainers.image.source=https://github.com/lem123ic/sse_project2 

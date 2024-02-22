@@ -50,32 +50,32 @@ def create_partner_post():
     return 
 
 
-def create_message_log():
-    print("Create Message Log")
-    try:
-        conn = get_conn()
-        cursor = conn.cursor()
+# def create_message_log():
+#     print("Create Message Log")
+#     try:
+#         conn = get_conn()
+#         cursor = conn.cursor()
 
-        print("connected")
-        # Table should be created ahead of time in production app.
-        cursor.execute("""
-            CREATE TABLE message_log (
-                id int NOT NULL PRIMARY KEY IDENTITY,
-                post_id int NOT NULL FOREIGN KEY REFERENCES workout_posts(id),
-                user_id varchar(255) NOT NULL FOREIGN KEY REFERENCES Users(ID),
-                sent_time datetime,
-                message text
-            );
-        """)
+#         print("connected")
+#         # Table should be created ahead of time in production app.
+#         cursor.execute("""
+#             CREATE TABLE message_log (
+#                 id int NOT NULL PRIMARY KEY IDENTITY,
+#                 post_id int NOT NULL FOREIGN KEY REFERENCES workout_posts(id),
+#                 user_id varchar(255) NOT NULL FOREIGN KEY REFERENCES Users(ID),
+#                 sent_time datetime,
+#                 message text
+#             );
+#         """)
 
-        conn.commit()
-    except Exception as e:
-        # Table may already exist
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
-        print(e)
-    return 
+#         conn.commit()
+#     except Exception as e:
+#         # Table may already exist
+#         exc_type, exc_obj, exc_tb = sys.exc_info()
+#         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+#         print(exc_type, fname, exc_tb.tb_lineno)
+#         print(e)
+#     return 
 
 
 def get_all_invitations():
@@ -84,7 +84,6 @@ def get_all_invitations():
         conn = get_conn()
         cursor = conn.cursor()
         print("connected")
-        # Table should be created ahead of time in production app.
         cursor.execute("""SELECT * FROM workout_posts""")
         posts = cursor.fetchall()
     except Exception as e:
@@ -102,7 +101,7 @@ def post_invitation(new_invitation):
         cursor = conn.cursor()
         print("connected")
         cursor.execute("""
-                INSERT INTO message_log (user_id, workout_name, location, start_time, end_time, post_time, message) VALUES (?, ?, ?, ?, ?, GETDATE(), ?)
+                INSERT INTO workout_posts (user_id, workout_name, location, start_time, end_time, post_time, message) VALUES (?, ?, ?, ?, ?, GETDATE(), ?)
             """, (new_invitation['user_id'], new_invitation['workout_name'], new_invitation['location'], 
                   new_invitation['start_time'].strftime('%Y-%m-%d %H:%M:%S'), new_invitation['end_time'].strftime('%Y-%m-%d %H:%M:%S'), new_invitation['message']))
         conn.commit()
@@ -119,7 +118,7 @@ def post_new_message(new_message):
         cursor = conn.cursor()
         print("connected")
         cursor.execute("""
-                INSERT INTO workout_posts (user_id, post_id, receiver_id, sent_time, message) VALUES (?, ?, ?, GETDATE(), ?)
+                INSERT INTO message_log (user_id, post_id, receiver_id, sent_time, message) VALUES (?, ?, ?, GETDATE(), ?)
             """, (new_message['user_id'], new_message['post_id'], new_message['receiver_id'], new_message['message']))
         conn.commit()
         print ("new message added")
