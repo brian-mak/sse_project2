@@ -130,15 +130,16 @@ def post_new_message(new_message):
     return
 
 
-def get_posts(user):
+def get_posts(user = None):
     try:
         conn = get_conn()
         cursor = conn.cursor()
         print("connected")
-        cursor.execute("""
-                SELECT * FROM workout_posts WHERE user_id = ?
-            """, (user))
-        posts = cursor.fetchall()
+        if user == None:
+            cursor.execute("""
+                    SELECT * FROM workout_posts JOIN Users ON Users.user_id = workout_posts.user_id
+                """)
+            posts = cursor.fetchall()
         columns = [column[0] for column in cursor.description]
         data = []
         for row in posts:

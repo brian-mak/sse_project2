@@ -28,14 +28,12 @@
     <ul>
         {% if have_posts %}
             {% for invitation in invitations %}
-            <li>
-                <strong>{{ invitation.name }}</strong> is looking for a workout partner for <em>{{ invitation.workout_type }}</em> at {{ invitation.location }}.
-                <form action="{{ url_for('send_message', invitation_id=invitation.id) }}" method="POST">
-                    <label for="message">Message:</label>
-                    <input type="text" id="message" name="message" required>
-                    <button type="submit">Send Message</button>
-                </form>
-            </li>
+                <div class="invitation-box">
+                    <strong>{{ invitation.Name }}</strong> is looking for a workout partner for <em>{{ invitation.workout_name }}</em> <br>
+                    Location: {{ invitation.location }} <br>
+                    Time: {{ invitation.start_time }} to {{ invitation.end_time }} <br>
+                    Message: {{ invitation.message }}
+                </div>
             {% endfor %}
         {% else %}
         <h3>{{ message }}</h3>

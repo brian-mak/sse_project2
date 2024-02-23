@@ -21,11 +21,17 @@ def index():
     elif len(response['data']) == 0:
         message = "There is no people looking for workout partner currently."
     else:
+        message = ""
         have_posts = True
-    return render_template("workout_match.html", have_posts = have_posts, invitation = response['data'], message = message)
+        for post in response['data']:
+            post['start_time'] = datetime.strptime(post['start_time'], "%a, %d %b %Y %H:%M:%S %Z").strftime("%Y-%m-%d %H:%M")
+            post['end_time'] = datetime.strptime(post['end_time'], "%a, %d %b %Y %H:%M:%S %Z").strftime("%Y-%m-%d %H:%M")
+    return render_template("workout_match.html", have_posts = have_posts, invitations = response['data'], message = message)
 
 
 def post_invitation():
+    if session.get('user') == None:
+        return 'Please login to continue'
     input = request.form
     # try:
     query_params = {

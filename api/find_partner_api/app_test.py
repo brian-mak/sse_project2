@@ -25,3 +25,16 @@ def test_post_invitation(client):
     assert 'success' in response_data
     print(response_data)
     assert response_data['success'] is True
+
+
+def test_get_all_posts(client):
+    # Assuming user is not provided
+    user = None
+    
+    # Call the function
+    response = client.get('/')
+    result = response.get_json()
+
+    # Assertions
+    assert result['success'] == True
+    assert 'data' in result
