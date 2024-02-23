@@ -182,6 +182,7 @@ app.add_url_rule('/login', 'login', authentication.login)
 app.add_url_rule('/callback', 'callback', authentication.callback)
 app.add_url_rule('/logout', 'logout', authentication.logout)
 app.add_url_rule('/post_invitation', 'post_invitation', find_partner.post_invitation, methods=['POST'])
+app.add_url_rule('/delete_post', 'delete_post', find_partner.delete_post, methods=['POST'])
 
 
 if __name__ == "__main__":

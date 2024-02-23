@@ -8,7 +8,7 @@ app = Flask(__name__)
 def index():
     query_params = request.args
     try:
-        posts = database.get_posts()
+        posts = database.get_active_posts()
         return posts
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})

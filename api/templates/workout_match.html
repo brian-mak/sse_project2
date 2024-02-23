@@ -9,37 +9,83 @@
 <body>
     <h1>Workout Partner Pairing</h1>
     
-    <h2>Post Invitation</h2>
-    <form action="/post_invitation" method="POST">
-        <label for="workout_type">Workout Type:</label>
-        <input type="text" id="workout_type" name="workout_type" required><br>
-        <label for="location">Location:</label>
-        <input type="text" id="location" name="location" required><br>
-        <label for="start_time">Start Time:</label>
-        <input type="datetime-local" id="start_time" name="start_time" required><br>
-        <label for="end_time">End Time:</label>
-        <input type="datetime-local" id="end_time" name="end_time" required><br>
-        <label for="message">Message:</label>
-        <input type="text" id="message" name="message"><br>
-        <button type="submit">Post Invitation</button>
-    </form>
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'currentInvitations')" id="defaultOpen">Current Invitations</button>
+        <button class="tablinks" onclick="openTab(event, 'postInvitation')">Post an Invitation</button>
+        <button class="tablinks" onclick="openTab(event, 'userInvitation')">Your Invitations</button>
+    </div>
 
-    <h2>Available Invitations</h2>
-    <ul>
-        {% if have_posts %}
-            {% for invitation in invitations %}
-                <div class="invitation-box">
-                    <strong>{{ invitation.Name }}</strong> is looking for a workout partner for <em>{{ invitation.workout_name }}</em> <br>
-                    Location: {{ invitation.location }} <br>
-                    Time: {{ invitation.start_time }} to {{ invitation.end_time }} <br>
-                    Message: {{ invitation.message }}
-                </div>
-            {% endfor %}
-        {% else %}
-        <h3>{{ message }}</h3>
-        {% endif %}
-    </ul>
+    <div id="currentInvitations" class="tabcontent">
+        <h2>Available Invitations</h2>
+        <ul>
+            {% if have_posts %}
+                {% for invitation in invitations %}
+                    <div class="invitation-box">
+                        <strong>{{ invitation.Name }}</strong> is looking for a workout partner for <em>{{ invitation.workout_name }}</em> <br>
+                        Location: {{ invitation.location }} <br>
+                        Time: {{ invitation.start_time }} to {{ invitation.end_time }} <br>
+                        Message: {{ invitation.message }}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h3>{{ message }}</h3>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div id="postInvitation" class="tabcontent">
+        <h2>Post Invitation</h2>
+        <form action="/post_invitation" method="POST">
+            <label for="workout_type">Workout Type:</label>
+            <input type="text" id="workout_type" name="workout_type" required><br>
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" required><br>
+            <label for="start_time">Start Time:</label>
+            <input type="datetime-local" id="start_time" name="start_time" required><br>
+            <label for="end_time">End Time:</label>
+            <input type="datetime-local" id="end_time" name="end_time" required><br>
+            <label for="message">Message:</label>
+            <input type="text" id="message" name="message"><br>
+            <button type="submit">Post Invitation</button>
+        </form>
+    </div>
+
+    <div id="userInvitation" class="tabcontent">
+        <h2>Your Invitations</h2>
+        <ul>
+                {% for invitation in user_invitations %}
+                    <div class="invitation-box">
+                        <strong>{{ invitation.Name }}</strong> is looking for a workout partner for <em>{{ invitation.workout_name }}</em> <br>
+                        Location: {{ invitation.location }} <br>
+                        Time: {{ invitation.start_time }} to {{ invitation.end_time }} <br>
+                        Message: {{ invitation.message }}
+                        <form action="/delete_post" method="POST">
+                            <input type="hidden" name=post_id value=invitation.id>
+                            <button type="submit">Delete</button>
+                        </form>
+                    </div>
+                {% endfor %}
+        </ul>
+    </div>
 
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+    </script>
 </body>
 </html>

@@ -6,6 +6,9 @@ from dotenv import find_dotenv, load_dotenv
 import sys
 from retry import retry
 
+# script_dir = os.path.dirname(os.path.abspath(__file__))
+# parent_dir = os.path.dirname(script_dir)
+
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
@@ -130,14 +133,14 @@ def post_new_message(new_message):
     return
 
 
-def get_posts(user = None):
+def get_active_posts(user = None):
     try:
         conn = get_conn()
         cursor = conn.cursor()
         print("connected")
         if user == None:
             cursor.execute("""
-                    SELECT * FROM workout_posts JOIN Users ON Users.user_id = workout_posts.user_id
+                    SELECT * FROM workout_posts JOIN Users ON Users.user_id = workout_posts.user_id WHERE is_active = 1
                 """)
             posts = cursor.fetchall()
         columns = [column[0] for column in cursor.description]
@@ -149,6 +152,19 @@ def get_posts(user = None):
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        return jsonify({"success": False, "message": str(e)})
+
+
+def delete_post(id):
+    try:
+        conn = get_conn()
+        cursor = conn.cursor()
+        print("connected")
+        cursor.execute("""
+                    UPDATE workout_posts SET is_active = 0 WHERE id =?
+            """, (id))
+        return jsonify({"success": True, "message": f"post {id} deleted"})
+    except Exception as e:
         return jsonify({"success": False, "message": str(e)})
 
 
@@ -175,8 +191,10 @@ def ad_hoc():
         cursor = conn.cursor()
         print("connected")
         cursor.execute("""
-                ALTER TABLE workout_posts DROP COLUMN workout_id """)
-        cursor.execute("""ALTER TABLE workout_posts ADD workout_name varchar(255)""")
+                ALTER TABLE workout_posts 
+                ADD is_active bit NOT NULL
+                CONSTRAINT DF_isactive_1 DEFAULT 1
+                """)
         conn.commit()
     except Exception as e:
         print(str(e))
