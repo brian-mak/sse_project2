@@ -1,7 +1,7 @@
 import openai
 
 def generate_workout_plan(user_id):
-    openai.api_key = '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'
+    openai.api_key = ''
 
     # Example of fetching user preferences and saved exercises
     # preferences = get_user_preferences(user_id)
