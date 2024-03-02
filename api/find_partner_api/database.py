@@ -6,6 +6,9 @@ from dotenv import find_dotenv, load_dotenv
 import sys
 from retry import retry
 
+# script_dir = os.path.dirname(os.path.abspath(__file__))
+# parent_dir = os.path.dirname(script_dir)
+
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
@@ -50,32 +53,32 @@ def create_partner_post():
     return 
 
 
-def create_message_log():
-    print("Create Message Log")
-    try:
-        conn = get_conn()
-        cursor = conn.cursor()
+# def create_message_log():
+#     print("Create Message Log")
+#     try:
+#         conn = get_conn()
+#         cursor = conn.cursor()
 
-        print("connected")
-        # Table should be created ahead of time in production app.
-        cursor.execute("""
-            CREATE TABLE message_log (
-                id int NOT NULL PRIMARY KEY IDENTITY,
-                post_id int NOT NULL FOREIGN KEY REFERENCES workout_posts(id),
-                user_id varchar(255) NOT NULL FOREIGN KEY REFERENCES Users(ID),
-                sent_time datetime,
-                message text
-            );
-        """)
+#         print("connected")
+#         # Table should be created ahead of time in production app.
+#         cursor.execute("""
+#             CREATE TABLE message_log (
+#                 id int NOT NULL PRIMARY KEY IDENTITY,
+#                 post_id int NOT NULL FOREIGN KEY REFERENCES workout_posts(id),
+#                 user_id varchar(255) NOT NULL FOREIGN KEY REFERENCES Users(ID),
+#                 sent_time datetime,
+#                 message text
+#             );
+#         """)
 
-        conn.commit()
-    except Exception as e:
-        # Table may already exist
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
-        print(e)
-    return 
+#         conn.commit()
+#     except Exception as e:
+#         # Table may already exist
+#         exc_type, exc_obj, exc_tb = sys.exc_info()
+#         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+#         print(exc_type, fname, exc_tb.tb_lineno)
+#         print(e)
+#     return 
 
 
 def get_all_invitations():
@@ -84,7 +87,6 @@ def get_all_invitations():
         conn = get_conn()
         cursor = conn.cursor()
         print("connected")
-        # Table should be created ahead of time in production app.
         cursor.execute("""SELECT * FROM workout_posts""")
         posts = cursor.fetchall()
     except Exception as e:
@@ -102,8 +104,8 @@ def post_invitation(new_invitation):
         cursor = conn.cursor()
         print("connected")
         cursor.execute("""
-                INSERT INTO message_log (user_id, workout, location, start_time, end_time, post_time, message) VALUES (?, ?, ?, ?, ?, GETDATE(), ?)
-            """, (new_invitation['user_id'], new_invitation['workout'], new_invitation['location'], 
+                INSERT INTO workout_posts (user_id, workout_name, location, start_time, end_time, post_time, message) VALUES (?, ?, ?, ?, ?, GETDATE(), ?)
+            """, (new_invitation['user_id'], new_invitation['workout_name'], new_invitation['location'], 
                   new_invitation['start_time'].strftime('%Y-%m-%d %H:%M:%S'), new_invitation['end_time'].strftime('%Y-%m-%d %H:%M:%S'), new_invitation['message']))
         conn.commit()
         return jsonify({"success": True, "message": "Post added successfully."})
@@ -119,7 +121,7 @@ def post_new_message(new_message):
         cursor = conn.cursor()
         print("connected")
         cursor.execute("""
-                INSERT INTO workout_posts (user_id, post_id, receiver_id, sent_time, message) VALUES (?, ?, ?, GETDATE(), ?)
+                INSERT INTO message_log (user_id, post_id, receiver_id, sent_time, message) VALUES (?, ?, ?, GETDATE(), ?)
             """, (new_message['user_id'], new_message['post_id'], new_message['receiver_id'], new_message['message']))
         conn.commit()
         print ("new message added")
@@ -131,15 +133,16 @@ def post_new_message(new_message):
     return
 
 
-def get_posts(user):
+def get_active_posts(user = None):
     try:
         conn = get_conn()
         cursor = conn.cursor()
         print("connected")
-        cursor.execute("""
-                SELECT * FROM workout_posts WHERE user_id = ?
-            """, (user))
-        posts = cursor.fetchall()
+        if user == None:
+            cursor.execute("""
+                    SELECT * FROM workout_posts JOIN Users ON Users.user_id = workout_posts.user_id WHERE is_active = 1
+                """)
+            posts = cursor.fetchall()
         columns = [column[0] for column in cursor.description]
         data = []
         for row in posts:
@@ -149,6 +152,19 @@ def get_posts(user):
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        return jsonify({"success": False, "message": str(e)})
+
+
+def delete_post(id):
+    try:
+        conn = get_conn()
+        cursor = conn.cursor()
+        print("connected")
+        cursor.execute("""
+                    UPDATE workout_posts SET is_active = 0 WHERE id =?
+            """, (id))
+        return jsonify({"success": True, "message": f"post {id} deleted"})
+    except Exception as e:
         return jsonify({"success": False, "message": str(e)})
 
 
@@ -175,8 +191,10 @@ def ad_hoc():
         cursor = conn.cursor()
         print("connected")
         cursor.execute("""
-                ALTER TABLE workout_posts DROP COLUMN workout_id """)
-        cursor.execute("""ALTER TABLE workout_posts ADD workout_name varchar(255)""")
+                ALTER TABLE workout_posts 
+                ADD is_active bit NOT NULL
+                CONSTRAINT DF_isactive_1 DEFAULT 1
+                """)
         conn.commit()
     except Exception as e:
         print(str(e))

@@ -90,3 +90,13 @@ body {
 .bmi-meter-bar, .bmi-meter-result {
     color: white; /* Set white font color for BMI meter */
 }
+
+.invitation-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    color: black;
+    width: 50%
+}

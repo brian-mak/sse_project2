@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import database
+import datetime
 
 app = Flask(__name__)
 
@@ -7,15 +8,22 @@ app = Flask(__name__)
 def index():
     query_params = request.args
     try:
-        # return database.get_posts()
-        return jsonify({"success": True, "message": "hello-world", "data": {}})
+        posts = database.get_active_posts()
+        return posts
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
 
 
 @app.route('/post_invitation', methods=['GET'])
 def post_invitation():
-    query_params = request.args
+    query_params = {
+        'user_id': request.args['user_id'],
+        'workout_name': request.args['workout_name'],
+        'location': request.args['location'],
+        'start_time': datetime.datetime.fromisoformat(request.args['start_time']),
+        'end_time': datetime.datetime.fromisoformat(request.args['end_time']),
+        'message': request.args["message"]
+    }
     try:
         return database.post_invitation(query_params)
     except Exception as e:
