@@ -3,6 +3,7 @@ import requests
 from dotenv import find_dotenv, load_dotenv
 from os import environ as env
 import os
+from googleapiclient.discovery import build
 
 import find_partner, authentication
 from database import db_bp
@@ -175,6 +176,64 @@ def search_exercises_result():
 
     exercises = fetch_exercises(target_muscle_groups, available_equipment)
     return render_template("exercises.html", exercises=exercises, user_id=user_id)
+
+
+# @app.route('/search_youtube', methods=['GET'])
+# def search_youtube():
+#     search_query = request.args.get('query')
+#     youtube_api_key = os.environ.get('YOUTUBE_API_KEY')
+
+#     youtube = build('youtube', 'v3', developerKey=youtube_api_key)
+
+#     youtube_search_request = youtube.search().list(
+#         part='snippet',
+#         q=search_query,
+#         type='video',
+#         maxResults=1
+#     )
+#     response = youtube_search_request.execute()
+
+#     if response['items']:
+#         # Assuming we only want the first result
+#         video_id = response['items'][0]['id']['videoId']
+#         return jsonify({'videoId': video_id})
+#     else:
+#         return jsonify({'error': 'No videos found'}), 404
+    
+
+@app.route('/search_youtube', methods=['GET'])
+def search_youtube():
+    search_query = request.args.get('query')
+    max_videos = int(request.args.get('max', 5))  # Get the max number of videos to return, default is 5
+    youtube_api_key = os.environ.get('YOUTUBE_API_KEY')
+
+    youtube = build('youtube', 'v3', developerKey=youtube_api_key)
+
+    search_request = youtube.search().list(
+        part='snippet',
+        q=search_query,
+        type='video',
+        maxResults=max_videos
+    )
+    response = search_request.execute()
+
+    videos = []
+    if response['items']:
+        for item in response['items']:
+            video_id = item['id']['videoId']
+            title = item['snippet']['title']
+            description = item['snippet']['description']
+            thumbnail_url = item['snippet']['thumbnails']['high']['url']
+            videos.append({
+                'videoId': video_id,
+                'title': title,
+                'description': description,
+                'thumbnailUrl': thumbnail_url
+            })
+        print(videos)
+        return jsonify(videos)
+    else:
+        return jsonify({'error': 'No videos found'}), 404
 
 
 app.add_url_rule('/find_partner', 'find_partner', find_partner.index)
