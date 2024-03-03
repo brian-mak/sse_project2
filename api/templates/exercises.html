@@ -5,27 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generated Workout Plan</title>
     <style>
+        html, header {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font-family: 'Roboto', sans-serif;
+            color: white;
+            text-decoration: none;
+            position: relative;
+            background-image: url("{{ url_for('static', filename='background.png') }}");
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            color: #fff;
+            cursor: default;
+            height: 100vh
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)); /* Gradient from solid black to transparent */
+            pointer-events: none; /* Allows clicks to pass through to elements underneath */
+            z-index: -1;
+        }
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 10em 500px;
+            font-size: 150%;
+            font-family: 'Roboto', sans-serif;
+            /* margin: 20px; */
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+        #navigation {
+            background-color: black;
+            color: white;
+            width: 100%;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem; /* Adjusted font size for small navigation links */
+            font-weight: normal;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            white-space: nowrap;
+            padding: 10px 0;
+        }
+        #navigation a {
+            color: white; /* Or any color you prefer */
+            text-decoration: none; /* Optional: Removes the underline from links */
+            margin: 0 10px; /* Adds space to the left and right of each link */
+        }
         .exercise {
-            background-color: #f8f9fa;
-            padding: 20px;
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
+            padding: 40px 80px 80px 80px;
             margin-bottom: 40px;
             width: 50em;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             border-radius: 8px;
             text-transform: capitalize;
+            z-index: 1;
         }
         .exercise h3, .exercise p {
             text-transform: capitalize;
+            z-index: 1;
         }
         h4 {
-            color: #fff; 
+            color: white; 
             font-size: 18px;
         }
         .instructions li {
@@ -34,40 +88,41 @@
         }
         /* The Modal (background) */
         .modal {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            /* background-color: rgb(0,0,0); */
+            /* background-color: rgba(0,0,0,0.4); */
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 1.0));
         }
 
         /* Modal Content/Box */
         .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto; /* 15% from the top and centered */
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%; /* Could be more or less, depending on screen size */
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
         }
 
         /* The Close Button */
         .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
         }
 
         .close:hover,
         .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
+            color: #df7366;
+            text-decoration: none;
+            cursor: pointer;
         }
 
         .container {
@@ -79,7 +134,7 @@
             /*  display: flex; */
             justify-content: center;
             align-items: center;
-            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 1.0));
+            /* background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 1.0)); */
         }
 
         .carousel-view {
@@ -90,7 +145,6 @@
             gap: 10px;
             padding: 40px 10px;
             overflow-y: visible;
-            /*  transition: all 0.25s ease-in; */
         }
 
         .carousel-view .item-list {
@@ -123,7 +177,7 @@
         } */
 
         .carousel-view .item:hover {
-        transform: scale(1.1); */ /* Adjust the scale value as needed */
+            transform: scale(1.1); */ /* Adjust the scale value as needed */
         }
 
         .item-list::-webkit-scrollbar {
@@ -153,10 +207,41 @@
             color: #df7366;
             border-color: #333333;
         }
+
+        button {
+            position: relative;
+            display: inline-block;
+            background: #df7366;
+            color: #fff;
+            text-align: center;
+            border-radius: 1.5em;
+            text-decoration: none;
+            padding: 0.65em 1.4em 0.65em 1.4em;
+            border: 0;
+            cursor: pointer;
+            outline: 0;
+            font-weight: 500;
+            font-size: medium;
+        }
+
     </style>
 </head>
+<div id="navigation">
+    <center><img src="{{ url_for('static', filename='Logo.png')
+    }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="health_buddy.html">Health Buddy</a>
+    <a href="/search_exercises">Search For Exercises</a>
+    <a href="/find_partner">Find Partner</a>
+    <a href="/saved_lists">Saved Exercises</a>
+    <a href="#account">Account</a>
+    <a href="#more">More</a>
+</div>
+<!-- Header -->
+<div id="header">
+    <center><h2>Workouts</h2></center>
 <body>
-    <h2>Generated Workout Plan</h2>
     {% for exercise in exercises %}
     <div class="exercise">
         <h3>{{ exercise.name | title }}</h3>
@@ -170,9 +255,9 @@
             {% endfor %}
         </ol>
         {% if exercise.gifUrl %}
-        <img src="{{ exercise.gifUrl }}" alt="{{ exercise.name }} GIF" style="max-width: 100%; height: auto;"><br>
+        <img src="{{ exercise.gifUrl }}" alt="{{ exercise.name }} GIF" style="max-width: 100%; height: auto;"><br><br>
         <button onclick="showSavedListsDropdown('{{ exercise.id }}', '{{ exercise.name }}', this)">Add to Saved List</button>
-        <button onclick="searchYouTube('{{ exercise.name }}')">Watch on YouTube</button>
+        <button onclick="searchYouTube('{{ exercise.name }}')">Search on YouTube</button>
         <!-- The dropdown and submit button will be added here dynamically -->
         {% endif %}
     </div>
@@ -182,7 +267,7 @@
         <!-- Modal content -->
         <div class="modal-content">
         <span class="close">&times;</span>
-        <h2>YouTube Videos</h2>
+        <center><h2>YouTube Videos</h2></center>
         <div class="container">
             <div class="carousel-view">
             <button id="prev-btn" class="prev-btn"><</button>

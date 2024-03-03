@@ -204,7 +204,7 @@ def search_exercises_result():
 @app.route('/search_youtube', methods=['GET'])
 def search_youtube():
     search_query = request.args.get('query')
-    max_videos = int(request.args.get('max', 5))  # Get the max number of videos to return, default is 5
+    max_videos = int(request.args.get('max', 10))  # Get the max number of videos to return, default is 5
     youtube_api_key = os.environ.get('YOUTUBE_API_KEY')
 
     youtube = build('youtube', 'v3', developerKey=youtube_api_key)
