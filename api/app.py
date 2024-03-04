@@ -118,40 +118,6 @@ def fetch_exercises(target_muscle_groups, available_equipment):
         print(f"Failed to fetch exercises: {response.status_code}")
         return []
 
-
-# @app.route()
-# def fetch_exercises_details(exercise_name):
-#     api_key = get_rapid_api_key()
-#     url = "https://exercisedb.p.rapidapi.com/exercises"
-
-#     headers = {
-#         "X-RapidAPI-Key": api_key,
-#         "X-RapidAPI-Host": "exercisedb.p.rapidapi.com"
-#     }
-    
-#     params = {"name": exercise_name}
-#     response = requests.get(url, headers=headers, params=params)
-
-#     user_id = request.args.get('user_id')
-
-#     if response.status_code == 200:
-#         all_exercises = response.json()
-
-#         details_of_exercises = [{
-#             'name': exercise.get('name'),
-#             'equipment': exercise.get('equipment'),
-#             'targetMuscleGroup': exercise.get('target'),
-#             'secondaryMuscles': exercise.get('secondaryMuscles', 'Not specified'),
-#             'instructions': exercise.get('instructions', 'Please refer to external sources for instructions'),
-#             'gifUrl': exercise.get('gifUrl', 'No GIF available')
-#         } for exercise in all_exercises]
-
-#         return details_of_exercises
-#     else:
-#         print(f"Failed to fetch exercises: {response.status_code}")
-#         return []
-    
-
 @app.route('/')
 def home():
     return render_template("index.html")
@@ -390,41 +356,6 @@ def parse_workout_plan(text):
             })
 
     return workouts
-
-@app.route('/my_custom_workout_plan')
-def my_custom_workout_plan():
-    # user_id = session['user_id']
-
-    workouts = generate_workout_plan()
-    # Ensure workout_plan is a dictionary before passing to render_template
-    if isinstance(workouts, str):
-        return workouts  # Handle error or "No workout plan generated" case
-    return render_template('custom_workout_plan.html', workouts=workouts)
-
-
-@app.route('/workout_plan')
-def workout_plan():
-    return render_template("workout_plan.html")
-
-
-@app.route('/generate_workout_plan', methods=['POST'])
-def generate_workout_plan():
-    # Retrieving user information from the session
-    user_info = session.get('user')
-    user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
-
-    data = request.form.to_dict(flat=True)
-    data['fitnessGoal'] = request.form.get('fitnessGoal')
-    data['muscleGroups'] = request.form.getlist('muscleGroups')
-    data['equipment'] = request.form.getlist('equipment')
-    data['fitnessLevel'] = request.form.get('fitnessLevel')
-    data['numOfWorkouts'] = request.form.get('numOfWorkouts')
-
-    target_muscle_groups = [muscle.lower() for muscle in data['muscleGroups']]
-    available_equipment = [equipment.lower() for equipment in data['equipment']]
-
-    exercises = fetch_exercises(target_muscle_groups, available_equipment)
-    return render_template("exercises.html", exercises=exercises, user_id=user_id)
 
 
 app.add_url_rule('/find_partner', 'find_partner', find_partner.index)

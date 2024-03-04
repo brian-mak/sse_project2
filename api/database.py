@@ -1,10 +1,12 @@
-from flask import Flask, jsonify, request, Blueprint
+import re
+from flask import Flask, jsonify, render_template, request, Blueprint, session
 from os import environ as env
 import os
 import pyodbc
 from dotenv import find_dotenv, load_dotenv
 import sys
 import requests
+import openai
 from retry import retry
 
 ENV_FILE = find_dotenv()
@@ -17,6 +19,9 @@ db_bp = Blueprint('db', __name__)
 
 def get_rapid_api_key():
     return os.environ.get('RAPID_API_KEY')
+
+def get_openai_api_key():
+    return os.environ.get('OPENAI_KEY')
 
 @db_bp.get("/")
 def root():
@@ -84,22 +89,6 @@ def create_schema():
         conn = pyodbc.connect(connection_string)
         cursor = conn.cursor()
 
-        # Create Workouts Table
-        # cursor.execute("""
-        #     IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Workouts]') AND type in (N'U'))
-        #     BEGIN
-        #         CREATE TABLE Workouts (
-        #             WorkoutID int NOT NULL PRIMARY KEY IDENTITY,
-        #             Name varchar(255) NOT NULL,
-        #             Equipment varchar(255),
-        #             TargetMuscleGroup varchar(255),
-        #             SecondaryMuscles varchar(255),
-        #             Instructions text,
-        #             GifUrl varchar(255)
-        #         );
-        #     END
-        # """)
-
         # Create SavedLists Table
         cursor.execute("""
             IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SavedLists]') AND type in (N'U'))
@@ -141,75 +130,6 @@ def create_schema():
     finally:
         if conn:  # Check if conn is not None
             conn.close()
-
-# @db_bp.route('/workouts/add', methods=['POST'])
-# def add_workout():
-#     data = request.get_json()
-#     try:
-#         with get_conn() as conn:
-#             cursor = conn.cursor()
-#             cursor.execute("""
-#                 INSERT INTO Workouts (Name, Equipment, TargetMuscleGroup, SecondaryMuscles, Instructions, GifUrl)
-#                 VALUES (?, ?, ?, ?, ?, ?, ?)
-#             """, (data['name'], data['equipment'], data['targetMuscleGroup'], data['secondaryMuscles'], data['instructions'], data['gifUrl']))
-#             conn.commit()
-#         return jsonify({"success": True, "message": "Workout added successfully."})
-#     except Exception as e:
-#         return jsonify({"success": False, "message": str(e)})
-
-# # List all workouts
-# @db_bp.route('/workouts', methods=['GET'])
-# def get_workouts():
-#     try:
-#         with get_conn() as conn:
-#             cursor = conn.cursor()
-#             cursor.execute("SELECT * FROM Workouts")
-#             workouts = cursor.fetchall()
-#         return jsonify([dict(zip([column[0] for column in cursor.description], row)) for row in workouts])
-#     except Exception as e:
-#         return jsonify({"success": False, "message": str(e)})
-
-# # Get details of a specific workout
-# @db_bp.route('/workouts/<int:workout_id>', methods=['GET'])
-# def get_workout(workout_id):
-#     try:
-#         with get_conn() as conn:
-#             cursor = conn.cursor()
-#             cursor.execute("SELECT * FROM Workouts WHERE WorkoutID = ?", (workout_id,))
-#             workout = cursor.fetchone()
-#         if workout:
-#             return jsonify(dict(zip([column[0] for column in cursor.description], workout)))
-#         else:
-#             return jsonify({"success": False, "message": "Workout not found."})
-#     except Exception as e:
-#         return jsonify({"success": False, "message": str(e)})
-
-# @db_bp.route('/workouts/update/<int:workout_id>', methods=['POST'])
-# def update_workout(workout_id):
-#     data = request.get_json()
-#     try:
-#         with get_conn() as conn:
-#             cursor = conn.cursor()
-#             cursor.execute("""
-#                 UPDATE Workouts
-#                 SET Name = ?, Equipment = ?, TargetMuscleGroup = ?, SecondaryMuscles = ?, Instructions = ?, GifUrl = ?
-#                 WHERE WorkoutID = ?
-#             """, (data['name'], data['equipment'], data['targetMuscleGroup'], data['secondaryMuscles'], data['instructions'], data['gifUrl'], workout_id))
-#             conn.commit()
-#         return jsonify({"success": True, "message": "Workout updated successfully."})
-#     except Exception as e:
-#         return jsonify({"success": False, "message": str(e)})
-
-# @db_bp.route('/workouts/delete/<int:workout_id>', methods=['POST'])
-# def delete_workout(workout_id):
-#     try:
-#         with get_conn() as conn:
-#             cursor = conn.cursor()
-#             cursor.execute("DELETE FROM Workouts WHERE WorkoutID = ?", (workout_id,))
-#             conn.commit()
-#         return jsonify({"success": True, "message": "Workout deleted successfully."})
-#     except Exception as e:
-#         return jsonify({"success": False, "message": str(e)})
 
 @db_bp.route('/saved_lists/create', methods=['POST'])
 def create_saved_list():
@@ -260,7 +180,24 @@ def get_saved_lists():
         return jsonify(saved_lists)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
+@db_bp.route('/api/saved_lists_workouts/<int:list_id>', methods=['GET'])
+def get_workout_list_details(list_id):
+    try:
+        with get_conn() as conn:
+            cursor = conn.cursor()
+            # Fetch workout IDs associated with the saved list
+            cursor.execute("SELECT * FROM SavedListWorkouts WHERE ListID = ?", (list_id,))
+            workout_details = [ {"workout_id": row[1],
+                                 "workout_name": row[2],
+                                 "equipment": row[3],
+                                 "target_muscle_group": row[4],
+                                 "secondary_muscles": row[5]} for row in cursor.fetchall() ]
+            print(jsonify(workout_details))
+            return jsonify(workout_details)
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @db_bp.route('/api/saved_lists/<int:list_id>/exercises', methods=['GET'])
 def get_exercises_for_list(list_id):
@@ -271,8 +208,6 @@ def get_exercises_for_list(list_id):
             cursor.execute("SELECT WorkoutID FROM SavedListWorkouts WHERE ListID = ?", (list_id,))
             workout_ids = [row[0] for row in cursor.fetchall()]
 
-        print(workout_ids)
-
         # Fetch exercise details from the ExerciseDB API
         exercises_details = []
         for id in workout_ids:
@@ -280,7 +215,6 @@ def get_exercises_for_list(list_id):
             if details:
                 exercises_details.append(details)
 
-        print(exercises_details)
         return jsonify(exercises_details)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -336,6 +270,137 @@ def remove_workout_from_saved_list():
         return jsonify({"success": True, "message": "Workout removed from saved list successfully."})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+
+
+def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num_of_workouts):
+    try:
+        api_key = get_openai_api_key()
+
+        openai.api_key = api_key
+
+        response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+            "role": "system",
+            "content": "Answer in a consistent style."
+            },
+            {
+            "role": "user",
+            "content": f"\"Create a workout plan for the following preferences: Fitness Goal: {fitness_goal}, Target Muscle Group: {', '.join(target_muscle_groups)}, Fitness Level: {fitness_level}. Include only {num_of_workouts} exercises from this list: 45° Side Bend, Air Bike, Barbell Bench Front Squat, Barbell Bent Over Row, Barbell Deadlift, Barbell Decline Bent Arm Pullover, Barbell Decline Wide-grip Pullover, Barbell Front Raise, Barbell Seated Behind Head Military Press, Dumbbell Around Pullover, Dumbbell Bench Press, Deep Push Up, Barbell Floor Calf Raise.\""
+            }
+        ],
+        temperature=0.2,
+        max_tokens=256,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+        )
+
+        print(response)
+        
+        response_text = response.choices[0]['message']['content'].strip()
+        workouts = parse_workout_plan(response_text)
+        # Depending on your application's needs, you can now return, print, or otherwise use the exercises list
+        print(workouts)  # For debugging
+        return workouts
+
+    except openai.error.AuthenticationError as e:
+        return jsonify({"error": "Authentication with OpenAI failed.", "details": str(e)}), 401
+    except openai.error.InvalidRequestError as e:
+        return jsonify({"error": "Invalid request to OpenAI.", "details": str(e)}), 400
+    except openai.error.APIError as e:
+        return jsonify({"error": "An error occurred with the OpenAI API.", "details": str(e)}), 500
+    except Exception as e:
+        # Catch-all for any other exceptions
+        return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
+
+def parse_workout_plan(text):
+    workouts = []
+
+    # Define a regular expression to match the exercise details
+    # This pattern accounts for variations in the formatting of the exercise details
+    pattern = re.compile(r"\d+\.\s*([\w\s]+)(?:-|:)\s*(\d+)\s*sets\s*x\s*(\d+)\s*reps")
+
+    # Split the text into lines for easier processing
+    lines = text.split('\n')
+
+    # Iterate over each line, trying to match the pattern
+    for line in lines:
+        match = pattern.search(line)
+        if match:
+            # Extract exercise name, sets, and reps from the match
+            exercise = match.group(1).strip()
+            sets = match.group(2).strip()
+            reps = match.group(3).strip()
+
+            # Append a dictionary with the extracted details to the exercises list
+            workouts.append({
+                'exercise': exercise,
+                'sets': sets,
+                'reps': reps
+            })
+
+    return workouts
+
+
+# @db_bp.route('/my_custom_workout_plan')
+# def my_custom_workout_plan():
+#     # user_id = session['user_id']
+
+#     workouts = generate_workout_plan()
+#     # Ensure workout_plan is a dictionary before passing to render_template
+#     if isinstance(workouts, str):
+#         return workouts  # Handle error or "No workout plan generated" case
+#     return render_template('custom_workout_plan.html', workouts=workouts)
+
+
+@db_bp.route('/workout_plan')
+def workout_plan():
+    user_info = session.get('user')
+    user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
+    saved_lists = get_saved_lists_for_user(user_id)
+    return render_template("workout_plan.html", saved_lists=saved_lists)
+
+
+@db_bp.route('/my_custom_workout_plan', methods=['POST'])
+def my_custom_workout_plan():
+    # Retrieving user information from the session
+    user_info = session.get('user')
+    user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
+
+    data = request.form.to_dict(flat=True)
+    data['fitnessGoal'] = request.form.get('fitnessGoal')
+    data['muscleGroups'] = request.form.getlist('muscleGroups')
+    data['equipment'] = request.form.getlist('equipment')
+    data['fitnessLevel'] = request.form.get('fitnessLevel')
+    data['numOfWorkouts'] = request.form.get('numOfWorkouts')
+
+    print(data['fitnessGoal'])
+    print(data['muscleGroups'])
+    print(data['equipment'])
+    print(data['fitnessLevel'])
+    print(data['numOfWorkouts'])
+
+    target_muscle_groups = [muscle.lower() for muscle in data['muscleGroups']]
+    available_equipment = [equipment.lower() for equipment in data['equipment']]
+
+    print(target_muscle_groups)
+    print(available_equipment)
+
+    workouts = generate_workout_plan(data["fitnessGoal"], target_muscle_groups, data["fitnessLevel"], data["numOfWorkouts"])
+    # Ensure workout_plan is a dictionary before passing to render_template
+    if isinstance(workouts, str):
+        return workouts  # Handle error or "No workout plan generated" case
+    return render_template('custom_workout_plan.html', workouts=workouts)
+
+
+def get_saved_lists_for_user(user_id):
+    with get_conn() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT ListID, Name FROM SavedLists WHERE UserID = ?", (user_id,))
+        lists = cursor.fetchall()
+        return [{"list_id": row[0], "name": row[1]} for row in lists]
 
 
 def ad_hoc():

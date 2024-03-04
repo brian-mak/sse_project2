@@ -106,9 +106,9 @@
 </div>
 <!-- Header -->
 <div id="header">
-    <h2>Search For Workouts</h2>
+    <center><h2>Generate Customised Workout Plan</h2></center
 <body>
-    <form id="preferencesForm" method="POST" action="/generate_workout_plan"> 
+    <form id="preferencesForm" method="POST" action="/db/my_custom_workout_plan"> 
         <!-- Fitness Goal Dropdown -->
         <label for="fitnessGoal">Fitness Goal:</label>
         <select id="fitnessGoal" name="fitnessGoal">
@@ -116,7 +116,15 @@
             <option value="muscle_gain">Muscle Gain</option>
             <option value="endurance">Endurance Improvement</option>
             <option value="general_fitness">General Fitness</option>
-        </select><br>
+        </select><br><br>
+
+        <!-- Saved Lists Dropdown -->
+        <label for="savedLists">Select A Saved List:</label>
+        <select id="savedLists" name="savedList">
+            {% for saved_list in saved_lists %}
+            <option value="{{ saved_list.list_id }}">{{ saved_list.name }}</option>
+            {% endfor %}
+        </select><br><br>
 
         <!-- Available Equipment (Checkboxes) -->
         <fieldset>

@@ -257,7 +257,6 @@
         </ol>
         {% if exercise.gifUrl %}
         <img src="{{ exercise.gifUrl }}" alt="{{ exercise.name }} GIF" style="max-width: 100%; height: auto;"><br><br>
-        <pre>{{ exercise | tojson }}</pre>
         <button onclick="showSavedListsDropdown('{{ exercise.id }}', '{{ exercise.name }}', '{{ exercise.equipment}}', '{{ exercise.targetMuscleGroup}}', '{{ exercise.secondaryMuscles | join(', ') | safe }}', this)">Add to Saved List</button>
         <button onclick="searchYouTube('{{ exercise.name }}')">Search on YouTube</button>
         <!-- The dropdown and submit button will be added here dynamically -->
