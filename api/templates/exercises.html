@@ -257,7 +257,8 @@
         </ol>
         {% if exercise.gifUrl %}
         <img src="{{ exercise.gifUrl }}" alt="{{ exercise.name }} GIF" style="max-width: 100%; height: auto;"><br><br>
-        <button onclick="showSavedListsDropdown('{{ exercise.id }}', '{{ exercise.name }}', this)">Add to Saved List</button>
+        <pre>{{ exercise | tojson }}</pre>
+        <button onclick="showSavedListsDropdown('{{ exercise.id }}', '{{ exercise.name }}', '{{ exercise.equipment}}', '{{ exercise.targetMuscleGroup}}', '{{ exercise.secondaryMuscles | join(', ') | safe }}', this)">Add to Saved List</button>
         <button onclick="searchYouTube('{{ exercise.name }}')">Search on YouTube</button>
         <!-- The dropdown and submit button will be added here dynamically -->
         {% endif %}
@@ -292,7 +293,7 @@
 -->
 </body>
 <script>
-    function showSavedListsDropdown(workoutID, workoutName, buttonElement) {
+    function showSavedListsDropdown(workoutID, workoutName, equipment, targetMuscleGroup, secondaryMuscles, buttonElement) {
         const userId = '{{ user_id }}';  // Replace with logic to get current user's ID
         fetch(`/db/api/user/saved_lists?user_id=${userId}`)
             .then(response => response.json())
@@ -310,7 +311,7 @@
 
                     const submitButton = document.createElement('button');
                     submitButton.textContent = 'Add';
-                    submitButton.onclick = () => addWorkoutToSavedList(workoutID, workoutName, dropdown.value);
+                    submitButton.onclick = () => addWorkoutToSavedList(workoutID, workoutName, equipment, targetMuscleGroup, secondaryMuscles, dropdown.value);
                     
                     // Insert dropdown and button after the "Add to Saved List" button
                     buttonElement.after(submitButton);
@@ -320,7 +321,7 @@
             .catch(error => console.error('Error fetching saved lists:', error));
     }
     
-    function addWorkoutToSavedList(workoutID, workoutName, listId) {
+    function addWorkoutToSavedList(workoutID, workoutName, equipment, targetMuscleGroup, secondaryMuscles, listId) {
         fetch('/db/saved_lists/add_workout', {
             method: 'POST',
             headers: {
@@ -330,6 +331,9 @@
                 list_id: listId,
                 workout_id: workoutID,
                 workout_name: workoutName,
+                equipment: equipment,
+                target_muscle_group: targetMuscleGroup,
+                secondary_muscles: secondaryMuscles,
             }),
         })
         .then(response => response.json())

@@ -402,6 +402,31 @@ def my_custom_workout_plan():
     return render_template('custom_workout_plan.html', workouts=workouts)
 
 
+@app.route('/workout_plan')
+def workout_plan():
+    return render_template("workout_plan.html")
+
+
+@app.route('/generate_workout_plan', methods=['POST'])
+def generate_workout_plan():
+    # Retrieving user information from the session
+    user_info = session.get('user')
+    user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
+
+    data = request.form.to_dict(flat=True)
+    data['fitnessGoal'] = request.form.get('fitnessGoal')
+    data['muscleGroups'] = request.form.getlist('muscleGroups')
+    data['equipment'] = request.form.getlist('equipment')
+    data['fitnessLevel'] = request.form.get('fitnessLevel')
+    data['numOfWorkouts'] = request.form.get('numOfWorkouts')
+
+    target_muscle_groups = [muscle.lower() for muscle in data['muscleGroups']]
+    available_equipment = [equipment.lower() for equipment in data['equipment']]
+
+    exercises = fetch_exercises(target_muscle_groups, available_equipment)
+    return render_template("exercises.html", exercises=exercises, user_id=user_id)
+
+
 app.add_url_rule('/find_partner', 'find_partner', find_partner.index)
 app.add_url_rule('/login', 'login', authentication.login)
 app.add_url_rule('/callback', 'callback', authentication.callback)

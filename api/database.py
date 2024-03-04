@@ -122,6 +122,9 @@ def create_schema():
                     ListID int NOT NULL,
                     WorkoutID varchar(255) NOT NULL,
                     WorkoutName varchar(255) NOT NULL,
+                    Equipment varchar(255) NOT NULL,
+                    TargetMuscleGroup varchar(255) NOT NULL,
+                    SecondaryMuscles varchar(255) NOT NULL,
                     PRIMARY KEY (ListID, WorkoutID),
                     FOREIGN KEY (ListID) REFERENCES SavedLists(ListID),
                 );
@@ -304,10 +307,13 @@ def add_workout_to_saved_list():
     list_id = request.json.get('list_id')
     workout_id = request.json.get('workout_id')
     workout_name = request.json.get('workout_name')
+    equipment = request.json.get('equipment')
+    target_muscle_group = request.json.get('target_muscle_group')
+    secondary_muscles = request.json.get('secondary_muscles')
     try:
         with get_conn() as conn:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO SavedListWorkouts (ListID, WorkoutID, WorkoutName) VALUES (?, ?, ?)", (list_id, workout_id, workout_name))
+            cursor.execute("INSERT INTO SavedListWorkouts (ListID, WorkoutID, WorkoutName, Equipment, TargetMuscleGroup, SecondaryMuscles) VALUES (?, ?, ?, ?, ?, ?)", (list_id, workout_id, workout_name, equipment, target_muscle_group, secondary_muscles))
             conn.commit()
         return jsonify({"success": True, "message": "Workout added to saved list successfully."})
     except Exception as e:
@@ -398,5 +404,7 @@ def delete_message_log_table():
         print(f"Failed to delete message_log table: {e}")
 
 if __name__ == "__main__":
+    # delete_saved_list_workouts_table()
+    # delete_saved_lists_table()
     root()
     # create_schema()
