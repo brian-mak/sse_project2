@@ -106,9 +106,26 @@
 </div>
 <!-- Header -->
 <div id="header">
-    <h2>Search For Workouts</h2>
+    <center><h2>Generate Customised Workout Plan</h2></center
 <body>
-    <form id="preferencesForm" method="POST" action="/exercises">        
+    <form id="preferencesForm" method="POST" action="/db/my_custom_workout_plan"> 
+        <!-- Fitness Goal Dropdown -->
+        <label for="fitnessGoal">Fitness Goal:</label>
+        <select id="fitnessGoal" name="fitnessGoal">
+            <option value="weight_loss">Weight Loss</option>
+            <option value="muscle_gain">Muscle Gain</option>
+            <option value="endurance">Endurance Improvement</option>
+            <option value="general_fitness">General Fitness</option>
+        </select><br><br>
+
+        <!-- Saved Lists Dropdown -->
+        <label for="savedLists">Select A Saved List:</label>
+        <select id="savedLists" name="savedList">
+            {% for saved_list in saved_lists %}
+            <option value="{{ saved_list.list_id }}">{{ saved_list.name }}</option>
+            {% endfor %}
+        </select><br><br>
+
         <!-- Available Equipment (Checkboxes) -->
         <fieldset>
             <legend>Available Equipment:</legend>
@@ -196,6 +213,27 @@
             <input type="checkbox" id="cardio" name="muscleGroups" value="cardio">
             <label for="cardio">Cardio</label><br>
         </fieldset><br>
+            
+        <!-- Fitness Level Dropdown -->
+        <label for="fitnessLevel">Fitness Level:</label>
+        <select id="fitnessLevel" name="fitnessLevel">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+        </select><br><br>
+        
+        <!-- Preferred Workout Duration Dropdown -->
+        <label for="numOfWorkouts">Preferred Number of Workouts:</label>
+        <select id="numOfWorkouts" name="numOfWorkouts">
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+        </select><br><br>
         <input type="submit" value="Submit">
     </form>
 </body>
