@@ -399,3 +399,4 @@ def delete_message_log_table():
 
 if __name__ == "__main__":
     root()
+    # create_schema()
