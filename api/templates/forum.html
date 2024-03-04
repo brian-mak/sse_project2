@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Forum</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='indexcss.css') }}">
+</head>
+<body>
+    <h1>Workout Forum</h1>
+    
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'allPosts')" id="defaultOpen">All Posts</button>
+        <button class="tablinks" onclick="openTab(event, 'yourPosts')">Your Posts</button>
+        <!-- <button class="tablinks" onclick="openTab(event, 'savedPosts')">Saved Posts</button> -->
+        <button class="tablinks" onclick="openTab(event, 'createPost')">Create A Post</button>
+    </div>
+
+    <div id="allPosts" class="tabcontent">
+        <ul id="allPostsList" class="postList"></ul>
+    </div>
+
+    <div id="yourPosts" class="tabcontent">
+        <ul id="yourPostsList" class="postList"></ul>
+    </div>
+
+    <div id="postDetails" class="post-details" style="display:none;">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <h2 id="postTitle"></h2>
+        <h3 id="postAuthor"></h3>
+        <p id="postContent"></p>
+        <ul id="repliesList"></ul>
+        <form action="/reply" method="POST">
+            <input type="hidden" id="postId" name="postId">
+            <label for="reply">Reply:</label><br>
+            <textarea id="reply" name="message" required></textarea><br>   
+            <button type="submit">Submit</button> 
+        </form>
+    </div>
+
+    <div id="createPost" class="tabcontent" style="display:none;">
+        <h2>Create A Post</h2>
+        <form action="/post" method="POST">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required><br>
+            <label for="message">Message:</label><br>
+            <textarea id="message" name="message" required></textarea><br>
+            <button type="submit">Post</button>
+        </form>
+    </div>
+
+    <script>
+        
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        
+            fetch('/update_posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tab: tabName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the page with the new posts data
+                const postList = document.getElementById(tabName.concat("List")) 
+                postList.innerHTML = ''; // Clear existing post list
+                data.posts.forEach(post => {
+                    const po = document.createElement('div');
+                    const a = document.createElement('a');
+                    a.href = "#";
+                    a.onclick = () => openPostDetails(post.id, data.posts);
+                    a.textContent = post.title;
+                    po.appendChild(a);
+                    postList.appendChild(po);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });        
+        }
+
+        function openPostDetails(postId, posts) {
+            // Find the post with the matching postId
+            const post = posts.find(post => post.id == postId);
+            
+            // Update the post details popup with the details of the selected post
+            const postid = document.getElementById('postId');
+            const postDetails = document.getElementById('postDetails');
+            const postTitle = document.getElementById('postTitle');
+            const postContent = document.getElementById('postContent');
+            const postAuthor = document.getElementById('postAuthor');
+
+            const repliesList = document.getElementById('repliesList');
+            repliesList.innerHTML = '';
+            
+            // Assuming 'message' contains the details of the post
+            postContent.textContent = post.message; 
+            postTitle.textContent = post.title; 
+            postAuthor.textContent = post.Name;
+            postid.value = postId; 
+            
+            postDetails.style.display = 'block';
+
+            // Fetch replies for the post
+            fetch(`/get_replies?postId=${postId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the page with the replies data
+                data.replies.forEach(reply => {
+                    const re = document.createElement('div');
+                    const pUser = document.createElement('p');
+                    const pMessage = document.createElement('p');
+                    pUser.textContent = reply.Name;
+                    pMessage.textContent = reply.message;
+                    re.appendChild(pUser);
+                    re.appendChild(pMessage);
+                    repliesList.appendChild(re);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            }); 
+
+        
+        }
+
+        function closePopup() {
+            document.getElementById("postDetails").style.display = "none";
+        }
+        
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+
+    </script>
+</body>
+</html>
+
+
+
+<!--     
+    <div id="allPosts" class="tab-content">
+        <h2>All Posts</h2>
+        <ul>
+            {% if have_posts %}
+                {% for post in posts %}
+                    <div class="post-box">
+                        <button onclick="openPopup({{ invitation.id }})">{{ invitation.title }}</button>
+                    </div>
+                    
+                    Popup form
+                    <div id="popupForm" class="popup-form">
+                        <span class="close" onclick="closePopup()">&times;</span>
+                        <form id="messageForm" action="/send_message" method="POST">
+                            <input type="hidden" id="postId" name="post_id" value="">
+                            <textarea id="messageInput" name="message" placeholder="Enter your message"></textarea>
+                            <button type="submit">Send</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h3>{{ message }}</h3>
+            {% endif %}
+        </ul>
+    </div> -->
+
