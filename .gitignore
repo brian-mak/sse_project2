@@ -182,4 +182,6 @@ cython_debug/
 pyvenv.cfg
 pip-selfcheck.json
 
+Dockerfile
+
 # End of https://www.toptal.com/developers/gitignore/api/flask,virtualenv
