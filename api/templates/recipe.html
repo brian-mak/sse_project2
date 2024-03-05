@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .recipes {
+            margin-top: 20px;
+        }
+        .recipe {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        .recipe h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .recipe p {
+            color: #666;
+        }
+        .instruction-link {
+            display: block;
+            margin-top: 10px;
+            text-align: right;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Recipe Finder</h1>
+        <input type="text" id="query" placeholder="Search for recipes...">
+        <select id="allergies" multiple>
+            <option value="peanuts">Peanuts</option>
+            <option value="dairy">Dairy</option>
+            <!-- Add more allergy options if needed -->
+        </select>
+        <button onclick="searchRecipes()">Search</button>
+        <div class="recipes" id="recipes"></div>
+    </div>
+
+    <script>
+        function searchRecipes() {
+            const query = document.getElementById('query').value;
+            const allergies = Array.from(document.getElementById('allergies').selectedOptions).map(option => option.value);
+
+            // Make GET request to Flask API
+            fetch(`/recipes?query=${query}&allergies=${allergies.join(',')}`)
+            .then(response => response.json())
+            .then(data => {
+                const recipesContainer = document.getElementById('recipes');
+                recipesContainer.innerHTML = '';
+
+                data.forEach(recipe => {
+                    const recipeDiv = document.createElement('div');
+                    recipeDiv.classList.add('recipe');
+
+                    const title = document.createElement('h3');
+                    title.textContent = recipe.title;
+
+                    const ingredients = document.createElement('p');
+                    ingredients.textContent = `Ingredients: ${recipe.ingredients.join(', ')}`;
+
+                    const instructions = document.createElement('a');
+                    instructions.classList.add('instruction-link');
+                    instructions.textContent = 'Instructions';
+                    instructions.href = recipe.instructions;
+                    instructions.target = '_blank';
+
+                    recipeDiv.appendChild(title);
+                    recipeDiv.appendChild(ingredients);
+                    recipeDiv.appendChild(instructions);
+
+                    recipesContainer.appendChild(recipeDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
