@@ -4,12 +4,102 @@
     <meta charset="UTF-8">
     <title>Saved Lists Manager</title>
     <style>
+        html, header {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font-family: 'Roboto', sans-serif;
+            color: white;
+            text-decoration: none;
+            position: relative;
+            background-image: url("{{ url_for('static', filename='background4.png') }}");
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            color: #fff;
+            cursor: default;
+            height: 100vh
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)); /* Gradient from solid black to transparent */
+            pointer-events: none; /* Allows clicks to pass through to elements underneath */
+            z-index: -1;
+        }
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Roboto', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin: 0;
+            padding: 8em 500px;
+            font-size: 150%;
+        }
+        #navigation {
+            background-color: black;
+            color: white;
+            width: 100%;
+            position: fixed; /* Change this from absolute to fixed */
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem; /* Adjusted font size for small navigation links */
+            font-weight: normal;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            white-space: nowrap;
+            padding: 10px 10px 30px 10px;
+            z-index: 1000;
+        }
+        #navigation a {
+            color: white; /* Or any color you prefer */
+            text-decoration: none; /* Optional: Removes the underline from links */
+            margin: 0 10px; /* Adds space to the left and right of each link */
+        }
+        /* Submit Button */
+        input[type="submit"]{
+            position: relative;
+            display: inline-block;
+            background: #df7366;
+            color: #fff;
+            text-align: center;
+            border-radius: 1.5em;
+            text-decoration: none;
+            padding: 0.65em 1.5em 0.65em 1.5em;
+            border: 0;
+            cursor: pointer;
+            outline: 0;
+            font-weight: 500;
+            font-size: x-large;
+            -moz-transition: background-color 0.35s ease-in-out, color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
+            -webkit-transition: background-color 0.35s ease-in-out, color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
+            -ms-transition: background-color 0.35s ease-in-out, color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
+            transition: background-color 0.35s ease-in-out, color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
+        }
+        input[type="checkbox"] {
+            transform: scale(1.5); /* Increase the size of the checkboxes */
+            margin-right: 5px; /* Add some space between the checkboxes and labels */
+        }
+
+        input[type="text"] {
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.8em; /* Increases the font size */
+            padding: 0.65em 1.4em 0.65em 1.4em; /* Adds padding inside the dropdown to make it larger */
+            border-radius: 1.5em; /* Optional: Rounds the corners of the dropdown */
+            border: 0; /* Optional: Adds a border around the dropdown */
+            cursor: pointer; /* Changes the cursor to indicate it's clickable */
+        }
+
+        /* Adjust the size of the labels */
+        label {
+            vertical-align: middle; /* Align the labels vertically with the checkboxes */
         }
         .list-form, .list-display, .exercises-display {
             margin-bottom: 20px;
@@ -18,30 +108,58 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px; /* Adjust based on your preference */
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
-        .list {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
+        .list, button {
+            font-family: 'Roboto', sans-serif;
+            position: relative;
+            display: inline-block;
+            background: #df7366;
+            color: #fff;
+            text-align: center;
+            border-radius: 1.5em;
+            text-decoration: none;
+            padding: 0.65em 1.4em 0.65em 1.4em;
+            border: 0;
             cursor: pointer;
-            transition: background-color 0.3s;
+            outline: 0;
+            font-weight: 500;
+            font-size: large;
         }
         .list:hover {
-            background-color: #e0e0e0; /* Change color on hover */
+            background-color: #E5B80B;
+            color: white;
+            border-color: #333333;
         }
         .exercises-container {
-            background-color: #f8f9fa;
-            padding: 20px;
-            margin-bottom: 40px;
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+            padding: 40px 80px 20px 80px;
+            margin-bottom: 0px;
             width: 50em;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             border-radius: 8px;
+            z-index: 1;
+        }
+        .selected {
+            background-color: #E5B80B; /* Or any color you prefer for the selected state */
+            color: white; /* Optional: change text color if needed */
         }
     </style>
 </head>
+<div id="navigation">
+    <center><img src="{{ url_for('static', filename='Logo.png')
+    }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="health_buddy.html">Nutrition</a>
+    <a href="/search_exercises">Search For Workouts</a>
+    <a href="/saved_lists">Saved Workout Lists</a>
+    <a href="/find_partner">Forum</a>
+    <a href="#account">Account</a>
+    <a href="#more">More</a>
+</div>
 <body>
-    <h2>Create a New Saved List</h2>
+    <h2>Create New Saved List</h2>
     <div class="list-form">
         <input type="text" id="newListName" placeholder="Enter list name">
         <button onclick="createSavedList()">Create List</button>
@@ -104,9 +222,9 @@
                         <p><strong>Instructions:</strong></p>
                         <ol class="instructions">
                             ${exercise.instructions.map(instruction => `<li>${instruction}</li>`).join('')}
-                        </ol>
+                        </ol><br>
                         ${exercise.gifUrl ? `<img src="${exercise.gifUrl}" alt="${capitalizeWords(exercise.name)} GIF" style="max-width: 100%; height: auto;">` : ''}
-                        <br><button onclick="removeExerciseFromSavedList('${listId}', '${exercise.id}')">Remove from Saved List</button><br>
+                        <br><br><button onclick="removeExerciseFromSavedList('${listId}', '${exercise.id}')">Remove from Saved List</button><br><br><br>
                     `;
                     container.appendChild(exerciseDiv);
                 });
@@ -136,6 +254,14 @@
             const lists = document.querySelectorAll('.list');
             lists.forEach(list => {
                 list.onclick = () => {
+                    // Remove the selected class from all lists
+                    lists.forEach(item => {
+                        item.classList.remove('selected');
+                    });
+
+                    // Add the selected class to the clicked list
+                    list.classList.add('selected');
+
                     const listId = list.getAttribute('data-list-id');
                     fetchExercisesForList(listId);
                 };

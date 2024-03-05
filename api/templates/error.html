@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Workout Plan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Plan Preferences</title>
     <style>
         html, header {
             margin: 0;
@@ -34,9 +35,9 @@
         }
         body {
             margin: 0;
-            padding: 8em 8em;
-            font-size: 120%
-        }        
+            padding: 8em 500px;
+            font-size: 150%
+        }
         #navigation {
             background-color: black;
             color: white;
@@ -59,6 +60,21 @@
             text-decoration: none; /* Optional: Removes the underline from links */
             margin: 0 10px; /* Adds space to the left and right of each link */
         }
+        button {
+            position: relative;
+            display: inline-block;
+            background: #df7366;
+            color: #fff;
+            text-align: center;
+            border-radius: 1.5em;
+            text-decoration: none;
+            padding: 0.65em 1.5em 0.65em 1.5em;
+            border: 0;
+            cursor: pointer;
+            outline: 0;
+            font-weight: 500;
+            font-size: x-large;
+        }
     </style>
 </head>
 <div id="navigation">
@@ -76,30 +92,13 @@
 <!-- Header -->
 <div id="header">
 <body>
-    <center>
-    <h2>Workout Plan</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>No.</th>
-                <th>Workout Name</th>
-                <th>Sets</th>
-                <th>Repetitions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for workout in workouts %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ workout.exercise }}</td>
-                <td>{{ workout.sets }}</td>
-                <td>{{ workout.reps }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <h3><strong>Remarks:</strong></h3>
-    <p>{{ notes|replace('\n', '<br>')|safe }}</p>
-    </center>
+    <center><h3>{{ error }}</h3></center>
+    <center><button onclick="goBack()">Back</button></center> <!-- Back button -->
+</div>
 </body>
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
 </html>
