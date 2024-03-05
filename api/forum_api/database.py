@@ -151,14 +151,15 @@ def get_active_posts(user = None):
         return jsonify({"success": False, "message": str(e)})
 
 
-def delete_post(id):
+def deactivate_post(id):
     try:
         conn = get_conn()
         cursor = conn.cursor()
         print("connected")
         cursor.execute("""
-                    UPDATE workout_posts SET is_active = 0 WHERE id = ?
+                    UPDATE forum_posts SET is_active = 0 WHERE id = ?
             """, (id))
+        conn.commit()
         return jsonify({"success": True, "message": f"post {id} deleted"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})

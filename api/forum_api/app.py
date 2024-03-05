@@ -56,6 +56,18 @@ def get_reply():
         return replies
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
+    
+
+@app.route('/delete_post', methods=['GET'])
+def delete_post():
+    query_params = request.args
+    try:
+        post_id = query_params.get('post_id')
+        if post_id == None:
+            return ('Invalid Input: post_ID empty')
+        return database.deactivate_post(int(post_id))
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
 
 
 if __name__ == '__main__':

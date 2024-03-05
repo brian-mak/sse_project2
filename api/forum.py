@@ -28,7 +28,7 @@ def index():
                 have_posts = True
         else: 
             message = "Sorry, we have encountered an issue. Please try again later."
-        return render_template("forum.html", have_posts = have_posts, posts = response['data'], message = message)
+        return render_template("forum.html", have_posts = have_posts, posts = response['data'], message = message, active_tab = "allPosts")
     except Exception:
         return render_template("forum.html", message = "Sorry, we have encountered an issue. Please try again later.")
     
@@ -55,22 +55,21 @@ def post():
     #     return (f"Post workout invitation failed at parent. Error: {e}")
 
 
-# @app.route('/delete_post', methods=['POST'])
-# def delete_post():
-#     item_id = request.form.get('item_id')
-#     url = api_url + "delete_post"
-#     query_params = {
-#         'post_id': item_id,
-#     }
-#     response = requests.get(url, params=query_params)
-#     if response.status_code == 200:
-#         if response.json()['success'] == False:
-#             flash(f"Delete post failed. Error: {response.json()['message']}")
-#         else:
-#             flash("Post deleted")
-#     else: 
-#         flash(f"Delete post failed. Error: {response.status_code}")
-#     return redirect(url_for("find_partner"))
+def delete_post():
+    post_id = request.form.get('post_id')
+    url = api_url + "delete_post"
+    query_params = {
+        'post_id': post_id,
+    }
+    response = requests.get(url, params=query_params)
+    if response.status_code == 200:
+        if response.json()['success'] == False:
+            flash(f"Delete post failed. Error: {response.json()['message']}")
+        else:
+            flash("Post deleted")
+    else: 
+        flash(f"Delete post failed. Error: {response.status_code}")
+    return redirect('/forum')
     
 
 def update_posts():

@@ -7,7 +7,26 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='indexcss.css') }}">
 </head>
 <body>
-    <h1>Workout Forum</h1>
+
+    <div id="navigation">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="health_buddy.html">Health Buddy</a>
+        <a href="/search_exercises">Search For Exercises</a>
+        <a href="/forum">Forum</a>
+        <a href="/saved_lists">Saved Exercises</a>
+        <a href="#account">Account</a>
+        <a href="#more">More</a>
+    </div>
+    
+      {% if session %}
+          <a id="logout-button" href="/logout">Logout</a>
+      {% else %}
+          <a id="login-button" href="/login">Log in</a>
+      {% endif %}
+    
+    <br><br><br><br><br>
+    <h1>Forum</h1>
     
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'allPosts')" id="defaultOpen">All Posts</button>
@@ -27,7 +46,7 @@
     <div id="postDetails" class="post-details" style="display:none;">
         <span class="close" onclick="closePopup()">&times;</span>
         <h2 id="postTitle"></h2>
-        <h3 id="postAuthor"></h3>
+        <h3 id="postAuthor">By: </h3>
         <p id="postContent"></p>
         <ul id="repliesList"></ul>
         <form action="/reply" method="POST">
@@ -77,15 +96,42 @@
                 const postList = document.getElementById(tabName.concat("List")) 
                 postList.innerHTML = ''; // Clear existing post list
                 data.posts.forEach(post => {
-                    const po = document.createElement('div');
+                    const postDivider = document.createElement('div'); // Create a wrapper div for each post
+                    postDivider.setAttribute('class', 'postDivider'); // Set class for the wrapper div
+
+                    const postTitle = document.createElement('div'); // Create a div for post title
+                    postTitle.setAttribute('class', 'postTitle'); // Set class for the post title div
+                    
                     const a = document.createElement('a');
                     a.href = "#";
                     a.onclick = () => openPostDetails(post.id, data.posts);
                     a.textContent = post.title;
-                    po.appendChild(a);
-                    postList.appendChild(po);
-                });
-            })
+                    
+                    postTitle.appendChild(a); // Append link to the post title div
+
+                    if (tabName == 'yourPosts') {
+                        var form = document.createElement('form');
+                        form.setAttribute('action', '/delete_post');
+                        form.setAttribute('method', 'post');
+
+                        var postIdInput = document.createElement('input');
+                        postIdInput.setAttribute('type', 'hidden');
+                        postIdInput.setAttribute('name', 'post_id');
+                        postIdInput.setAttribute('value', post.id);
+                        form.appendChild(postIdInput);
+
+                        var deleteButton = document.createElement('button');
+                        deleteButton.setAttribute('type', 'submit');
+                        deleteButton.innerText = 'Delete';
+                        form.appendChild(deleteButton);
+                        
+                        postTitle.appendChild(form); // Append form to the wrapper div
+                    }
+
+                    postList.appendChild(postDivider);
+                    postList.appendChild(postTitle);
+                })
+            })    
             .catch(error => {
                 console.error('Error:', error);
             });        
@@ -108,7 +154,7 @@
             // Assuming 'message' contains the details of the post
             postContent.textContent = post.message; 
             postTitle.textContent = post.title; 
-            postAuthor.textContent = post.Name;
+            postAuthor.textContent = postAuthor.textContent.concat(post.Name);
             postid.value = postId; 
             
             postDetails.style.display = 'block';
@@ -145,7 +191,6 @@
             document.getElementById("postDetails").style.display = "none";
         }
         
-        // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpen").click();
 
     </script>

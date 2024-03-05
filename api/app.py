@@ -367,7 +367,7 @@ app.add_url_rule('/post', 'post', forum.post, methods=['POST'])
 app.add_url_rule('/update_posts', 'update_posts', forum.update_posts, methods=['POST'])
 app.add_url_rule('/reply', 'reply', forum.reply, methods=['POST'])
 app.add_url_rule('/get_replies', 'get_replies', forum.get_replies)
-# app.add_url_rule('/delete_post', 'delete_post', forum.delete_post, methods=['POST'])
+app.add_url_rule('/delete_post', 'delete_post', forum.delete_post, methods=['POST'])
 
 
 if __name__ == "__main__":
