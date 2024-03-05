@@ -2,6 +2,8 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=flask,virtualenv
 
 .env
+Dockerfile
+
 
 ### Flask ###
 instance/*
@@ -182,6 +184,5 @@ cython_debug/
 pyvenv.cfg
 pip-selfcheck.json
 
-Dockerfile
 
 # End of https://www.toptal.com/developers/gitignore/api/flask,virtualenv

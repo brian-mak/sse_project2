@@ -20,7 +20,7 @@ EXPOSE 5000
 # Define environment variable
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
-ENV AZURE_SQL_CONNECTIONSTRING="Driver={ODBC Driver 18 for SQL Server};Server=tcp:workout-buddy.database.windows.net,1433;Database=workout-buddy;Uid=azureuser;Pwd=2024Workout-buddy;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
+ENV AZURE_SQL_CONNECTIONSTRING="Driver={ODBC Driver 18 for SQL Server};Server=tcp:workout-buddy.database.windows.net,1433;Database=workout-buddy;Uid=azureuser;Pwd=2024Workoutbuddy;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
 
 # Connect to Repo
 LABEL org.opencontainers.image.source=https://github.com/lem123ic/sse_project2 
