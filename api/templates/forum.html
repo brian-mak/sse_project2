@@ -9,8 +9,8 @@
 <body>
 
     <div id="navigation">
-        <a href="#home">Home</a>
-        <a href="#about">About</a>
+        <a href="/">Home</a>
+        <a href="/#about">About</a>
         <a href="health_buddy.html">Health Buddy</a>
         <a href="/search_exercises">Search For Exercises</a>
         <a href="/forum">Forum</a>
@@ -46,25 +46,24 @@
     <div id="postDetails" class="post-details" style="display:none;">
         <span class="close" onclick="closePopup()">&times;</span>
         <h2 id="postTitle"></h2>
-        <h3 id="postAuthor">By: </h3>
-        <p id="postContent"></p>
+        <p id="postContent" class="replyMessage"></p>
+        <p id="postAuthor" class="replyUser">By: </p>
         <ul id="repliesList"></ul>
-        <form action="/reply" method="POST">
+        <form action="/reply" method="POST" class="replyBox">
             <input type="hidden" id="postId" name="postId">
             <label for="reply">Reply:</label><br>
             <textarea id="reply" name="message" required></textarea><br>   
-            <button type="submit">Submit</button> 
+            <button type="submit" class="styled-button">Submit</button> 
         </form>
     </div>
 
     <div id="createPost" class="tabcontent" style="display:none;">
-        <h2>Create A Post</h2>
-        <form action="/post" method="POST">
+        <form action="/post" method="POST" class="createPost">
             <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required><br>
+            <input type="text" id="postTitle" name="title" class="postTitleInput" required><br><br>
             <label for="message">Message:</label><br>
-            <textarea id="message" name="message" required></textarea><br>
-            <button type="submit">Post</button>
+            <textarea id="message" name="message" required></textarea><br><br>
+            <button type="submit" class="styled-button">Post</button>
         </form>
     </div>
 
@@ -82,59 +81,67 @@
             }
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
-        
-            fetch('/update_posts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ tab: tabName })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Update the page with the new posts data
-                const postList = document.getElementById(tabName.concat("List")) 
-                postList.innerHTML = ''; // Clear existing post list
-                data.posts.forEach(post => {
-                    const postDivider = document.createElement('div'); // Create a wrapper div for each post
-                    postDivider.setAttribute('class', 'postDivider'); // Set class for the wrapper div
-
-                    const postTitle = document.createElement('div'); // Create a div for post title
-                    postTitle.setAttribute('class', 'postTitle'); // Set class for the post title div
-                    
-                    const a = document.createElement('a');
-                    a.href = "#";
-                    a.onclick = () => openPostDetails(post.id, data.posts);
-                    a.textContent = post.title;
-                    
-                    postTitle.appendChild(a); // Append link to the post title div
-
-                    if (tabName == 'yourPosts') {
-                        var form = document.createElement('form');
-                        form.setAttribute('action', '/delete_post');
-                        form.setAttribute('method', 'post');
-
-                        var postIdInput = document.createElement('input');
-                        postIdInput.setAttribute('type', 'hidden');
-                        postIdInput.setAttribute('name', 'post_id');
-                        postIdInput.setAttribute('value', post.id);
-                        form.appendChild(postIdInput);
-
-                        var deleteButton = document.createElement('button');
-                        deleteButton.setAttribute('type', 'submit');
-                        deleteButton.innerText = 'Delete';
-                        form.appendChild(deleteButton);
-                        
-                        postTitle.appendChild(form); // Append form to the wrapper div
-                    }
-
-                    postList.appendChild(postDivider);
-                    postList.appendChild(postTitle);
+            
+            if (tabName == "allPosts" || tabName == "yourPosts") {
+                fetch('/update_posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tab: tabName })
                 })
-            })    
-            .catch(error => {
-                console.error('Error:', error);
-            });        
+                .then(response => response.json())
+                .then(data => {
+                    // Update the page with the new posts data
+                    const postList = document.getElementById(tabName.concat("List")) 
+                    postList.innerHTML = ''; // Clear existing post list
+                    data.posts.forEach(post => {
+                        const postDivider = document.createElement('div'); // Create a wrapper div for each post
+                        postDivider.setAttribute('class', 'postDivider'); // Set class for the wrapper div
+
+                        const postTitle = document.createElement('div'); // Create a div for post title
+                        postTitle.setAttribute('class', 'postTitle'); // Set class for the post title div
+                        
+                        const a = document.createElement('a');
+                        a.href = "#";
+                        a.onclick = () => openPostDetails(post.id, data.posts);
+                        a.textContent = post.title;
+                        
+                        postTitle.appendChild(a); // Append link to the post title div
+
+                        if (tabName == 'yourPosts') {
+                            var form = document.createElement('form');
+                            form.setAttribute('action', '/delete_post');
+                            form.setAttribute('method', 'post');
+                            form.setAttribute('class', 'deleteButtonBox');
+
+                            var postIdInput = document.createElement('input');
+                            postIdInput.setAttribute('type', 'hidden');
+                            postIdInput.setAttribute('name', 'post_id');
+                            postIdInput.setAttribute('value', post.id);
+                            form.appendChild(postIdInput);
+
+                            var deleteButton = document.createElement('button');
+                            deleteButton.setAttribute('type', 'submit');
+                            deleteButton.setAttribute('class', 'deleteButton');
+                            deleteButton.innerText = 'Delete';
+                            deleteButton.addEventListener('click', function(event) {
+                            if (!confirm("Are you sure you want to delete this post?")) {
+                                event.preventDefault(); 
+                            }});
+                            form.appendChild(deleteButton);
+                            
+                            postTitle.appendChild(form); // Append form to the wrapper div
+                        }
+
+                        postList.appendChild(postDivider);
+                        postList.appendChild(postTitle);
+                    })
+                })    
+                .catch(error => {
+                    console.error('Error:', error);
+                });   
+            }     
         }
 
         function openPostDetails(postId, posts) {
@@ -173,10 +180,13 @@
                     const re = document.createElement('div');
                     const pUser = document.createElement('p');
                     const pMessage = document.createElement('p');
-                    pUser.textContent = reply.Name;
+                    pUser.setAttribute('class', 'replyUser');
+                    pMessage.setAttribute('class', 'replyMessage')
+                    const by = "By: "
+                    pUser.textContent = by.concat(reply.Name);
                     pMessage.textContent = reply.message;
-                    re.appendChild(pUser);
                     re.appendChild(pMessage);
+                    re.appendChild(pUser);
                     repliesList.appendChild(re);
                 });
             })

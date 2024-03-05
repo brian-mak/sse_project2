@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recipe Finder</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font-family: 'Roboto', sans-serif;
+            color: white;
+            text-decoration: none;
+            position: relative;
+            background-image: url("{{ url_for('static', filename='background4.png') }}");
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            cursor: default;
+            height: 100vh;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)); /* Gradient from solid black to transparent */
+            pointer-events: none; /* Allows clicks to pass through to elements underneath */
+            z-index: -1;
+        }
+        #navigation {
+            background-color: black;
+            color: white;
+            width: 100%;
+            position: fixed; /* Change this from absolute to fixed */
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem; /* Adjusted font size for small navigation links */
+            font-weight: normal;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            white-space: nowrap;
+            padding: 10px 10px 30px 10px;
+            z-index: 1000;
+        }
+        #navigation a {
+            color: white; /* Or any color you prefer */
+            text-decoration: none; /* Optional: Removes the underline from links */
+            margin: 0 10px; /* Adds space to the left and right of each link */
+        }
+        #header {
+            margin: 8em 8em;
+            font-size: 120%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid white;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: black;
+        }
+        th, td {
+            color: white;
+        }
+        h2, h3 {
+            color: white;
+            text-align: center;
+        }
+        p {
+            color: white;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="navigation">
+        <center><img src="{{ url_for('static', filename='Logo.png') }}" alt="Recipe Finder Logo" width="400" height="100"></center>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="health_buddy.html">Nutrition</a>
+        <a href="/search_recipes">Search For Recipes</a> <!-- Adjusted link -->
+        <a href="/saved_lists">Saved Recipe Lists</a> <!-- Adjusted link -->
+        <a href="/find_partner">Forum</a>
+        <a href="#account">Account</a>
+        <a href="#more">More</a>
+    </div>
+
+    <!-- Header -->
+    <div id="header">
+        <center>
+            <h2>Recipe Finder</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Recipe Name</th>
+                        <th>Ingredients</th>
+                        <th>Instructions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for recipe in recipes %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ recipe.title }}</td>
+                        <td>{{ recipe.ingredients }}</td>
+                        <td><a href="{{ recipe.instructions }}" target="_blank">Instructions</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </center>
+    </div>
+</body>
+</html>
