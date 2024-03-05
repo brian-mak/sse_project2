@@ -106,7 +106,7 @@
 </div>
 <!-- Header -->
 <div id="header">
-    <h2>Search For Workouts</h2>
+    <center><h2>Search For Workouts</h2></center>
 <body>
     <form id="preferencesForm" method="POST" action="/exercises">        
         <!-- Available Equipment (Checkboxes) -->
@@ -199,4 +199,58 @@
         <input type="submit" value="Submit">
     </form>
 </body>
+<script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const muscleGroups = document.querySelectorAll('input[name="muscleGroups"]');
+        const equipmentCheckboxes = document.querySelectorAll('input[name="equipment"]');
+
+        function updateMuscleGroupCheckboxes() {
+            const fullBody = document.getElementById('full_body').checked;
+            const upperBody = document.getElementById('upper_body').checked;
+            const lowerBody = document.getElementById('lower_body').checked;
+
+            muscleGroups.forEach((checkbox) => {
+                if (fullBody) {
+                    if (checkbox.value !== "full_body" && checkbox.value !== "abs" && checkbox.value !== "cardio") {
+                        checkbox.checked = false;
+                        checkbox.disabled = true;
+                    } else {
+                        checkbox.disabled = false;
+                    }
+                } else if (upperBody) {
+                    if (["chest", "back", "shoulders", "biceps", "triceps", "forearms"].includes(checkbox.value)) {
+                        checkbox.checked = false;
+                        checkbox.disabled = true;
+                    } else {
+                        checkbox.disabled = false;
+                    }
+                } else if (lowerBody) {
+                    if (["quads", "hamstrings", "calves", "glutes", "hips"].includes(checkbox.value)) {
+                        checkbox.checked = false;
+                        checkbox.disabled = true;
+                    } else {
+                        checkbox.disabled = false;
+                    }
+                } else {
+                    checkbox.disabled = false;
+                }
+            });
+        }
+
+        muscleGroups.forEach((checkbox) => {
+            checkbox.addEventListener('change', updateMuscleGroupCheckboxes);
+        });
+
+        // Add validation to ensure at least one checkbox is selected for muscle groups and equipment
+        document.getElementById('preferencesForm').addEventListener('submit', function(event) {
+            const selectedMuscleGroups = Array.from(muscleGroups).some(checkbox => checkbox.checked);
+            const selectedEquipment = Array.from(equipmentCheckboxes).some(checkbox => checkbox.checked);
+
+            if (!selectedMuscleGroups || !selectedEquipment) {
+                alert("Please select at least one option for both Target Muscle Groups and Available Equipment.");
+                event.preventDefault(); // Prevent form submission
+            }
+        });
+    });
+</script>
 </html>

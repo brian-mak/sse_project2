@@ -1,5 +1,5 @@
 import re
-from flask import Flask, jsonify, render_template, request, Blueprint, session
+from flask import Flask, flash, jsonify, render_template, request, Blueprint, session
 from os import environ as env
 import os
 import pyodbc
@@ -166,7 +166,6 @@ def create_saved_list():
 
 @db_bp.route('/api/user/saved_lists', methods=['GET'])
 def get_saved_lists():
-    # Assuming you have a user_id to fetch lists for, perhaps from session or a request parameter
     user_id = request.args.get('user_id')
     if user_id is None:
         return jsonify({"error": "User ID is required"}), 400
@@ -181,7 +180,6 @@ def get_saved_lists():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@db_bp.route('/api/saved_lists_workouts/<int:list_id>', methods=['GET'])
 def get_workout_list_details(list_id):
     try:
         with get_conn() as conn:
@@ -193,11 +191,10 @@ def get_workout_list_details(list_id):
                                  "equipment": row[3],
                                  "target_muscle_group": row[4],
                                  "secondary_muscles": row[5]} for row in cursor.fetchall() ]
-            print(jsonify(workout_details))
-            return jsonify(workout_details)
+            return workout_details
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return {"error": str(e)}, 500
 
 @db_bp.route('/api/saved_lists/<int:list_id>/exercises', methods=['GET'])
 def get_exercises_for_list(list_id):
@@ -272,7 +269,7 @@ def remove_workout_from_saved_list():
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num_of_workouts):
+def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num_of_workouts, workouts):
     try:
         api_key = get_openai_api_key()
 
@@ -287,7 +284,7 @@ def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num
             },
             {
             "role": "user",
-            "content": f"\"Create a workout plan for the following preferences: Fitness Goal: {fitness_goal}, Target Muscle Group: {', '.join(target_muscle_groups)}, Fitness Level: {fitness_level}. Include only {num_of_workouts} exercises from this list: 45° Side Bend, Air Bike, Barbell Bench Front Squat, Barbell Bent Over Row, Barbell Deadlift, Barbell Decline Bent Arm Pullover, Barbell Decline Wide-grip Pullover, Barbell Front Raise, Barbell Seated Behind Head Military Press, Dumbbell Around Pullover, Dumbbell Bench Press, Deep Push Up, Barbell Floor Calf Raise.\""
+            "content": f"\"Create a workout plan for the following preferences: Fitness Goal: {fitness_goal}, Target Muscle Group: {', '.join(target_muscle_groups)}, Fitness Level: {fitness_level}. Include only {num_of_workouts} exercises from this list: {workouts}. ALWAYS ANSWER IN THIS FORMAT for each workout: [Index of Workout]. [Name of Workout]: [Number of Sets] sets x [No of Reps] reps. Give only these in your response without other words.\""
             }
         ],
         temperature=0.2,
@@ -300,10 +297,10 @@ def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num
         print(response)
         
         response_text = response.choices[0]['message']['content'].strip()
-        workouts = parse_workout_plan(response_text)
+        workout_plan = parse_workout_plan(response_text)
         # Depending on your application's needs, you can now return, print, or otherwise use the exercises list
-        print(workouts)  # For debugging
-        return workouts
+        print(workout_plan)  # For debugging
+        return workout_plan
 
     except openai.error.AuthenticationError as e:
         return jsonify({"error": "Authentication with OpenAI failed.", "details": str(e)}), 401
@@ -315,34 +312,34 @@ def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num
         # Catch-all for any other exceptions
         return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
 
+
 def parse_workout_plan(text):
+    # Normalize the text: remove markdown formatting for simplicity
+    clean_text = re.sub(r'\*\*|\n', '', text)
+
+    # Regex to match the exercise patterns observed in the variations
+    # This pattern attempts to capture:
+    # - Exercise name (handling variations in formatting)
+    # - Sets and reps information (accounting for "x reps" and "reps" formats)
+    pattern = re.compile(
+        r"(?:(?:\d+\.\s*)?([A-Za-z\s]+)(?::|\-|\d))?[\s\n]*"  # Captures exercise name optionally preceded by a number and followed by ":", "-", or directly a number
+        r"(\d+)\s*sets\s*x\s*(\d+)\s*reps"                    # Captures "3 sets x 12 reps" format
+        , re.IGNORECASE | re.DOTALL)
+
     workouts = []
+    for match in re.finditer(pattern, clean_text):
+        exercise, sets, reps = match.groups()
 
-    # Define a regular expression to match the exercise details
-    # This pattern accounts for variations in the formatting of the exercise details
-    pattern = re.compile(r"\d+\.\s*([\w\s]+)(?:-|:)\s*(\d+)\s*sets\s*x\s*(\d+)\s*reps")
-
-    # Split the text into lines for easier processing
-    lines = text.split('\n')
-
-    # Iterate over each line, trying to match the pattern
-    for line in lines:
-        match = pattern.search(line)
-        if match:
-            # Extract exercise name, sets, and reps from the match
-            exercise = match.group(1).strip()
-            sets = match.group(2).strip()
-            reps = match.group(3).strip()
-
-            # Append a dictionary with the extracted details to the exercises list
+        # Some clean-up and checks to ensure meaningful data is captured
+        if exercise and sets and reps:
+            exercise = exercise.strip()
             workouts.append({
                 'exercise': exercise,
-                'sets': sets,
-                'reps': reps
+                'sets': sets.strip(),
+                'reps': reps.strip()
             })
 
     return workouts
-
 
 # @db_bp.route('/my_custom_workout_plan')
 # def my_custom_workout_plan():
@@ -366,33 +363,118 @@ def workout_plan():
 @db_bp.route('/my_custom_workout_plan', methods=['POST'])
 def my_custom_workout_plan():
     # Retrieving user information from the session
-    user_info = session.get('user')
-    user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
+    # user_info = session.get('user')
+    # user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
 
     data = request.form.to_dict(flat=True)
-    data['fitnessGoal'] = request.form.get('fitnessGoal')
-    data['muscleGroups'] = request.form.getlist('muscleGroups')
-    data['equipment'] = request.form.getlist('equipment')
-    data['fitnessLevel'] = request.form.get('fitnessLevel')
-    data['numOfWorkouts'] = request.form.get('numOfWorkouts')
+    fitness_goal = data['fitnessGoal']
+    list_id = data['savedList']
+    # target_muscle_groups = request.form.getlist('muscleGroups')
+    # available_equipment = request.form.getlist('equipment')
+    fitness_level = data['fitnessLevel']
+    num_of_workouts = int(data['numOfWorkouts'])
 
-    print(data['fitnessGoal'])
-    print(data['muscleGroups'])
-    print(data['equipment'])
-    print(data['fitnessLevel'])
-    print(data['numOfWorkouts'])
+    muscle_groups_mapping = {
+        'full_body': ["pectorals", "serratus anterior", "upper back", "lats", 
+                      "traps", "spine", "delts", "biceps", "triceps", "forearms", 
+                      "quads", "hamstrings", "calves", "glutes", "adductors", 
+                      "abductors", "abs", "cardiovascular system"],
+        'upper_body': ["pectorals", "serratus anterior", "upper back", "lats", 
+                      "traps", "spine", "delts", "biceps", "triceps", "forearms"],
+        'chest': ["pectorals", "serratus anterior"],
+        'back': ["upper back", "lats", "traps", "spine"],
+        'shoulders': ["delts"],
+        'biceps': ["biceps"],
+        'triceps': ["triceps"],
+        'forearms': ["forearms"],        
+        'lower_body': ["quads", "hamstrings", "calves", "glutes", "adductors", "abductors"],
+        'quads': ["quads"],
+        'hamstrings': ["hamstrings"],
+        'calves': ["calves"],
+        'glutes': ["glutes"],
+        'hips': ["adductors", "abductors"],
+        'abs': ["abs"],
+        'cardio': ["cardiovascular system"],
+    }
+    
+    equipment_mapping = {
+        'body_weight': "body weight",
+        'band': "band", 
+        'barbell': "barbell", 
+        'bosu_ball': "bosu ball", 
+        'cable': "cable", 
+        'dumbbell': "dumbbell", 
+        'elliptical_machine': "elliptical machine", 
+        'ez_barbell': "ez barbell", 
+        'hammer': "hammer", 
+        'kettlebell': "kettlebell", 
+        'leverage_machine': "leverage machine",
+        'medicine_ball': "medicine ball", 
+        'olympic_barbell': "olympic barbell", 
+        'resistance_band': "resistance band",
+        'roller': "roller", 
+        'rope': "rope", 
+        'skierg_machine': "skierg machine", 
+        'sled_machine': "sled machine", 
+        'smith_machine': "smith machine", 
+        'stability_ball': "stability ball", 
+        'stationary_bike': "stationary bike", 
+        'stepmill_machine': "stepmill machine",
+        'wheel_roller': "wheel roller"
+    }
 
-    target_muscle_groups = [muscle.lower() for muscle in data['muscleGroups']]
-    available_equipment = [equipment.lower() for equipment in data['equipment']]
+    target_muscles = []
+    for group in request.form.getlist('muscleGroups'):
+        if group in muscle_groups_mapping:
+            target_muscles.extend(muscle_groups_mapping[group])
+    
+    target_muscles = list(set(target_muscles))
+    print(target_muscles) # to delete
+    available_equipments = [equipment_mapping[equipment] for equipment in request.form.getlist('equipment') if equipment in equipment_mapping]
+    print(available_equipments) # to delete
 
-    print(target_muscle_groups)
-    print(available_equipment)
+    workout_list_details = get_workout_list_details(list_id)
 
-    workouts = generate_workout_plan(data["fitnessGoal"], target_muscle_groups, data["fitnessLevel"], data["numOfWorkouts"])
+    filtered_workouts = [workout["workout_name"] for workout in workout_list_details if workout["equipment"] in available_equipments and workout["target_muscle_group"] in target_muscles]
+
+    print(filtered_workouts) # to delete
+
+    if len(filtered_workouts) < num_of_workouts:
+        error_message = "There are not enough exercises in your saved list to meet the selected criteria."
+        # return jsonify({"error": "There are not enough exercises in your saved list to meet the selected criteria."}), 400
+        return render_template('error.html', error=error_message)
+
+    workouts = generate_workout_plan(fitness_goal, target_muscles, fitness_level, num_of_workouts, filtered_workouts)
     # Ensure workout_plan is a dictionary before passing to render_template
     if isinstance(workouts, str):
-        return workouts  # Handle error or "No workout plan generated" case
-    return render_template('custom_workout_plan.html', workouts=workouts)
+        error_message = "No workout plan generated"
+        return render_template('error.html', error=error_message)
+    
+    if data['fitnessGoal']=="weight_loss":
+        notes="""1. Begin with a warm-up and end with a cool-down stretching routine to aid in recovery and flexibility.\n
+        2. Rest for 60-90 seconds between sets to ensure you're ready for the next set.\n
+        3. Aim to gradually increase the intensity of your workouts by adding more reps or reducing rest time, which can help burn more calories.\n
+        4. Always ensure proper form to avoid injuries and maximize the effectiveness of your workout."""
+
+    elif data['fitnessGoal']=="muscle_gain":
+        notes="""1. Remember to start with a warm-up and conclude with a cool-down stretching routine to enhance muscle flexibility.\n 
+        2. Take 60-90 seconds of rest between sets for optimal recovery.\n
+        3. Focus on progressively increasing the weight to stimulate muscle growth effectively.\n
+        4. It's crucial to maintain precise form during each exercise to prevent injuries and ensure maximal muscle development."""
+
+    elif data['fitnessGoal']=="endurance":
+        notes="""1. Kick off with a warm-up and wrap up with a cool-down stretching routine to improve recovery and flexibility.\n
+        2. Rest periods should be around 60-90 seconds between sets, or even shorter to boost your endurance.\n
+        3. Focus on increasing the number of reps and sets over time to build your muscular and cardiovascular endurance.\n
+        4. Ensuring proper form is essential to prevent injuries and enhance stamina development."""
+
+    elif data['fitnessGoal']=="general_fitness":
+        notes="""1. Start with a warm-up and finish with a cool-down stretching routine for overall well-being and flexibility.\n
+        2. Allow for a rest period of 60-90 seconds between sets to facilitate comprehensive recovery.\n
+        3. Aim for a balanced increase in weight, reps, and sets to improve your general fitness levels.\n
+        4. Proper form is paramount in every exercise to prevent injuries and ensure effective training."""
+
+    return render_template('custom_workout_plan.html', workouts=workouts, notes=notes)
 
 
 def get_saved_lists_for_user(user_id):
