@@ -7,7 +7,8 @@ import openai
 import re
 from googleapiclient.discovery import build
 
-import find_partner, authentication
+import forum
+import authentication
 from database import db_bp
 
 ENV_FILE = find_dotenv()
@@ -358,12 +359,15 @@ def parse_workout_plan(text):
     return workouts
 
 
-app.add_url_rule('/find_partner', 'find_partner', find_partner.index)
+app.add_url_rule('/forum', 'forum', forum.index)
 app.add_url_rule('/login', 'login', authentication.login)
 app.add_url_rule('/callback', 'callback', authentication.callback)
 app.add_url_rule('/logout', 'logout', authentication.logout)
-app.add_url_rule('/post_invitation', 'post_invitation', find_partner.post_invitation, methods=['POST'])
-app.add_url_rule('/delete_post', 'delete_post', find_partner.delete_post, methods=['POST'])
+app.add_url_rule('/post', 'post', forum.post, methods=['POST'])
+app.add_url_rule('/update_posts', 'update_posts', forum.update_posts, methods=['POST'])
+app.add_url_rule('/reply', 'reply', forum.reply, methods=['POST'])
+app.add_url_rule('/get_replies', 'get_replies', forum.get_replies)
+app.add_url_rule('/delete_post', 'delete_post', forum.delete_post, methods=['POST'])
 
 
 if __name__ == "__main__":
