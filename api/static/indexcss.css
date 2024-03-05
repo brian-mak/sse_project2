@@ -101,7 +101,7 @@ body {
     width: 80%;
     height: 80%;
     overflow: auto;
-    background-color: rgb(200, 200, 200);
+    background-color: rgb(150, 150, 150);
     padding: 20px;
   }
 
@@ -110,6 +110,7 @@ body {
     float: right;
     font-size: 28px;
     font-weight: bold;
+    cursor: pointer;
   }
 
 
@@ -136,19 +137,26 @@ body {
 
 .tabcontent {
     display: none;
+    padding: 20px;
 }
 
 
 /* Form styling */
-form {
+.replyBox {
     text-align: center;
 }
 
-form label,
-form input,
-form button {
-    display: block;
-    margin: 10px auto;
+form textarea {
+    height: 250px;
+    width: 500px;
+}
+
+.createPost {
+    margin-left: 20px;
+}
+
+.postTitleInput {
+    width: 400px;
 }
 
 
@@ -173,6 +181,7 @@ h3 {
     font-size: 1.5rem;
     margin-top: 10px;
     margin-bottom: 10px;
+    color: rgb(100, 100, 100);
 }
 
 /* post title */
@@ -180,8 +189,57 @@ h3 {
     background-color: rgba(255, 255, 255, 0.5);
     width: 50%;
     padding: 10px;
+    color: white;
+    text-decoration: none;
 }
 
 .postDivider {
-    height: 10px;;
+    height: 10px;
+    width: 50%;
+}
+
+.deleteButtonBox {
+    float: right;
+}
+
+/* reply */
+.replyUser {
+    display: inline-block;    
+    color: rgb(100, 100, 100);
+}
+
+.replyMessage {
+    display: inline-block;    
+    margin-right: 20px;
+}
+
+/* button */
+.styled-button {
+    background-color: rgb(255, 255, 255, 0.5);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.3rem;
+    color: white; /* Set white font color */
+    font-family: Arial, sans-serif; /* Use minimalist font */
+    font-size: 0.8rem; /* Adjusted font size for the button */
+    /* margin: 0 20px; /* Adjusted margin */
+}
+
+.deleteButton {
+    background-color: rgb(255, 255, 255, 0);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    /* padding: 10px 20px; */
+    /* transition: background-color 0.3s ease; */
+    text-transform: uppercase;
+    letter-spacing: 0.3rem;
+    color: rgb(134, 0, 0); /* Set white font color */
+    font-family: Arial, sans-serif; /* Use minimalist font */
+    font-size: 0.8rem; /* Adjusted font size for the button */
+    font-weight: bold;
 }
