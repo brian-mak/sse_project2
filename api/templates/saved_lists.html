@@ -144,6 +144,128 @@
             background-color: #E5B80B; /* Or any color you prefer for the selected state */
             color: white; /* Optional: change text color if needed */
         }
+
+                /* The Modal (background) */
+                .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            /* background-color: rgb(0,0,0); */
+            /* background-color: rgba(0,0,0,0.4); */
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #df7366;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .container {
+            position: relative;
+            /* width: 100%; */
+            overflow-x: auto; /* Allows horizontal scrolling */
+            overflow-y: visible;
+            height: auto;
+            /*  display: flex; */
+            justify-content: center;
+            align-items: center;
+            /* background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 1.0)); */
+        }
+
+        .carousel-view {
+            display: flex;
+            height: auto;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 40px 10px;
+            overflow-y: visible;
+        }
+
+        .carousel-view .item-list {
+            /* max-width: 85em; */
+            width: 100vw;
+            height: auto;
+            padding: 0em 0em;
+            display: flex;
+            gap: 20px; /* May need to be adjusted */
+            scroll-behavior: smooth;
+            transition: all 0.25s ease-in;
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+            overflow-x: auto;
+            overflow-y: visible;
+            /*  scroll-snap-type: x mandatory; */
+            background-color: transparent;
+        }
+
+        /* New Hover Effect */
+        .carousel-view .item {
+            flex: 0 0 auto;
+            width: 500px; /* Adjust based on design */
+            margin: 0 0px; /* Optional, for spacing between items */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* .item {
+        scroll-snap-align: center;
+        } */
+
+        .carousel-view .item:hover {
+            transform: scale(1.1); */ /* Adjust the scale value as needed */
+        }
+
+        .item-list::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+        }
+
+        /* Style for carousel button */
+        .prev-btn, .next-btn {
+            height: 100px;
+            width: 100px;
+            padding: 10px 10px 150px 10px;
+            font-family: 'Arial Narrow', sans-serif;
+            font-size: 80px;
+            font-stretch: ultra-condensed;
+            background-color: transparent;
+            color: #fff;
+            border: transparent;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+            overflow-y: hidden;
+        }
+
+        /* Hover effect button */
+        .prev-btn:hover, .next-btn:hover {
+            background-color: transparent;
+            color: #df7366;
+            border-color: #333333;
+        }
     </style>
 </head>
 <div id="navigation">
@@ -173,7 +295,37 @@
     <div id="exercisesContainer" class="exercises-container">
         <!-- Exercises will be displayed here -->
     </div>
-    
+
+    <!-- <div id="youtubeModal" class="modal">
+        <div class="modal-content">
+        <span class="close">&times;</span>
+        <center><h2>YouTube Videos</h2></center>
+        <div class="container">
+            <div class="carousel-view">
+            <button id="prev-btn" class="prev-btn"><</button>
+            <div id="youtubeVideoList" class="item-list">
+            </div>
+            <button id="next-btn" class="next-btn">></button>
+            </div>
+        </div>
+        </div>
+    </div> -->
+    <div id="youtubeModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+        <span class="close">&times;</span>
+        <center><h2>YouTube Videos</h2></center>
+        <div class="container">
+            <div class="carousel-view">
+            <button id="prev-btn" class="prev-btn"><</button>
+            <div id="youtubeVideoList" class="item-list">
+                <!-- YouTube video thumbnails will be added here by JavaScript -->
+            </div>
+            <button id="next-btn" class="next-btn">></button>
+            </div>
+        </div>
+        </div>
+    </div>
     <script>
         function createSavedList() {
             const listName = document.getElementById('newListName').value;
@@ -198,11 +350,11 @@
                 alert('Please enter a list name and ensure user ID is available.');
             }
         }
-
+    
         function capitalizeWords(str) {
             return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         }
-
+    
         function fetchExercisesForList(listId) {
             fetch(`/db/api/saved_lists/${listId}/exercises`)
             .then(response => response.json())
@@ -224,14 +376,15 @@
                             ${exercise.instructions.map(instruction => `<li>${instruction}</li>`).join('')}
                         </ol><br>
                         ${exercise.gifUrl ? `<img src="${exercise.gifUrl}" alt="${capitalizeWords(exercise.name)} GIF" style="max-width: 100%; height: auto;">` : ''}
-                        <br><br><button onclick="removeExerciseFromSavedList('${listId}', '${exercise.id}')">Remove from Saved List</button><br><br><br>
+                        <br><br><button onclick="removeExerciseFromSavedList('${listId}', '${exercise.id}')">Remove from Saved List</button>
+                        <button onclick="searchYouTube('${exercise.name}')">Search on YouTube</button><br><br><br>
                     `;
                     container.appendChild(exerciseDiv);
                 });
             })
             .catch(error => console.error('Error:', error));
         }
-
+    
         function removeExerciseFromSavedList(listId, workoutID) {
             fetch('/db/saved_lists/remove_workout', {
                 method: 'POST',
@@ -249,7 +402,7 @@
             })
             .catch(error => console.error('Error:', error));
         }
-
+    
         function makeListClickable() {
             const lists = document.querySelectorAll('.list');
             lists.forEach(list => {
@@ -258,16 +411,16 @@
                     lists.forEach(item => {
                         item.classList.remove('selected');
                     });
-
+    
                     // Add the selected class to the clicked list
                     list.classList.add('selected');
-
+    
                     const listId = list.getAttribute('data-list-id');
                     fetchExercisesForList(listId);
                 };
             });
         }
-
+    
         function fetchSavedLists() {
             const userId = '{{ user_id }}';
             // Update the fetch URL to include the user_id as a query parameter
@@ -287,11 +440,120 @@
                 })
                 .catch(error => console.error('Error fetching saved lists:', error));
         }
-
+    
         // Load saved lists when the page loads
         window.onload = function() {
             fetchSavedLists();
         };
+    
+        function searchYouTube(workoutName) {
+        fetch(`/search_youtube?query=${encodeURIComponent(workoutName + ' exercise')}`)
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    const videoListContainer = document.getElementById('youtubeVideoList');
+                    videoListContainer.innerHTML = ''; // Clear previous results
+    
+                    // Create carousel items for each video
+                    data.forEach(video => {
+                        const item = document.createElement('div');
+                        item.className = 'item';
+                        item.innerHTML = `
+                            <img src="${video.thumbnailUrl}" alt="${video.title}" class="thumbnail">
+                            <center><h4>${video.title}</h4></center>
+                        `;
+                        item.onclick = () => window.open(`https://www.youtube.com/watch?v=${video.videoId}`, '_blank');
+                        videoListContainer.appendChild(item);
+                    });
+    
+                    // Initialize or update carousel here if needed
+                    // initializeCarousel(); // This function would handle carousel navigation
+    
+                    // Display the modal
+                    const youtubeModal = document.getElementById('youtubeModal');
+                    youtubeModal.style.display = "block";
+                    startScrolling();
+    
+                    // Correcting the scope of 'modal' variable
+                    const span = document.getElementsByClassName('close')[0];
+                    span.onclick = function() {
+                        youtubeModal.style.display = 'none';
+                    };
+    
+                    // Ensuring 'modal' is correctly targeted
+                    window.onclick = function(event) {
+                        if (event.target == youtubeModal) {
+                            youtubeModal.style.display = 'none';
+                        }
+                    };                 
+                } else {
+                    alert('No videos found for this exercise.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error fetching the YouTube videos.');
+            });
+        }
+    
+        document.addEventListener('readystatechange', (event) => {
+            if (document.readyState === 'complete') {
+                startScrolling();
+            }
+        });
+    
+        const itemList = document.getElementById('youtubeVideoList'); // Ensure this ID matches your HTML
+        const prevBtn = document.getElementById('prev-btn'); // Ensure this ID matches your HTML
+        const nextBtn = document.getElementById('next-btn'); // Ensure this ID matches your HTML
+    
+        let scrollingInterval;
+        let scrollDirection = 1; // 1 for scrolling right, -1 for scrolling left
+    
+        function startScrolling() {
+            if (scrollingInterval) return; // Prevent multiple intervals
+            scrollingInterval = setInterval(() => {
+                itemList.scrollLeft += scrollDirection * 10; // Adjust the scrolling speed as needed
+            }, 50); // Adjust the interval for smoother scrolling
+        }
+    
+        function stopScrolling() {
+            if (scrollingInterval) {
+                clearInterval(scrollingInterval);
+                scrollingInterval = null; // Clear the interval reference
+            }
+        }
+    
+        // Event listeners for starting, stopping, and changing the direction of the scroll
+        itemList.addEventListener('mouseenter', stopScrolling);
+        itemList.addEventListener('mouseleave', () => {
+            scrollDirection = 1; // Ensure direction is set to right when resuming
+            startScrolling();
+        });
+    
+        prevBtn.addEventListener('mouseenter', () => {
+            scrollDirection = -1;
+            startScrolling();
+        });
+    
+        prevBtn.addEventListener('mouseleave', () => {
+            scrollDirection = 1;
+            startScrolling();
+        });
+    
+        nextBtn.addEventListener('mouseenter', () => {
+            scrollDirection = 1;
+            startScrolling();
+        });
+    
+        prevBtn.addEventListener('click', () => {
+            stopScrolling();
+            itemList.scrollBy({ left: -500, behavior: 'smooth' });
+        });
+    
+        nextBtn.addEventListener('click', () => {
+            stopScrolling();
+            itemList.scrollBy({ left: 500, behavior: 'smooth' });
+        });
     </script>
 </body>
 </html>

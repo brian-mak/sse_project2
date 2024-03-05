@@ -59,6 +59,31 @@
             text-decoration: none; /* Optional: Removes the underline from links */
             margin: 0 10px; /* Adds space to the left and right of each link */
         }
+        table {
+            /* width: 80%; Adjust as needed */
+            margin-left: auto;
+            margin-right: auto; /* Center the table on the page */
+            border-collapse: collapse; /* Remove gaps between cells */
+        }
+
+        th, td {
+            text-align: center; /* Center-align text */
+            padding: 5px; /* Add padding */
+            border: 1px solid #ddd; /* Optional: Add border */
+        }
+
+        th {
+            /* background-color: #4CAF50; Optional: Add background color to headers */
+            color: white;
+        }
+
+        /* tr:nth-child(even) {
+            background-color: #f2f2f2;
+        } */
+
+        tr:hover {
+            background-color: #df7366;
+        }
     </style>
 </head>
 <div id="navigation">
@@ -84,7 +109,7 @@
                 <th>No.</th>
                 <th>Workout Name</th>
                 <th>Sets</th>
-                <th>Repetitions</th>
+                <th>Reps/Seconds</th>
             </tr>
         </thead>
         <tbody>
@@ -93,7 +118,7 @@
                 <td>{{ loop.index }}</td>
                 <td>{{ workout.exercise }}</td>
                 <td>{{ workout.sets }}</td>
-                <td>{{ workout.reps }}</td>
+                <td>{{ workout.reps_secs }}</td>
             </tr>
             {% endfor %}
         </tbody>

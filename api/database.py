@@ -284,11 +284,11 @@ def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num
             },
             {
             "role": "user",
-            "content": f"\"Create a workout plan for the following preferences: Fitness Goal: {fitness_goal}, Target Muscle Group: {', '.join(target_muscle_groups)}, Fitness Level: {fitness_level}. Include only {num_of_workouts} exercises from this list: {workouts}. ALWAYS ANSWER IN THIS FORMAT for each workout: [Index of Workout]. [Name of Workout]: [Number of Sets] sets x [No of Reps] reps. Give only these in your response without other words.\""
+            "content": f"\"Create a workout plan for the following preferences: Fitness Goal: {fitness_goal}, Target Muscle Group: {', '.join(target_muscle_groups)}, Fitness Level: {fitness_level}. Include EXACTLY {num_of_workouts} exercises from this list: {workouts}. ALWAYS ANSWER IN THIS FORMAT for each workout: [Index of Workout]. [Name of Workout]: [Number of Sets] sets x [No of Reps] reps. GIVE ONLY THESE IN YOUR RESPONSE WITHOUT OTHER WORDS.\""
             }
         ],
         temperature=0.2,
-        max_tokens=256,
+        max_tokens=512,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
@@ -313,30 +313,57 @@ def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num
         return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
 
 
+# def parse_workout_plan(text):
+#     # Normalize the text: remove markdown formatting for simplicity
+#     clean_text = re.sub(r'\*\*|\n', '', text)
+
+#     # Regex to match the exercise patterns observed in the variations
+#     # This pattern attempts to capture:
+#     # - Exercise name (handling variations in formatting)
+#     # - Sets and reps information (accounting for "x reps" and "reps" formats)
+#     pattern = re.compile(
+#         r"(?:(?:\d+\.\s*)?([A-Za-z\s]+)(?::|\-|\d))?[\s\n]*"  # Captures exercise name optionally preceded by a number and followed by ":", "-", or directly a number
+#         r"(\d+)\s*sets\s*x\s*(\d+)\s*reps"                    # Captures "3 sets x 12 reps" format
+#         , re.IGNORECASE | re.DOTALL)
+
+#     workouts = []
+#     for match in re.finditer(pattern, clean_text):
+#         exercise, sets, reps = match.groups()
+
+#         # Some clean-up and checks to ensure meaningful data is captured
+#         if exercise and sets and reps:
+#             exercise = exercise.strip()
+#             workouts.append({
+#                 'exercise': exercise,
+#                 'sets': sets.strip(),
+#                 'reps': reps.strip()
+#             })
+
+#     return workouts
+
 def parse_workout_plan(text):
     # Normalize the text: remove markdown formatting for simplicity
     clean_text = re.sub(r'\*\*|\n', '', text)
 
-    # Regex to match the exercise patterns observed in the variations
-    # This pattern attempts to capture:
-    # - Exercise name (handling variations in formatting)
-    # - Sets and reps information (accounting for "x reps" and "reps" formats)
+    # Adjusted regex pattern to match both "sets x reps" and "sets x seconds"
     pattern = re.compile(
         r"(?:(?:\d+\.\s*)?([A-Za-z\s]+)(?::|\-|\d))?[\s\n]*"  # Captures exercise name optionally preceded by a number and followed by ":", "-", or directly a number
-        r"(\d+)\s*sets\s*x\s*(\d+)\s*reps"                    # Captures "3 sets x 12 reps" format
+        r"(\d+)\s*sets\s*x\s*(\d+)\s*(reps|seconds)"  # Adjusted to capture "reps" or "seconds" directly
         , re.IGNORECASE | re.DOTALL)
 
     workouts = []
     for match in re.finditer(pattern, clean_text):
-        exercise, sets, reps = match.groups()
+        exercise, sets, reps_secs, unit = match.groups()
 
-        # Some clean-up and checks to ensure meaningful data is captured
-        if exercise and sets and reps:
+        # Format the 'reps_secs' value based on the captured unit
+        reps_secs_formatted = f"{reps_secs} {unit}" if unit else reps_secs
+
+        if exercise:
             exercise = exercise.strip()
             workouts.append({
                 'exercise': exercise,
                 'sets': sets.strip(),
-                'reps': reps.strip()
+                'reps_secs': reps_secs_formatted
             })
 
     return workouts
@@ -404,7 +431,6 @@ def my_custom_workout_plan():
         'bosu_ball': "bosu ball", 
         'cable': "cable", 
         'dumbbell': "dumbbell", 
-        'elliptical_machine': "elliptical machine", 
         'ez_barbell': "ez barbell", 
         'hammer': "hammer", 
         'kettlebell': "kettlebell", 
@@ -418,8 +444,6 @@ def my_custom_workout_plan():
         'sled_machine': "sled machine", 
         'smith_machine': "smith machine", 
         'stability_ball': "stability ball", 
-        'stationary_bike': "stationary bike", 
-        'stepmill_machine': "stepmill machine",
         'wheel_roller': "wheel roller"
     }
 

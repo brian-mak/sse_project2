@@ -66,7 +66,6 @@ def fetch_exercises(target_muscle_groups, available_equipment):
         'bosu_ball': "bosu ball", 
         'cable': "cable", 
         'dumbbell': "dumbbell", 
-        'elliptical_machine': "elliptical machine", 
         'ez_barbell': "ez barbell", 
         'hammer': "hammer", 
         'kettlebell': "kettlebell", 
@@ -80,8 +79,6 @@ def fetch_exercises(target_muscle_groups, available_equipment):
         'sled_machine': "sled machine", 
         'smith_machine': "smith machine", 
         'stability_ball': "stability ball", 
-        'stationary_bike': "stationary bike", 
-        'stepmill_machine': "stepmill machine",
         'wheel_roller': "wheel roller"
     }
     
