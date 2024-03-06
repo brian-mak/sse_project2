@@ -81,6 +81,7 @@ def update_user_log(info):
 @retry(Exception, tries=3, delay=1, backoff=2)
 def get_conn():
     conn = pyodbc.connect(connection_string)
+    print("Successful")
     return conn
 
 def create_schema():
@@ -312,35 +313,6 @@ def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num
         # Catch-all for any other exceptions
         return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
 
-
-# def parse_workout_plan(text):
-#     # Normalize the text: remove markdown formatting for simplicity
-#     clean_text = re.sub(r'\*\*|\n', '', text)
-
-#     # Regex to match the exercise patterns observed in the variations
-#     # This pattern attempts to capture:
-#     # - Exercise name (handling variations in formatting)
-#     # - Sets and reps information (accounting for "x reps" and "reps" formats)
-#     pattern = re.compile(
-#         r"(?:(?:\d+\.\s*)?([A-Za-z\s]+)(?::|\-|\d))?[\s\n]*"  # Captures exercise name optionally preceded by a number and followed by ":", "-", or directly a number
-#         r"(\d+)\s*sets\s*x\s*(\d+)\s*reps"                    # Captures "3 sets x 12 reps" format
-#         , re.IGNORECASE | re.DOTALL)
-
-#     workouts = []
-#     for match in re.finditer(pattern, clean_text):
-#         exercise, sets, reps = match.groups()
-
-#         # Some clean-up and checks to ensure meaningful data is captured
-#         if exercise and sets and reps:
-#             exercise = exercise.strip()
-#             workouts.append({
-#                 'exercise': exercise,
-#                 'sets': sets.strip(),
-#                 'reps': reps.strip()
-#             })
-
-#     return workouts
-
 def parse_workout_plan(text):
     # Normalize the text: remove markdown formatting for simplicity
     clean_text = re.sub(r'\*\*|\n', '', text)
@@ -368,16 +340,6 @@ def parse_workout_plan(text):
 
     return workouts
 
-# @db_bp.route('/my_custom_workout_plan')
-# def my_custom_workout_plan():
-#     # user_id = session['user_id']
-
-#     workouts = generate_workout_plan()
-#     # Ensure workout_plan is a dictionary before passing to render_template
-#     if isinstance(workouts, str):
-#         return workouts  # Handle error or "No workout plan generated" case
-#     return render_template('custom_workout_plan.html', workouts=workouts)
-
 
 @db_bp.route('/workout_plan')
 def workout_plan():
@@ -389,15 +351,9 @@ def workout_plan():
 
 @db_bp.route('/my_custom_workout_plan', methods=['POST'])
 def my_custom_workout_plan():
-    # Retrieving user information from the session
-    # user_info = session.get('user')
-    # user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
-
     data = request.form.to_dict(flat=True)
     fitness_goal = data['fitnessGoal']
     list_id = data['savedList']
-    # target_muscle_groups = request.form.getlist('muscleGroups')
-    # available_equipment = request.form.getlist('equipment')
     fitness_level = data['fitnessLevel']
     num_of_workouts = int(data['numOfWorkouts'])
 
@@ -577,5 +533,6 @@ def delete_message_log_table():
 if __name__ == "__main__":
     # delete_saved_list_workouts_table()
     # delete_saved_lists_table()
-    root()
+    # root()
+    get_conn()
     # create_schema()
