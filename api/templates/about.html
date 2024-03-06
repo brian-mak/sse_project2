@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <link rel="stylesheet" href="static/indexcss.css">
+    <style>
+        #video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        #title {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 2em;
+        }
+
+        #about-paragraph {
+            text-align: justify;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #navigation a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="meal_planner.html">Nutrition</a>
+        <a href="search_exercises.html">Search For Exercises</a>
+        <a href="forum.html">Forum</a>
+        <a href="saved_lists.html">Saved Exercises</a>
+        <a href="accountinfo.html">Account</a>
+
+    </div>
+
+    <div id="title">
+        <p>Welcome to our fitness app, where we stand as the cornerstone of healthy living. Our platform is designed to cater to individuals at every stage of their fitness journey, offering a comprehensive range of resources from beginner to advanced levels. Whether you're just starting out or striving for peak performance, we provide tailored fitness programs crafted by experts to help you achieve your goals effectively. Our community forums foster support, motivation, and knowledge sharing among members, creating a vibrant environment for growth and learning. Additionally, we understand the importance of nutrition in achieving optimal health, which is why we offer a variety of healthy food options and nutritional guidance to complement your fitness regimen. With our app, embark on a journey towards a healthier, happier you.</p>
+    </div>
+
+    <video id="video-background" autoplay loop muted>
+        <source src="./static/indexvideo.mp4" type="video/mp4">
+    </video>
+</body>
+</html>
