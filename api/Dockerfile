@@ -21,11 +21,11 @@ EXPOSE 5000
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
-ARG AZURE_CONNECTION_STRING
-ENV AZURE_CONNECTION_STRING=$AZURE_CONNECTION_STRING
+ARG AZURE_SQL_CONNECTIONSTRING
+ENV AZURE_SQL_CONNECTIONSTRING=$AZURE_SQL_CONNECTIONSTRING
 
 # Connect to Repo
-LABEL org.opencontainers.image.source https://github.com/lem123ic/sse_project2 
+LABEL org.opencontainers.image.source https://github.com/brian-mak/sse_project2 
 
 # Run app.py when the container launches
 CMD ["flask", "run"]
