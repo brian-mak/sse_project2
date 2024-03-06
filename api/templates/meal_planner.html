@@ -4,16 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nutrition Analysis</title>
-    <link rel="stylesheet" href="styles.css"> <!-- You can link your CSS file here -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Ensure content is centered vertically */
+        }
+
+        #video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        section {
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        footer {
+            display: none; /* Hide the footer */
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>Welcome to the Nutrition Analysis Tool</h1>
+        <h1>Nutrition Analysis</h1>
     </header>
 
     <section id="about">
         <h2>About</h2>
-        <p>Here you can analyze the nutritional content of various ingredients. Simply enter the ingredient in the form below and click "Analyze".</p>
+        <p>Good nutrition is essential for a healthy lifestyle. Understanding the nutritional content of the food you consume is the first step towards making informed dietary choices. Our nutrition calculator simplifies this process, providing you with easy access to the nutritional information of various ingredients. By analyzing the components of your meals, you can better manage your dietary intake and achieve your health goals.</p>
     </section>
 
     <section id="analysis">
@@ -29,7 +67,6 @@
     <section id="healthy-nutrition">
         <h2>Healthy Nutrition</h2>
         <div class="nutrition-info">
-            <!-- You can add images and information about healthy nutrition here -->
             <img src="image1.jpg" alt="Image 1">
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
         </div>
@@ -39,8 +76,10 @@
         </div>
     </section>
 
-    <footer>
-        <p>&copy; 2024 Nutrition Analysis Tool</p>
-    </footer>
+    <video id="video-background" autoplay loop muted>
+        <source src="/static/nutrition.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 </body>
 </html>
+
