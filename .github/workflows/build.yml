@@ -115,7 +115,8 @@ jobs:
         push: true
         tags: ghcr.io/brian-mak/workout-buddy-main:latest
         build-args: |
-          AZURE_CONNECTION_STRING=${{ secrets.AZURE_CONNECTION_STRING }}  
+          AZURE_SQL_CONNECTIONSTRING=${{ secrets.AZURE_SQL_CONNECTIONSTRING }}  
+        github-token: ${{ secrets.TOKEN }}
       
     # - name: Azure login
     #   uses: azure/login@v1
