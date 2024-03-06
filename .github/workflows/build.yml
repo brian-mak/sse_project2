@@ -68,7 +68,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
-        dockerfile: api/forum_api/Dockerfile
+        file: api/forum_api/Dockerfile
         push: true
         tags: ghcr.io/brian-mak/fitness-planner-forum:latest
         build-args: |
@@ -111,7 +111,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
-        dockerfile: api/Dockerfile
+        file: api/Dockerfile
         push: true
         tags: ghcr.io/brian-mak/workout-buddy-main:latest
         build-args: |
