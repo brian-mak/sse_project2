@@ -55,7 +55,7 @@ jobs:
       uses: docker/setup-buildx-action@v1
 
     - name: Build Docker image
-      working-directory: api/forum_api
+      working-directory: ./api/forum_api
       run: docker build -t fitness-planner-forum .
       
     - name: Run PyTest
