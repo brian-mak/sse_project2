@@ -2,3 +2,4 @@ flask
 pyodbc
 python-dotenv
 retry
+pytest
