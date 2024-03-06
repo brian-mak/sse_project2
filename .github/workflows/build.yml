@@ -82,19 +82,7 @@ jobs:
         file: api/Dockerfile
         push: true
         tags: ghcr.io/brian-mak/workout_buddy_main:latest
-        build-args: |
-          AZURE_SQL_CONNECTIONSTRING=${{ secrets.AZURE_SQL_CONNECTIONSTRING }}  
-          AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}
-          AUTH0_CLIENT_SECRET=${{ AUTH0_CLIENT_SECRET }}
-          AUTH0_DOMAIN=${{ AUTH0_DOMAIN }}
-          APP_SECRET_KEY=${{ APP_SECRET_KEY }}
-          FORUM_API=${{ FORUM_API }}
-          RAPID_API_KEY=${{ RAPID_API_KEY }}
-          YOUTUBE_API_KEY=${{ YOUTUBE_API_KEY }}
-          OPENAI_KEY=${{ OPENAI_KEY }}
-          EDAMAM_API_ID=${{ EDAMAM_API_ID }}
-          EDAMAM_API_KEY=${{ EDAMAM_API_KEY }}
-      
+        build-args: [AZURE_SQL_CONNECTIONSTRING=${{ secrets.AZURE_SQL_CONNECTIONSTRING }}, AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}, AUTH0_CLIENT_SECRET=${{ AUTH0_CLIENT_SECRET }}, AUTH0_DOMAIN=${{ AUTH0_DOMAIN }}, APP_SECRET_KEY=${{ APP_SECRET_KEY }}, FORUM_API=${{ FORUM_API }}, RAPID_API_KEY=${{ RAPID_API_KEY }}, YOUTUBE_API_KEY=${{ YOUTUBE_API_KEY }}, OPENAI_KEY=${{ OPENAI_KEY }}, EDAMAM_API_ID=${{ EDAMAM_API_ID }}, EDAMAM_API_KEY=${{ EDAMAM_API_KEY }}]
     # - name: Azure login
     #   uses: azure/login@v1
     #   with:
