@@ -18,6 +18,7 @@ connection_string = env.get("AZURE_SQL_CONNECTIONSTRING")
 
 @retry(Exception, tries=3, delay=1, backoff=2)
 def get_conn():
+    print (connection_string)
     conn = pyodbc.connect(connection_string)
     return conn
 

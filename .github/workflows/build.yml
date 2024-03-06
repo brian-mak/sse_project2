@@ -82,7 +82,7 @@ jobs:
         file: api/forum_api/Dockerfile
         push: true
         tags: ghcr.io/brian-mak/fitness-planner-forum:latest
-        build-args: AZURE_CONNECTION_STRING=${{ secrets.AZURE_CONNECTION_STRING }}  
+        build-args: AZURE_SQL_CONNECTIONSTRING=${{ secrets.AZURE_SQL_CONNECTIONSTRING }}  
       
     # - name: Azure login
     #   uses: azure/login@v1
