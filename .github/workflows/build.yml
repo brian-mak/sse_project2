@@ -4,6 +4,8 @@ on: [push]
 jobs:
   forum-api-test:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest
     env:
       AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
       AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
