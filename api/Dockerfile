@@ -5,7 +5,7 @@ FROM python:3.9-slim
 WORKDIR /usr/src/app
 
 # Copy the current directory contents into the container at /usr/src/app
-COPY . /usr/src/app
+COPY ./api /usr/src/app
 
 # Install odbc packages and the .deb file using dpkg
 RUN apt-get update && apt-get install -y unixodbc && apt-get install -y odbcinst
