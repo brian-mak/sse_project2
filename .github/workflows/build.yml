@@ -44,7 +44,7 @@ jobs:
     
     name: Build Docker image of forum API, run PyTest and deploy 
     runs-on: ubuntu-latest
-    needs: forum-api-test
+    # needs: forum-api-test
     # env:
     #   AZURE_WEBAPP_NAME: <your-app-name>
     #   GHCR_USERNAME: ${{ github.actor }}
