@@ -16,6 +16,82 @@
             height: 100vh; /* Ensure content is centered vertically */
         }
 
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        nav {
+            background-color: #f8f9fa; /* Light gray background */
+            padding: 10px 0;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 10px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333; /* Dark gray text color */
+            font-size: 1.2em;
+        }
+
+        nav ul li a:hover {
+            color: #007bff; /* Blue text color on hover */
+        }
+
+        section {
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px; /* Limit section width */
+            margin-top: 20px;
+        }
+
+        section p {
+            text-align: left; /* Centered text */
+            margin-bottom: 10px;
+        }
+
+        section input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: vertical; /* Allow resizing vertically */
+        }
+
+        section button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #007bff; /* Blue button background */
+            color: #fff; /* White button text color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        section button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        footer {
+            display: none; /* Hide the footer */
+        }
+
         #video-background {
             position: fixed;
             top: 0;
@@ -25,23 +101,6 @@
             z-index: -1;
             opacity: 0.5;
         }
-
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        section {
-            text-align: center;
-            margin-bottom: 20px;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-        }
-
-        footer {
-            display: none; /* Hide the footer */
-        }
     </style>
 </head>
 <body>
@@ -49,16 +108,32 @@
         <h1>Nutrition Analysis</h1>
     </header>
 
+    <!-- Navigation Menu -->
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="health_buddy.html">Health Buddy</a></li>
+            <li><a href="/search_exercises">Search For Exercises</a></li>
+            <li><a href="/forum">Forum</a></li>
+            <li><a href="/saved_lists">Saved Exercises</a></li>
+            <li><a href="#account">Account</a></li>
+            <li><a href="#more">More</a></li>
+        </ul>
+    </nav>
+
     <section id="about">
         <h2>About</h2>
-        <p>Good nutrition is essential for a healthy lifestyle. Understanding the nutritional content of the food you consume is the first step towards making informed dietary choices. Our nutrition calculator simplifies this process, providing you with easy access to the nutritional information of various ingredients. By analyzing the components of your meals, you can better manage your dietary intake and achieve your health goals.</p>
+        <p>At Nutrition Analysis, we believe that understanding the nutritional content of the food you consume is essential for a healthy lifestyle. Our mission is to empower individuals to make informed dietary choices by providing easy access to the nutritional information of their favorite meals. We are committed to helping you achieve your health goals and live your best life.</p>
     </section>
 
     <section id="analysis">
         <h2>Nutrition Analysis</h2>
+        <p>Please enter a food item or a list of food items that you enjoy eating with a quantity prior to find out its nutritional facts!</p>
+        <p>Example: "30g chicken, 1 cup of rice"</p>
         <form action="/nutrition" method="POST">
             <label for="query">Enter an ingredient:</label>
-            <input type="text" id="query" name="query" required>
+            <input type="text" id="query" name="query" required maxlength="100">
             <button type="submit">Analyze</button>
         </form>
         <!-- Results will be displayed here -->
@@ -82,4 +157,3 @@
     </video>
 </body>
 </html>
-
