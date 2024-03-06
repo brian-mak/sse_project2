@@ -3,41 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Planner</title>
-    <style>
-        /* Add your CSS styles here */
-    </style>
+    <title>Nutrition Analysis</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Recipe Planner</h1>
-        <div class="preferences">
-            <h2>Choose Your Preferences</h2>
-            <div class="preference-options">
-                <!-- Add your preference options here -->
-                <label><input type="checkbox" name="preference" value="vegetarian"> Vegetarian</label>
-                <label><input type="checkbox" name="preference" value="vegan"> Vegan</label>
-                <label><input type="checkbox" name="preference" value="gluten-free"> Gluten-Free</label>
-                <!-- Add more options as needed -->
-            </div>
-        </div>
-        <div class="ingredients">
-            <h2>Enter Ingredients</h2>
-            <textarea name="ingredients" id="ingredients" rows="4" placeholder="Enter ingredients separated by commas"></textarea>
-        </div>
-        <div class="submit-button">
-            <button id="find-recipes">Find Recipes</button>
-        </div>
-        <div class="recipe-results">
-            <h2>Recipe Results</h2>
-            <ul id="recipe-list">
-                <!-- Results will be displayed here -->
-            </ul>
-        </div>
-    </div>
-
-    <script>
-        // Add your JavaScript code here
-    </script>
+    <h1>Nutrition Analysis</h1>
+    <form action="/nutrition" method="POST">
+        <label for="query">Enter an ingredient:</label>
+        <input type="text" id="query" name="query" required>
+        <button type="submit">Analyze</button>
+    </form>
 </body>
 </html>

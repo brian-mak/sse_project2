@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrition Results</title>
+    <style>
+        .nutrition-facts {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px;
+            max-width: 400px;
+            border-radius: 10px;
+        }
+        .nutrition-facts h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nutrition-label {
+            margin-bottom: 10px;
+        }
+        .nutrition-label p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="nutrition-facts">
+        <h2>Nutritional Facts</h2>
+        <div class="nutrition-label">
+            <p>Ingredient: {{ query }}</p>
+            <p>Calories: {{ calories }}</p>
+            <p>Protein: {{ protein }} g</p>
+            <p>Fat: {{ fat }} g</p>
+            <p>Carbohydrates: {{ carbs }} g</p>
+            <p>Saturated Fat: {{ nutrients['Saturated Fat'] }} g</p>
+            <p>Trans Fat: {{ nutrients['Trans Fat'] }} g</p>
+            <p>Cholesterol: {{ nutrients['Cholesterol'] }} mg</p>
+            <p>Sodium: {{ nutrients['Sodium'] }} mg</p>
+            <p>Dietary Fiber: {{ nutrients['Dietary Fiber'] }} g</p>
+            <p>Total Sugars: {{ nutrients['Total Sugars'] }} g</p>
+            <p>Vitamin D: {{ nutrients['Vitamin D'] }} IU</p>
+            <p>Calcium: {{ nutrients['Calcium'] }} mg</p>
+            <p>Iron: {{ nutrients['Iron'] }} mg</p>
+            <p>Potassium: {{ nutrients['Potassium'] }} mg</p>
+        </div>
+    </div>
+</body>
+</html>
