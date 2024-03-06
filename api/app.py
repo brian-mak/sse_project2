@@ -10,6 +10,7 @@ from googleapiclient.discovery import build
 import forum
 import authentication
 from database import db_bp
+from nutrition import nutrition_bp
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
@@ -19,6 +20,7 @@ app = Flask(__name__)
 app.secret_key = env.get("APP_SECRET_KEY")
 
 app.register_blueprint(db_bp, url_prefix='/db')
+app.register_blueprint(nutrition_bp, url_prefix='/nutrition')
 
 def get_rapid_api_key():
     return os.environ.get('RAPID_API_KEY')
