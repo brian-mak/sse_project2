@@ -72,7 +72,7 @@ jobs:
     #   run: docker run fitness-planner-forum pytest app_test.py
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v5
       with:
         context: .
         file: api/forum_api/Dockerfile
