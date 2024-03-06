@@ -49,6 +49,9 @@ jobs:
     #   AZURE_WEBAPP_NAME: <your-app-name>
     #   GHCR_USERNAME: ${{ github.actor }}
     #   GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+    permissions:
+      contents: read
+      packages: write
     steps:
 
     - name: Checkout
