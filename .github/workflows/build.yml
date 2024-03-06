@@ -82,8 +82,7 @@ jobs:
         file: api/forum_api/Dockerfile
         push: true
         tags: ghcr.io/brian-mak/fitness-planner-forum:latest
-        build-args: |
-          AZURE_CONNECTION_STRING=${{ secrets.AZURE_CONNECTION_STRING }}  
+        build-args: AZURE_CONNECTION_STRING=${{ secrets.AZURE_CONNECTION_STRING }}  
       
     # - name: Azure login
     #   uses: azure/login@v1
@@ -95,7 +94,7 @@ jobs:
     #     az container restart --name $AZURE_WEBAPP_NAME --resource-group <your-resource-group-name>
   
   build-and-deploy-main-app:
-    
+  
     name: Build Docker image of main app and deploy 
     runs-on: ubuntu-latest
     # needs: forum-api-test
@@ -136,8 +135,7 @@ jobs:
         file: api/Dockerfile
         push: true
         tags: ghcr.io/brian-mak/workout_buddy_main:latest
-        build-args: |
-          AZURE_SQL_CONNECTIONSTRING=${{ secrets.AZURE_SQL_CONNECTIONSTRING }}  
+        build-args: AZURE_SQL_CONNECTIONSTRING=${{ secrets.AZURE_SQL_CONNECTIONSTRING }}  
       
     # - name: Azure login
     #   uses: azure/login@v1
