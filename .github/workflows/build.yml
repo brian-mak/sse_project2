@@ -28,7 +28,12 @@ jobs:
       
       - name: Install all
         run: pip install -r api/forum_api/requirements.txt
-      
+
+      - name: Install ODBC driver
+        run: |
+        sudo apt-get update
+        sudo apt-get install -y unixodbc-dev
+
       - name: Run unit tests
         run: pytest api/forum_api/app_test.py
   
