@@ -35,7 +35,7 @@ jobs:
         run: pip install -r api/forum_api/requirements.txt
 
       - name: Install dependencies
-        run: sudo apt-get update | sudo apt-get install -y openssl unixodbc odbcinst
+        run: apt-get update | apt-get install -y openssl unixodbc odbcinst
 
       - name: Install ODBC driver
         run: apt-get update && apt-get install -y unixodbc && apt-get install -y odbcinst | DEBIAN_FRONTEND=noninteractive ACCEPT_EULA=Y dpkg -i msodbcsql18_18.3.2.1-1_amd64.deb
