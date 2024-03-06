@@ -25,7 +25,7 @@ ARG AZURE_CONNECTION_STRING
 ENV AZURE_CONNECTION_STRING=$AZURE_CONNECTION_STRING
 
 # Connect to Repo
-LABEL org.opencontainers.image.source=https://github.com/lem123ic/sse_project2 
+LABEL org.opencontainers.image.source https://github.com/lem123ic/sse_project2 
 
 # Run app.py when the container launches
 CMD ["flask", "run"]
