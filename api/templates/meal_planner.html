@@ -64,7 +64,8 @@
             margin-bottom: 10px;
         }
 
-        section input[type="text"] {
+        section input[type="text"],
+        section textarea {
             width: 80%;
             padding: 10px;
             margin-top: 10px;
@@ -72,20 +73,24 @@
             border-radius: 5px;
             border: 1px solid #ccc;
             resize: vertical; /* Allow resizing vertically */
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            margin-bottom: 20px;
         }
 
         section button {
             padding: 10px 20px;
             font-size: 1em;
-            background-color: #007bff; /* Blue button background */
-            color: #fff; /* White button text color */
-            border: none;
+            background-color: #f8f9fa; /* Light grey button background */
+            color: #333; /* Dark gray button text color */
+            border: 1px solid #333; /* Dark gray button border */
             border-radius: 5px;
             cursor: pointer;
         }
 
         section button:hover {
-            background-color: #0056b3; /* Darker blue on hover */
+            background-color: #e9ecef; /* Lighter grey on hover */
         }
 
         footer {
@@ -132,7 +137,8 @@
         <p>Example: "30g chicken, 1 cup of rice"</p>
         <form action="/nutrition" method="POST">
             <label for="query">Enter an ingredient:</label>
-            <input type="text" id="query" name="query" required maxlength="100">
+            <textarea id="query" name="query" required maxlength="300" rows="3"></textarea>
+            <br>
             <button type="submit">Analyze</button>
         </form>
         <!-- Results will be displayed here -->
