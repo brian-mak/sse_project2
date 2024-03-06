@@ -27,7 +27,7 @@ jobs:
           python-version: 3.9
       
       - name: Install all
-        run: pip install -r api/requirements.txt
+        run: pip install -r api/forum_api/requirements.txt
       
       - name: Run unit tests
         run: pytest api/forum_api/app_test.py
