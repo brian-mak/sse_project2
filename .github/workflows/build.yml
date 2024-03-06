@@ -108,15 +108,14 @@ jobs:
     #   run: docker run fitness-planner-forum pytest app_test.py
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v5
       with:
         context: .
         file: api/Dockerfile
         push: true
-        tags: ghcr.io/brian-mak/workout-buddy-main:latest
+        tags: brian-mak/workout-buddy-main:latest
         build-args: |
           AZURE_SQL_CONNECTIONSTRING=${{ secrets.AZURE_SQL_CONNECTIONSTRING }}  
-        github-token: ${{ secrets.TOKEN }}
       
     # - name: Azure login
     #   uses: azure/login@v1
