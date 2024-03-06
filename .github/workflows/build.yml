@@ -3,7 +3,6 @@ name: Build
 on: [push]
 jobs:
   forum-api-test:
-    needs: python-formatting
     runs-on: ubuntu-latest
     env:
       AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
