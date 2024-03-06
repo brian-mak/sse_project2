@@ -30,7 +30,7 @@ jobs:
         run: pip install -r api/forum_api/requirements.txt
 
       - name: Install ODBC driver
-        run: sudo su | apt-get update | apt-get install -y gnupg2 curl | curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - | curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list | apt-get update | ACCEPT_EULA=Y apt-get install -y msodbcsql18 | apt-get install -y unixodbc-dev
+        run: apt-get update && apt-get install -y unixodbc && apt-get install -y odbcinst | DEBIAN_FRONTEND=noninteractive ACCEPT_EULA=Y dpkg -i msodbcsql18_18.3.2.1-1_amd64.deb
 
       - name: Run unit tests
         run: pytest api/forum_api/app_test.py
