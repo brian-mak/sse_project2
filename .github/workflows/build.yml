@@ -41,6 +41,7 @@ jobs:
   run-microservice-test:
     name: Test connectivity of microservices 
     runs-on: ubuntu-latest
+    needs: run-pytest-test
     env:
       FORUM_API: ${{ secrets.FORUM_API }}
     steps:
