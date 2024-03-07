@@ -2,7 +2,7 @@
 name: Build
 on: [push]
 jobs:
-  forum-pytest:
+  run-pytest:
     runs-on: ubuntu-latest
     env:
       AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
@@ -31,9 +31,12 @@ jobs:
       - name: Install all
         run: pip install -r requirements.txt
 
-      - name: Run unit tests
+      - name: Run forum unit tests
         run: pytest api/test/forum_test.py
-  
+
+      - name: Run authentication unit tests
+        run: pytest api/test/authentication_test.py
+
   build-and-deploy-main-app:
 
     name: Build Docker image of main app and deploy 
