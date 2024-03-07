@@ -157,7 +157,8 @@
     <section id="analysis">
         <h2>Nutrition Analysis</h2>
         <p>Please enter a food item or a list of food items that you enjoy eating with a quantity prior to find out its nutritional facts!</p>
-        <p>Example: "30g chicken, 1 cup of rice"</p>
+        <p>Example: "30g chicken,</p>
+        <p>1 cup of rice"</p>
         <form action="/nutrition" method="POST">
             <label for="query">Enter ingredients:</label>
             <textarea id="query" name="query" required maxlength="300" rows="5" placeholder="Enter each ingredient followed by a comma"></textarea>
@@ -177,7 +178,7 @@
     </video>
     <script>
         var video = document.getElementById("video-background");
-        video.playbackRate = 5;
+        video.playbackRate = 2.5;
     </script>
 </body>
 </html>
