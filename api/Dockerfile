@@ -15,7 +15,7 @@ RUN DEBIAN_FRONTEND=noninteractive ACCEPT_EULA=Y dpkg -i msodbcsql18_18.3.2.1-1_
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Make port 5000 available to the world outside this container
-EXPOSE 5000
+EXPOSE 80 5000
 
 # Define environment variable
 ENV FLASK_APP=app.py
