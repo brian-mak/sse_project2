@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORUM_API: ${{ secrets.FORUM_API }}
-      steps:
+    steps:
       - name: Checkout
         uses: actions/checkout@v3
       
