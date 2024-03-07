@@ -49,4 +49,4 @@ ENV EDAMAM_API_KEY=$EDAMAM_API_KEY
 LABEL org.opencontainers.image.source https://github.com/brian-mak/sse_project2 
 
 # Run app.py when the container launches
-CMD ["flask", "run"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=80"]
