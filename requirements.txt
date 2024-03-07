@@ -6,3 +6,4 @@ authlib
 retry
 google-api-python-client
 openai==0.28
+pytest
