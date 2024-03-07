@@ -46,7 +46,7 @@
         #navigation {
             background-color: black;
             color: white;
-            width: 100%;
+            /* width: 100%; */
             position: fixed; /* Change this from absolute to fixed */
             top: 0;
             left: 50%;
@@ -251,12 +251,13 @@
 
     </style>
 </head>
+<body>
 
 <div id="navigation">
     <center><img src="{{ url_for('static', filename='Logo.png')
     }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
     <a href="/">Home</a>
-    <a href="#about">About</a>
+    <!-- <a href="#about">About</a> -->
     <a href="/meal_planner">Nutrition</a>
     <a href="/search_exercises">Search For Exercises</a>
     <a href="/forum">Forum</a>
@@ -271,7 +272,7 @@
 <!-- Header -->
 <div id="header">
     <center><h2>Workouts</h2></center>
-<body>
+
     {% for exercise in exercises %}
     <div class="exercise">
         <h3>{{ exercise.name | title }}</h3>

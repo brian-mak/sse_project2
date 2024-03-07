@@ -1,0 +1,27 @@
+from bs4 import BeautifulSoup
+import requests
+
+url = "http://workout-buddy.dkbgdbcpdshbe7bu.uksouth.azurecontainer.io/"
+reqs = requests.get(url)
+soup = BeautifulSoup(reqs.text, "html.parser")
+
+# Function to perform basic HTML checks using Beautiful Soup
+def test_index_page():
+    
+    # Verify navigation links count
+    navigation_links = soup.select("#navigation a")
+    assert len(navigation_links) == 5  # Assuming there are 5 navigation links
+    
+    # Verify presence of login/logout button
+    login_button = soup.find("a", {"id": "login-button"})
+    logout_button = soup.find("a", {"id": "logout-button"})
+    assert login_button or logout_button  # Either login or logout button should be present
+    
+    # Verify presence of video background
+    video_tag = soup.find("video", {"id": "video-background"})
+    assert video_tag
+    
+    # Add more checks as needed
+
+# Run the test
+test_index_page()

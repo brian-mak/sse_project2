@@ -9,8 +9,10 @@
 <body>
 
     <div id="navigation">
+        <center><img src="{{ url_for('static', filename='Logo.png')
+        }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
         <a href="/">Home</a>
-        <a href="#about">About</a>
+        <!-- <a href="#about">About</a> -->
         <a href="/meal_planner">Nutrition</a>
         <a href="/search_exercises">Search For Exercises</a>
         <a href="/forum">Forum</a>
@@ -23,7 +25,7 @@
         <a id="login-button" href="/login">Log in</a>
     {% endif %}
     
-    <br><br><br><br><br>
+    <br><br><br><br><br><br><br><br>
     <h1>Forum</h1>
     
     <div class="tab">
@@ -45,7 +47,7 @@
         <span class="close" onclick="closePopup()">&times;</span>
         <h2 id="postTitle"></h2>
         <p id="postContent" class="replyMessage"></p>
-        <p id="postAuthor" class="replyUser">By: </p>
+        <p id="postAuthor" class="replyUser"></p>
         <ul id="repliesList"></ul>
         <form action="/reply" method="POST" class="replyBox">
             <input type="hidden" id="postId" name="postId">
@@ -159,7 +161,8 @@
             // Assuming 'message' contains the details of the post
             postContent.textContent = post.message; 
             postTitle.textContent = post.title; 
-            postAuthor.textContent = postAuthor.textContent.concat(post.Name);
+            const by = "By: "
+            postAuthor.textContent = by.concat(post.NickName);
             postid.value = postId; 
             
             postDetails.style.display = 'block';
@@ -174,6 +177,11 @@
             .then(response => response.json())
             .then(data => {
                 // Update the page with the replies data
+                if (data.message) {
+                    const pMessage = document.createElement('p');
+                    pMessage.textContent = data.message;
+                    repliesList.appendChild(pMessage);
+                } else {
                 data.replies.forEach(reply => {
                     const re = document.createElement('div');
                     const pUser = document.createElement('p');
@@ -181,12 +189,12 @@
                     pUser.setAttribute('class', 'replyUser');
                     pMessage.setAttribute('class', 'replyMessage')
                     const by = "By: "
-                    pUser.textContent = by.concat(reply.Name);
+                    pUser.textContent = by.concat(reply.NickName);
                     pMessage.textContent = reply.message;
                     re.appendChild(pMessage);
                     re.appendChild(pUser);
                     repliesList.appendChild(re);
-                });
+                })};
             })
             .catch(error => {
                 console.error('Error:', error);
