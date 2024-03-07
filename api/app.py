@@ -9,6 +9,7 @@ from googleapiclient.discovery import build
 
 import forum
 import authentication
+import nutrition
 from database import db_bp
 
 
@@ -191,6 +192,8 @@ app.add_url_rule('/update_posts', 'update_posts', forum.update_posts, methods=['
 app.add_url_rule('/reply', 'reply', forum.reply, methods=['POST'])
 app.add_url_rule('/get_replies', 'get_replies', forum.get_replies)
 app.add_url_rule('/delete_post', 'delete_post', forum.delete_post, methods=['POST'])
+app.add_url_rule('/meal_planner', 'meal_planner', nutrition.index)
+app.add_url_rule('/nutrtion', 'nutrtion', nutrition.get_nutrition, methods=['POST'])
 
 if __name__ == "__main__":
     app.run(debug=True)
