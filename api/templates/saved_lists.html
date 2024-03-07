@@ -349,11 +349,13 @@
         function createSavedList() {
             const listName = document.getElementById('newListName').value;
             const userId = '{{ user_id }}';
-            if (listName && userId) { // Ensure both listName and userId are provided
-                fetch('/db/saved_lists/create', {
+            const url = `http://workout-management-microservice-dns.dpf4a3ayemg0b0fu.uksouth.azurecontainer.io:5000/api/users/${userId}/saved_lists`;
+            console.log(UserId)
+            if (listName && userId) {
+                fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ list_name: listName, user_id: userId }) // Adjusted to match expected keys
+                    body: JSON.stringify({ list_name: listName }) // No need to send user_id in the body, as it's part of the URL
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -375,29 +377,20 @@
         }
     
         function fetchExercisesForList(listId) {
-            fetch(`/db/api/saved_lists/${listId}/exercises`)
+            const url = `http://workout-management-microservice-dns.dpf4a3ayemg0b0fu.uksouth.azurecontainer.io:5000/api/saved_lists/${listId}/workouts`;
+
+            fetch(url)
             .then(response => response.json())
             .then(data => {
-                const exercises = data.flat(); // Flatten the nested array structure
+                const exercises = data; // Assuming data is already in the correct format
                 const container = document.getElementById('exercisesContainer');
-                container.innerHTML = ''; // Clear the container for exercises
-                console.log(exercises); // Debugging to view the structure
+                container.innerHTML = '';
+                console.log(exercises);
                 exercises.forEach(exercise => {
+                    // Assuming the structure matches what your service returns
                     const exerciseDiv = document.createElement('div');
                     exerciseDiv.className = 'exercise';
-                    exerciseDiv.innerHTML = `
-                        <h3>${capitalizeWords(exercise.name)}</h3>
-                        <p><strong>Equipment Required:</strong> ${capitalizeWords(exercise.equipment)}</p>
-                        <p><strong>Target Muscle Group:</strong> ${capitalizeWords(exercise.target)}</p>
-                        <p><strong>Secondary Muscles:</strong> ${exercise.secondaryMuscles.map(muscle => capitalizeWords(muscle)).join(', ')}</p>
-                        <p><strong>Instructions:</strong></p>
-                        <ol class="instructions">
-                            ${exercise.instructions.map(instruction => `<li>${instruction}</li>`).join('')}
-                        </ol><br>
-                        ${exercise.gifUrl ? `<img src="${exercise.gifUrl}" alt="${capitalizeWords(exercise.name)} GIF" style="max-width: 100%; height: auto;">` : ''}
-                        <br><br><button onclick="removeExerciseFromSavedList('${listId}', '${exercise.id}')">Remove from Saved List</button>
-                        <button onclick="searchYouTube('${exercise.name}')">Search on YouTube</button><br><br><br>
-                    `;
+                    exerciseDiv.innerHTML = generateExerciseHtml(exercise); // Assuming this function exists to generate HTML
                     container.appendChild(exerciseDiv);
                 });
             })
@@ -405,10 +398,11 @@
         }
     
         function removeExerciseFromSavedList(listId, workoutID) {
-            fetch('/db/saved_lists/remove_workout', {
-                method: 'POST',
+            const url = `http://workout-management-microservice-dns.dpf4a3ayemg0b0fu.uksouth.azurecontainer.io:5000/api/saved_lists/${listId}/workouts/${workoutID}`;
+
+            fetch(url, {
+                method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ list_id: listId, workout_id: workoutID })
             })
             .then(response => response.json())
             .then(data => {
@@ -420,7 +414,7 @@
                 }
             })
             .catch(error => console.error('Error:', error));
-        }
+            }
     
         function makeListClickable() {
             const lists = document.querySelectorAll('.list');
@@ -442,23 +436,23 @@
     
         function fetchSavedLists() {
             const userId = '{{ user_id }}';
-            // Update the fetch URL to include the user_id as a query parameter
-            fetch(`/db/api/user/saved_lists?user_id=${userId}`)
-                .then(response => response.json())
-                .then(lists => {
-                    const container = document.getElementById('savedListsContainer');
-                    container.innerHTML = ''; // Clear existing lists
-                    lists.forEach(list => {
-                        const div = document.createElement('div');
-                        div.className = 'list';
-                        div.setAttribute('data-list-id', list.list_id); // Make sure to set this attribute for clicking to work
-                        div.textContent = list.name; // Assuming each list has a 'name' property
-                        container.appendChild(div);
-                    });
-                    makeListClickable(); // Call makeListClickable here, after the lists have been added
-                })
-                .catch(error => console.error('Error fetching saved lists:', error));
-        }
+            const url = `http://workout-management-microservice-dns.dpf4a3ayemg0b0fu.uksouth.azurecontainer.io:5000/api/users/${userId}/saved_lists`;
+            fetch(url)
+            .then(response => response.json())
+            .then(lists => {
+                const container = document.getElementById('savedListsContainer');
+                container.innerHTML = ''; // Clear existing lists
+                lists.forEach(list => {
+                    const div = document.createElement('div');
+                    div.className = 'list';
+                    div.setAttribute('data-list-id', list.list_id); // Ensure this attribute matches your data structure
+                    div.textContent = list.name;
+                    container.appendChild(div);
+                });
+                makeListClickable(); // Re-initialize click events
+            })
+            .catch(error => console.error('Error fetching saved lists:', error));
+            }
     
         // Load saved lists when the page loads
         window.onload = function() {
@@ -484,9 +478,6 @@
                         item.onclick = () => window.open(`https://www.youtube.com/watch?v=${video.videoId}`, '_blank');
                         videoListContainer.appendChild(item);
                     });
-    
-                    // Initialize or update carousel here if needed
-                    // initializeCarousel(); // This function would handle carousel navigation
     
                     // Display the modal
                     const youtubeModal = document.getElementById('youtubeModal');
