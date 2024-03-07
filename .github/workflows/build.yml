@@ -30,7 +30,7 @@ jobs:
       
       - name: Install all
         run: pip install -r requirements.txt
-
+# add this below
       - name: Run forum unit tests
         run: pytest api/test/forum_test.py
 

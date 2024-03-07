@@ -311,10 +311,10 @@
     </div>
 </body>
 <script>
-    const url = `http://workout-management-microservice-dns.dpf4a3ayemg0b0fu.uksouth.azurecontainer.io:5000/api/users/${userId}/saved_lists`;
 
     function showSavedListsDropdown(workoutID, workoutName, equipment, targetMuscleGroup, secondaryMuscles, buttonElement) {
         const userId = '{{ user_id }}';  // Replace with logic to get current user's ID
+        const url = `http://workout-management-microservice-dns.dpf4a3ayemg0b0fu.uksouth.azurecontainer.io:5000/api/users/${userId}/saved_lists`;
         fetch(url)
             .then(response => response.json())
             .then(data => {
@@ -342,6 +342,7 @@
     }
     
     function addWorkoutToSavedList(workoutID, workoutName, equipment, targetMuscleGroup, secondaryMuscles, listId) {
+        const url = `http://workout-management-microservice-dns.dpf4a3ayemg0b0fu.uksouth.azurecontainer.io:5000/api/saved_lists/${listId}/workouts`;
         fetch(url, {
             method: 'POST',
             headers: {
