@@ -1,0 +1,16 @@
+import os
+from os import environ as env
+from flask import Flask
+import requests
+
+forum_api_url = os.getenv('FORUM_API')
+workout_api_url = os.getenv('WORKOUT')
+
+
+app = Flask(__name__)
+app.secret_key = env.get("APP_SECRET_KEY")
+
+
+def test_forum_api():
+    response = requests.get(api_url)
+    assert response.status_code == 200
