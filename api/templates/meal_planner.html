@@ -123,41 +123,6 @@
             max-width: 100%;
             height: auto;
         }
-        #navigation {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem; /* Adjusted font size for small navigation links */
-            font-weight: normal;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.3rem;
-            white-space: nowrap;
-        }
-
-        #navigation a {
-            color: white;
-            text-decoration: none;
-            margin: 0 20px;
-            cursor: pointer;
-        }
-
-        #login-button, #logout-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 0.8rem;
-            font-weight: normal;
-            text-transform: uppercase;
-            letter-spacing: 0.3rem;
-            white-space: nowrap;
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-            text-align: right;
-        }
-
     </style>
 </head>
 <body>
@@ -192,7 +157,8 @@
     <section id="analysis">
         <h2>Nutrition Analysis</h2>
         <p>Please enter a food item or a list of food items that you enjoy eating with a quantity prior to find out its nutritional facts!</p>
-        <p>Example: "30g chicken, 1 cup of rice"</p>
+        <p>Example: "30g chicken,</p>
+        <p>1 cup of rice"</p>
         <form action="/nutrition" method="POST">
             <label for="query">Enter ingredients:</label>
             <textarea id="query" name="query" required maxlength="300" rows="5" placeholder="Enter each ingredient followed by a comma"></textarea>
@@ -206,21 +172,13 @@
         <!-- This section creates a gap -->
     </section>
 
-    <section id="healthy-nutrition">
-        <h2>Healthy Nutrition</h2>
-        <div class="nutrition-info">
-            <img src="image1.jpg" alt="Image 1">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
-        </div>
-        <div class="nutrition-info">
-            <img src="image2.jpg" alt="Image 2">
-            <p>Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris.</p>
-        </div>
-    </section>
-
     <video id="video-background" autoplay loop muted>
         <source src="/static/nutrition.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
+    <script>
+        var video = document.getElementById("video-background");
+        video.playbackRate = 2.5;
+    </script>
 </body>
 </html>
