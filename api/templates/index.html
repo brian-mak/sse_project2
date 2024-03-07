@@ -10,21 +10,22 @@
     <div id="title">Start your personalized fitness journey</div>
 
     <div id="navigation">
-      <center><img src="{{ url_for('static', filename='Logo.png')
-      }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
-      <a href="/">Home</a>
-      <!-- <a href="#about">About</a> -->
-      <a href="/meal_planner">Nutrition</a>
-      <a href="/search_exercises">Search For Exercises</a>
-      <a href="/forum">Forum</a>
-      <a href="/saved_lists">Saved Exercises</a>
+        <center><img src="{{ url_for('static', filename='Logo.png')
+        }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
+        <a href="/">Home</a>
+        <!-- <a href="#about">About</a> -->
+        <a href="/meal_planner">Nutrition</a>
+        <a href="/search_exercises">Search For Workouts</a>
+        <a href="/db/workout_plan">Generate Workout Plan</a>    
+        <a href="/forum">Forum</a>
+        <a href="/saved_lists">My Workout Lists</a>
+        {% if session %}
+        <a href="/logout">Logout</a>
+        <br><br>Welcome {{ session.user.userinfo.nickname }}
+        {% else %}
+        <a id href="/login">Login</a>
+        {% endif %}
     </div>
-  
-    {% if session %}
-        <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
-    {% else %}
-        <a id="login-button" href="/login">Log in</a>
-    {% endif %}
 
     <video id="video-background" autoplay muted loop>
         <source src="./static/indexvideo.mp4" type="video/mp4">

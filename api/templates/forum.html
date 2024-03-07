@@ -14,16 +14,17 @@
         <a href="/">Home</a>
         <!-- <a href="#about">About</a> -->
         <a href="/meal_planner">Nutrition</a>
-        <a href="/search_exercises">Search For Exercises</a>
+        <a href="/search_exercises">Search For Workouts</a>
+        <a href="/db/workout_plan">Generate Workout Plan</a>    
         <a href="/forum">Forum</a>
-        <a href="/saved_lists">Saved Exercises</a>
-      </div>
-    
-    {% if session %}
-        <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
-    {% else %}
-        <a id="login-button" href="/login">Log in</a>
-    {% endif %}
+        <a href="/saved_lists">My Workout Lists</a>
+        {% if session %}
+        <a href="/logout">Logout</a>
+        <br><br>Welcome {{ session.user.userinfo.nickname }}
+        {% else %}
+        <a id href="/login">Login</a>
+        {% endif %}
+    </div>
     
     <br><br><br><br><br><br><br><br>
     <h1>Forum</h1>

@@ -44,7 +44,7 @@
         #navigation {
             background-color: black;
             color: white;
-            /* width: 100%; */
+            width: 100%;
             position: fixed; /* Change this from absolute to fixed */
             top: 0;
             left: 50%;
@@ -282,7 +282,6 @@
         }
     </style>
 </head>
-<body>
 
 <div id="navigation">
     <center><img src="{{ url_for('static', filename='Logo.png')
@@ -290,24 +289,25 @@
     <a href="/">Home</a>
     <!-- <a href="#about">About</a> -->
     <a href="/meal_planner">Nutrition</a>
-    <a href="/search_exercises">Search For Exercises</a>
+    <a href="/search_exercises">Search For Workouts</a>
+    <a href="/db/workout_plan">Generate Workout Plan</a>    
     <a href="/forum">Forum</a>
-    <a href="/saved_lists">Saved Exercises</a>
-  </div>
+    <a href="/saved_lists">My Workout Lists</a>
+    {% if session %}
+    <a href="/logout">Logout</a>
+    <br><br>Welcome {{ session.user.userinfo.nickname }}
+    {% else %}
+    <a id href="/login">Login</a>
+    {% endif %}
+</div>
 
-  {% if session %}
-      <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
-  {% else %}
-      <a id="login-button" href="/login">Log in</a>
-  {% endif %}
-
-    <h2>Create New Saved List</h2>
+    <h2>Create New Workout List</h2>
     <div class="list-form">
         <input type="text" id="newListName" placeholder="Enter list name">
         <button onclick="createSavedList()">Create List</button>
     </div>
 
-    <h2>Your Saved Lists</h2>
+    <h2>Your Workout Lists</h2>
     <div id="savedListsContainer" class="list-container">
         <!-- Saved lists will be displayed here -->
     </div>

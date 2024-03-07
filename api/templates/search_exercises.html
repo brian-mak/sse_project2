@@ -38,10 +38,10 @@
             padding: 8em 500px;
             font-size: 150%
         }
-        #navigation {
+        #navigation, #username {
             background-color: black;
             color: white;
-            /* width: 100%; */
+            width: 100%;
             position: fixed; /* Change this from absolute to fixed */
             top: 0;
             left: 50%;
@@ -89,7 +89,7 @@
         label {
             vertical-align: middle; /* Align the labels vertically with the checkboxes */
         }
-        #login-button, #logout-button {
+        /* #username {
             position: absolute;
             top: 20px;
             right: 20px;
@@ -102,7 +102,7 @@
             text-decoration: none;
             cursor: pointer;
             text-align: right;
-        }
+        } */
 
     </style>
 </head>
@@ -113,16 +113,17 @@
     <a href="/">Home</a>
     <!-- <a href="#about">About</a> -->
     <a href="/meal_planner">Nutrition</a>
-    <a href="/search_exercises">Search For Exercises</a>
+    <a href="/search_exercises">Search For Workouts</a>
+    <a href="/db/workout_plan">Generate Workout Plan</a>    
     <a href="/forum">Forum</a>
-    <a href="/saved_lists">Saved Exercises</a>
+    <a href="/saved_lists">My Workout Lists</a>
+    {% if session %}
+    <a href="/logout">Logout</a>
+    <br><br>Welcome {{ session.user.userinfo.nickname }}
+    {% else %}
+    <a id href="/login">Login</a>
+    {% endif %}
 </div>
-
-  {% if session %}
-      <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
-  {% else %}
-      <a id="login-button" href="/login">Log in</a>
-  {% endif %}
 
 <!-- Header -->
 <div id="header">
