@@ -44,7 +44,7 @@
         #navigation {
             background-color: black;
             color: white;
-            width: 100%;
+            /* width: 100%; */
             position: fixed; /* Change this from absolute to fixed */
             top: 0;
             left: 50%;
@@ -282,6 +282,7 @@
         }
     </style>
 </head>
+<body>
 
 <div id="navigation">
     <center><img src="{{ url_for('static', filename='Logo.png')
@@ -299,7 +300,7 @@
   {% else %}
       <a id="login-button" href="/login">Log in</a>
   {% endif %}
-<body>
+
     <h2>Create New Saved List</h2>
     <div class="list-form">
         <input type="text" id="newListName" placeholder="Enter list name">

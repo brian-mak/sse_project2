@@ -41,7 +41,7 @@
         #navigation {
             background-color: black;
             color: white;
-            width: 100%;
+            /* width: 100%; */
             position: fixed; /* Change this from absolute to fixed */
             top: 0;
             left: 50%;
@@ -106,7 +106,7 @@
 
     </style>
 </head>
-
+<body>
 <div id="navigation">
     <center><img src="{{ url_for('static', filename='Logo.png')
     }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
@@ -116,7 +116,7 @@
     <a href="/search_exercises">Search For Exercises</a>
     <a href="/forum">Forum</a>
     <a href="/saved_lists">Saved Exercises</a>
-  </div>
+</div>
 
   {% if session %}
       <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
@@ -127,7 +127,6 @@
 <!-- Header -->
 <div id="header">
     <center><h2>Search For Workouts</h2></center>
-<body>
     <form id="preferencesForm" method="POST" action="/exercises">        
         <!-- Available Equipment (Checkboxes) -->
         <fieldset>
