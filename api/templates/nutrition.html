@@ -15,6 +15,8 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            font-family: Arial, sans-serif;
+        
         }
 
         .nutrition-facts {
@@ -52,7 +54,7 @@
         }
 
         #navigation a {
-            color: white;
+            color: black;
             text-decoration: none;
             margin: 0 20px;
             cursor: pointer;
@@ -67,7 +69,7 @@
             text-transform: uppercase;
             letter-spacing: 0.3rem;
             white-space: nowrap;
-            color: white;
+            color: black;
             text-decoration: none;
             cursor: pointer;
             text-align: right;
@@ -77,6 +79,23 @@
     </style>
 </head>
 <body>
+    <div id="navigation">
+        <center><img src="{{ url_for('static', filename='Logo.png')
+        }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
+        <a href="/">Home</a>
+        <a href="#about">About</a>
+        <a href="/meal_planner">Nutrition</a>
+        <a href="/search_exercises">Search For Exercises</a>
+        <a href="/forum">Forum</a>
+        <a href="/saved_lists">Saved Exercises</a>
+      </div>
+    
+      {% if session %}
+          <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
+      {% else %}
+          <a id="login-button" href="/login">Log in</a>
+      {% endif %}
+
     <div class="nutrition-facts">
         <h2>Nutritional Facts</h2>
         <div class="nutrition-label">
