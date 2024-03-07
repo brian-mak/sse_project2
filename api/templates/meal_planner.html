@@ -123,6 +123,41 @@
             max-width: 100%;
             height: auto;
         }
+        #navigation {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem; /* Adjusted font size for small navigation links */
+            font-weight: normal;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            white-space: nowrap;
+        }
+
+        #navigation a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            cursor: pointer;
+        }
+
+        #login-button, #logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.8rem;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            white-space: nowrap;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            text-align: right;
+        }
+
     </style>
 </head>
 <body>
@@ -131,17 +166,23 @@
     </header>
 
     <!-- Navigation Menu -->
-    <nav>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="meal_plannerhtml">Nutrition</a></li>
-            <li><a href="search_exercises.html">Search For Exercises</a></li>
-            <li><a href="forum.html">Forum</a></li>
-            <li><a href="saved_lists.html">Saved Exercises</a></li>
-            <li><a href="accountinfo.html">Account</a></li>
-        </ul>
-    </nav>
+
+    <div id="navigation">
+        <center><img src="{{ url_for('static', filename='Logo.png')
+        }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
+        <a href="/">Home</a>
+        <a href="#about">About</a>
+        <a href="/meal_planner">Nutrition</a>
+        <a href="/search_exercises">Search For Exercises</a>
+        <a href="/forum">Forum</a>
+        <a href="/saved_lists">Saved Exercises</a>
+      </div>
+    
+      {% if session %}
+          <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
+      {% else %}
+          <a id="login-button" href="/login">Log in</a>
+      {% endif %}
 
     <section id="about">
         <h2>About</h2>

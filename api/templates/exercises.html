@@ -233,20 +233,41 @@
             border: 0; /* Optional: Adds a border around the dropdown */
             cursor: pointer; /* Changes the cursor to indicate it's clickable */
         }
+
+        #login-button, #logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.8rem;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            white-space: nowrap;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            text-align: right;
+        }
+
     </style>
 </head>
+
 <div id="navigation">
     <center><img src="{{ url_for('static', filename='Logo.png')
     }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
-    <a href="#home">Home</a>
+    <a href="/">Home</a>
     <a href="#about">About</a>
-    <a href="health_buddy.html">Nutrition</a>
-    <a href="/search_exercises">Search For Workouts</a>
-    <a href="/saved_lists">Saved Workout Lists</a>
-    <a href="/find_partner">Forum</a>
-    <a href="#account">Account</a>
-    <a href="#more">More</a>
-</div>
+    <a href="/meal_planner">Nutrition</a>
+    <a href="/search_exercises">Search For Exercises</a>
+    <a href="/forum">Forum</a>
+    <a href="/saved_lists">Saved Exercises</a>
+  </div>
+
+  {% if session %}
+      <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
+  {% else %}
+      <a id="login-button" href="/login">Log in</a>
+  {% endif %}
 <!-- Header -->
 <div id="header">
     <center><h2>Workouts</h2></center>
