@@ -311,9 +311,11 @@
     </div>
 </body>
 <script>
+    const url = `http://workout-management-microservice-dns.dpf4a3ayemg0b0fu.uksouth.azurecontainer.io:5000/api/users/${userId}/saved_lists`;
+
     function showSavedListsDropdown(workoutID, workoutName, equipment, targetMuscleGroup, secondaryMuscles, buttonElement) {
         const userId = '{{ user_id }}';  // Replace with logic to get current user's ID
-        fetch(`/db/api/user/saved_lists?user_id=${userId}`)
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 // Create dropdown if it doesn't already exist
@@ -340,13 +342,12 @@
     }
     
     function addWorkoutToSavedList(workoutID, workoutName, equipment, targetMuscleGroup, secondaryMuscles, listId) {
-        fetch('/db/saved_lists/add_workout', {
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                list_id: listId,
                 workout_id: workoutID,
                 workout_name: workoutName,
                 equipment: equipment,

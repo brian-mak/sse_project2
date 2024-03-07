@@ -1,4 +1,10 @@
-Flask
-Flask-SQLAlchemy
-python-dotenv
 pyodbc
+flask
+flask_cors
+flask-SQLAlchemy
+python-dotenv
+requests
+authlib
+retry
+google-api-python-client
+openai==0.28

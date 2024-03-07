@@ -2,7 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=flask,virtualenv
 
 .env
-
+Dockerfile
 
 ### Flask ###
 instance/*

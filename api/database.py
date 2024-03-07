@@ -15,6 +15,8 @@ if ENV_FILE:
 
 connection_string = env.get("AZURE_SQL_CONNECTIONSTRING")
 
+api_url = os.getenv('WORKOUT_MANAGEMENT_API')
+
 db_bp = Blueprint('db', __name__)
 
 def get_rapid_api_key():
