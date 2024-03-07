@@ -162,7 +162,7 @@
             postContent.textContent = post.message; 
             postTitle.textContent = post.title; 
             const by = "By: "
-            postAuthor.textContent = by.concat(post.Name);
+            postAuthor.textContent = by.concat(post.NickName);
             postid.value = postId; 
             
             postDetails.style.display = 'block';
@@ -189,7 +189,7 @@
                     pUser.setAttribute('class', 'replyUser');
                     pMessage.setAttribute('class', 'replyMessage')
                     const by = "By: "
-                    pUser.textContent = by.concat(reply.Name);
+                    pUser.textContent = by.concat(reply.NickName);
                     pMessage.textContent = reply.message;
                     re.appendChild(pMessage);
                     re.appendChild(pUser);
