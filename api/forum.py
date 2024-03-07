@@ -138,15 +138,17 @@ def get_replies():
     try:
         post_id = request.args.get('postId')
         response = requests.get(api_url+'get_reply', params={'post_id': post_id})
+        print(post_id)
         if response.status_code == 200:
             response = response.json()
             have_reply = False
+            reply = None
             if response["success"] == False:
                 message = "Sorry, we have encountered an issue. Please try again later."
             elif len(response['data']) == 0:
                 message = "There is no reply now. Be the first one!"
             else:
-                message = ""
+                message = False
                 have_reply = True
                 reply = response['data']
         return jsonify({'replies': reply,
