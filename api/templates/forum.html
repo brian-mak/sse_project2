@@ -9,21 +9,19 @@
 <body>
 
     <div id="navigation">
-        <a href="/">Home</a>
-        <a href="/#about">About</a>
-        <a href="health_buddy.html">Health Buddy</a>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="/meal_planner">Nutrition</a>
         <a href="/search_exercises">Search For Exercises</a>
         <a href="/forum">Forum</a>
         <a href="/saved_lists">Saved Exercises</a>
-        <a href="#account">Account</a>
-        <a href="#more">More</a>
-    </div>
+      </div>
     
-      {% if session %}
-          <a id="logout-button" href="/logout">Logout</a>
-      {% else %}
-          <a id="login-button" href="/login">Log in</a>
-      {% endif %}
+    {% if session %}
+        <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
+    {% else %}
+        <a id="login-button" href="/login">Log in</a>
+    {% endif %}
     
     <br><br><br><br><br>
     <h1>Forum</h1>

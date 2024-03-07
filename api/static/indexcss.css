@@ -64,6 +64,7 @@ body {
     color: white;
     text-decoration: none;
     cursor: pointer;
+    text-justify: right;
 }
 
 .container {

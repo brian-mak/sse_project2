@@ -16,11 +16,10 @@
       <a href="/search_exercises">Search For Exercises</a>
       <a href="/forum">Forum</a>
       <a href="/saved_lists">Saved Exercises</a>
-      <a href="accountinfo.html">Account</a>
     </div>
   
     {% if session %}
-        <a id="logout-button" href="/logout">Logout</a>
+        <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
     {% else %}
         <a id="login-button" href="/login">Log in</a>
     {% endif %}
