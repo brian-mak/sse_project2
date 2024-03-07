@@ -3,7 +3,7 @@ from os import environ as env
 from flask import Flask
 import requests
 
-forum_api_url = os.getenv('FORUM_API')
+forum_api_url = "http://workout-buddy-forum-dns.amaxdkavcvbkafdk.uksouth.azurecontainer.io:5000/"
 workout_api_url = 'http://workout-management-microservice-dns.dpf4a3ayemg0b0fu.uksouth.azurecontainer.io:5000/api/saved_lists/1/workouts'
 
 
