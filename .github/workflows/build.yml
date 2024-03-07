@@ -64,7 +64,7 @@ jobs:
       - name: Run microservice tests
         run: pytest api/test/microservice_test.py
 
-build-and-deploy-main-app:
+  build-and-deploy-main-app:
 
     name: Build Docker image of main app and deploy 
     runs-on: ubuntu-latest
