@@ -4,17 +4,10 @@ import requests
 app = Flask(__name__)
 
 # Landing page with form
-@app.route('/', methods=['GET'])
 def index():
     return render_template('meal_planner.html')
 
-# Results page
-@app.route('/nutrition', methods=['POST'])
-# Results page
-@app.route('/nutrition', methods=['POST'])
-@app.route('/nutrition', methods=['POST'])
 def get_nutrition():
-    print('hi')
     if request.method == 'POST':
         # Get ingredients from the form
         query = request.form['query']
