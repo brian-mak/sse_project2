@@ -14,10 +14,11 @@ def index():
 @app.route('/nutrition', methods=['POST'])
 @app.route('/nutrition', methods=['POST'])
 def get_nutrition():
+    print('hi')
     if request.method == 'POST':
         # Get ingredients from the form
         query = request.form['query']
-
+        print(query)
         # Split the input string based on new lines and commas
         ingredients = [ingredient.strip() for line in query.split('\n') for ingredient in line.split(',') if ingredient.strip()]
         
@@ -28,7 +29,6 @@ def get_nutrition():
 
         for ingredient in ingredients:
             url = f"https://api.edamam.com/api/nutrition-data?app_id={app_id}&app_key={app_key}&ingr={ingredient}"
-
             try:
                 response = requests.get(url)
                 response.raise_for_status()  # Raise an exception for any HTTP error
@@ -53,20 +53,20 @@ def get_nutrition():
                     'Iron': data['totalNutrients']['FE']['quantity'],
                     'Potassium': data['totalNutrients']['K']['quantity']
                 }
-
+                
                 return render_template('nutrition.html', query=query, calories=calories, protein=protein, fat=fat, carbs=carbs, nutrients=nutrients)
 
             except requests.RequestException as e:
-                error_message = f"Error fetching data from Edamam API: {str(e)}"
+                error_message = f"Error fetching data from Edamam API: {str(e)}. Please try again."
                 print(error_message)
-                return render_template('error.html', message=error_message)
+                return render_template('error.html', error=error_message)
 
             except KeyError as e:
-                error_message = f"Error parsing response from Edamam API: {str(e)}"
+                error_message = f"Error parsing response from Edamam API: {str(e)}. Please try again."
                 print(error_message)
-                return render_template('error.html', message=error_message)
+                return render_template('error.html', error=error_message)
     else:
-        return render_template('error.html', message="Invalid request method")
+        return render_template('error.html', error="Invalid request method")
 
 if __name__ == '__main__':
     app.run(debug=True) 
