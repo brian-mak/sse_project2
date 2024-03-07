@@ -61,6 +61,9 @@ jobs:
 
       - name: Install requests
         run: pip install requests
+      
+      - name: Install pytest
+        run: pip install pytest
   
       - name: Run microservice tests
         run: pytest api/test/microservice_test.py
