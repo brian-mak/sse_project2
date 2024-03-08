@@ -96,12 +96,27 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    # - name: Build Docker image
-    #   working-directory: ./api/forum_api
-    #   run: docker build -t fitness-planner-forum .
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: api/Dockerfile
+        push: false
+        build-args: |
+          "AZURE_SQL_CONNECTIONSTRING=${{ secrets.AZURE_SQL_CONNECTIONSTRING }}"
+          "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}"
+          "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}"
+          "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}"
+          "APP_SECRET_KEY=${{ secrets.APP_SECRET_KEY }}"
+          "FORUM_API=${{ secrets.FORUM_API }}"
+          "RAPID_API_KEY=${{ secrets.RAPID_API_KEY }}"
+          "YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}"
+          "OPENAI_KEY=${{ secrets.OPENAI_KEY }}"
+          "EDAMAM_API_ID=${{ secrets.EDAMAM_API_ID }}"
+          "EDAMAM_API_KEY=${{ secrets.EDAMAM_API_KEY }}"
       
-    # - name: Run PyTest
-    #   run: docker run fitness-planner-forum pytest app_test.py
+    - name: Run PyTest
+      run: docker run fitness-planner-main pytest test/*_test.py
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
