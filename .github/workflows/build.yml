@@ -68,6 +68,10 @@ jobs:
       - name: Install all
         run: pip install -r workout_management_microservice/requirements.txt
 # add this below
+
+      - name: Install Microsoft ODBC
+        run: sudo ACCEPT_EULA=Y apt-get install msodbcsql18 -y
+
       - name: Run routes unit tests
         run: pytest workout_management_microservice/tests/test_routes.py
 
