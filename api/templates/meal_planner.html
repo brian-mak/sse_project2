@@ -5,67 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nutrition Analysis</title>
     <style>
-        /* Your CSS styles here */
         body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-image: url('/static/nutrition.jpg');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: auto;
+        }
+
+        #navigation {
+            background-color: black; /* Changed to black background */
+            color: white;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 100;
+            padding: 10px 0;
+            text-align: center; /* Center the navigation links */
+        }
+
+        #navigation img {
+            width: 200px; /* Adjust logo size as needed */
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        #navigation a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            cursor: pointer;
         }
 
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin: 60px 0 20px; /* Adjust top margin to push content down */
             font-size: 2em;
-            padding-top: 20px;
-        }
-
-        nav {
-            background-color: #f8f9fa;
-            padding: 10px 0;
-        }
-
-        nav ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
-
-        nav ul li {
-            display: inline;
-            margin: 0 10px;
-        }
-
-        nav ul li a {
-            text-decoration: none;
-            color: #333;
-            font-size: 1.2em;
-        }
-
-        nav ul li a:hover {
-            color: #007bff;
         }
 
         section {
             text-align: center;
-            margin-bottom: 40px;
             background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 10px;
             max-width: 600px;
-            margin: 0 auto;
-            overflow: hidden;
-        }
-
-        section + section {
-            margin-top: 20px;
+            width: 90%;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         section p {
@@ -75,7 +66,7 @@
 
         section input[type="text"],
         section textarea {
-            width: 80%;
+            width: calc(100% - 20px);
             padding: 10px;
             margin-top: 10px;
             font-size: 1em;
@@ -83,8 +74,6 @@
             border: 1px solid #ccc;
             resize: vertical;
             display: block;
-            margin: 0 auto;
-            max-width: 100%;
             margin-bottom: 20px;
         }
 
@@ -102,114 +91,48 @@
             background-color: #e9ecef;
         }
 
-        footer {
-            display: none;
-        }
-
         #video-background {
             position: fixed;
             top: 0;
             left: 0;
-            min-width: 100%;
-            min-height: 100%;
-            z-index: -1;
-            opacity: 0.5;
-        }
-
-        #navigation {
-            background-color: black;
-            color: white;
             width: 100%;
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem;
-            font-weight: normal;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.3rem;
-            white-space: nowrap;
-            padding: 10px 10px 30px 10px;
-            z-index: 100;
+            height: 100%;
+            z-index: -1;
+            object-fit: cover; /* Ensure the video covers the whole screen */
         }
 
-        #navigation a {
-            color: black;
-            text-decoration: none;
-            margin: 0 20px;
-            cursor: pointer;
-        }
-
-        #login-button, #logout-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 0.8rem;
-            font-weight: normal;
-            text-transform: uppercase;
-            letter-spacing: 0.3rem;
-            white-space: nowrap;
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-            text-align: right;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.3rem;
-            font-weight: normal;
-        }
-
-        h2 {
-            font-size: 2rem;
-            margin-top: 15px;
-            margin-bottom: 15px;
-        }
-
-        h3 {
-            font-size: 1.5rem;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            color: rgb(100, 100, 100);
-        }
+        /* Additional styles for other elements can be added here */
     </style>
 </head>
 <body>
     <!-- Navigation Menu -->
     <div id="navigation">
-        <center><img src="{{ url_for('static', filename='Logo.png') }}" alt="Workout Buddy Logo" width="400" height="100"></center>
+        <img src="{{ url_for('static', filename='Logo.png') }}" alt="Workout Buddy Logo">
         <a href="/">Home</a>
         <a href="/meal_plan">Nutrition</a>
         <a href="/search_exercises">Search For Workouts</a>
         <a href="/db/workout_plan">Workout Planner</a>
         <a href="/forum">Forum</a>
         <a href="/saved_lists">My Workout Lists</a>
-        {% if session %}
-            <a href="/logout">Logout</a>
-            <br><br>Welcome {{ session.user.userinfo.nickname }}
-        {% else %}
-            <a id="login-button" href="/login">Login</a>
-        {% endif %}
+        <!-- Session-related links -->
     </div>
-    
+
+    <!-- Header -->
     <header>
         <h1>Nutrition Analysis</h1>
     </header>
+
+    <!-- About Section -->
     <section id="about">
         <h2>About</h2>
-        <p>At Nutrition Analysis, we believe that understanding the nutritional content of the food you consume is essential for a healthy lifestyle. Our mission is to empower individuals to make informed dietary choices by providing easy access to the nutritional information of their favorite meals. We are committed to helping you achieve your health goals and live your best life.</p>
+        <p>At Nutrition Analysis, we believe that understanding the nutritional content of the food you consume is essential for a healthy lifestyle...</p>
     </section>
 
+    <!-- Analysis Section -->
     <section id="analysis">
         <h2>Nutrition Analysis</h2>
         <p>Please enter a food item or a list of food items that you enjoy eating with a quantity prior to find out its nutritional facts!</p>
-        <p>Example: "30g chicken, 1 cup of rice"</p>
+        <p>"Example: 500g of chicken and 3 bottles of coke"</p>
         <form action="/facts" method="POST">
             <label for="query">Enter ingredients:</label>
             <textarea id="query" name="query" required maxlength="300" rows="5" placeholder="Enter each ingredient followed by a comma"></textarea>
@@ -218,15 +141,18 @@
         </form>
     </section>
 
+    <!-- Gap Section -->
     <section id="gap1">
         <!-- This section creates a gap -->
     </section>
-    
+
+    <!-- Video Background -->
     <video id="video-background" autoplay loop muted>
         <source src="/static/nutrition.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
+    <!-- JavaScript for adjusting video playback rate -->
     <script>
         var video = document.getElementById("video-background");
         video.playbackRate = 2.5;
