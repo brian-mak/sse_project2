@@ -283,8 +283,8 @@
         <p id="p1"><strong>Meal Type:</strong> {{ recipe.meal_type | title }}</p>
         <p id="p1"><strong>Dish Type:</strong> {{ recipe.dish_type | title }}</p>
         <!-- <p><strong>Calories Per 100g:</strong> {{ recipe.calories_per_serving }}</p> -->
-        <p><strong>Link for Detailed Nutritional Information: </strong></p><a href="url" style="color: #197ad4;" target="_blank">{{ recipe.nutritional_info_link }}</a>
-        <p><strong>Link for Recipe: </strong></p><a href="url" style="color: #197ad4;" target="_blank">{{ recipe.recipe_link }}</a><br>
+        <p><strong>Link for Detailed Nutritional Information: </strong></p><a href="{{ recipe.nutritional_info_link }}" style="color: #197ad4;" target="_blank">{{ recipe.nutritional_info_link }}</a>
+        <p><strong>Link for Recipe: </strong></p><a href="{{ recipe.recipe_link }}" style="color: #197ad4;" target="_blank">{{ recipe.recipe_link }}</a><br>
         {% endif %}
     </div>
     {% endfor %}
