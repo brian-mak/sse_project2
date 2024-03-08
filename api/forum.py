@@ -1,10 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
+from flask import Flask, render_template, request, redirect, jsonify, session, flash
 import requests
-import sys, os
+import os
 from os import environ as env
-import database
-from datetime import datetime
-
+import authentication
 
 api_url = os.getenv('FORUM_API')
 
@@ -14,23 +12,27 @@ app.secret_key = env.get("APP_SECRET_KEY")
 
 
 def index():
-    try:
-        response = requests.get(api_url)
-        if response.status_code == 200:
-            response = response.json()
-            have_posts = False
-            if response["success"] == False:
+    user_info = session.get('user')
+    if user_info:
+        try:
+            response = requests.get(api_url)
+            if response.status_code == 200:
+                response = response.json()
+                have_posts = False
+                if response["success"] == False:
+                    message = "Sorry, we have encountered an issue. Please try again later."
+                elif len(response['data']) == 0:
+                    message = "There is no post now. Create one!"
+                else:
+                    message = ""
+                    have_posts = True
+            else: 
                 message = "Sorry, we have encountered an issue. Please try again later."
-            elif len(response['data']) == 0:
-                message = "There is no post now. Create one!"
-            else:
-                message = ""
-                have_posts = True
-        else: 
-            message = "Sorry, we have encountered an issue. Please try again later."
-        return render_template("forum.html", have_posts = have_posts, posts = response['data'], message = message, active_tab = "allPosts")
-    except Exception:
-        return render_template("forum.html", message = "Sorry, we have encountered an issue. Please try again later.")
+            return render_template("forum.html", have_posts = have_posts, posts = response['data'], message = message, active_tab = "allPosts")
+        except Exception:
+            return render_template("forum.html", message = "Sorry, we have encountered an issue. Please try again later.")
+    else:
+        return authentication.login()
     
 
 def post():

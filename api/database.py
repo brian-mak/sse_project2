@@ -1,10 +1,10 @@
 import re
-from flask import Flask, flash, jsonify, render_template, request, Blueprint, session
+from flask import jsonify, render_template, request, Blueprint, session
 from os import environ as env
 import os
 import pyodbc
+import authentication
 from dotenv import find_dotenv, load_dotenv
-import sys
 import requests
 import openai
 from retry import retry
@@ -33,7 +33,7 @@ def root():
         cursor = conn.cursor()
 
         print("connected")
-        # Table should be created ahead of time in production app.
+
         cursor.execute("""
             CREATE TABLE Users (
                 ID int NOT NULL IDENTITY,
@@ -134,71 +134,6 @@ def get_conn():
 #         if conn:  # Check if conn is not None
 #             conn.close()
 
-# @db_bp.route('/saved_lists/create', methods=['POST'])
-# def create_saved_list():
-#     if request.json:
-#         user_id = request.json.get('user_id')
-#         list_name = request.json.get('list_name')
-#     else:
-#         user_id = request.form.get('user_id')
-#         list_name = request.form.get('list_name')
-
-#     if not user_id or not list_name:
-#         return jsonify({"success": False, "message": "Missing required fields."}), 400
-
-#     try:
-#         with get_conn() as conn:
-#             cursor = conn.cursor()
-#             # Check for duplicate list names for the same user
-#             cursor.execute("""
-#                 SELECT 1 FROM SavedLists WHERE UserID = ? AND Name = ?
-#             """, (user_id, list_name))
-#             if cursor.fetchone():
-#                 return jsonify({"success": False, "message": "A list with this name already exists for the user."}), 400
-            
-#             # Proceed with inserting the new saved list
-#             cursor.execute("""
-#                 INSERT INTO SavedLists (UserID, Name) VALUES (?, ?)
-#             """, (user_id, list_name))
-#             conn.commit()
-#         return jsonify({"success": True, "message": "Saved list created successfully."})
-#     except pyodbc.IntegrityError as e:
-#         return jsonify({"success": False, "message": "Database integrity error. Please check the data."}), 500
-#     except Exception as e:
-#         return jsonify({"success": False, "message": str(e)}), 500
-
-# @db_bp.route('/api/user/saved_lists', methods=['GET'])
-# def get_saved_lists():
-#     user_id = request.args.get('user_id')
-#     if user_id is None:
-#         return jsonify({"error": "User ID is required"}), 400
-    
-#     try:
-#         with get_conn() as conn:
-#             cursor = conn.cursor()
-#             cursor.execute("SELECT * FROM SavedLists WHERE UserID = ?", (user_id,))
-#             lists = cursor.fetchall()
-#             saved_lists = [{"list_id": row[0], "name": row[2]} for row in lists]
-#         return jsonify(saved_lists)
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
-
-# def get_workout_list_details(list_id):
-#     try:
-#         with get_conn() as conn:
-#             cursor = conn.cursor()
-#             # Fetch workout IDs associated with the saved list
-#             cursor.execute("SELECT * FROM SavedListWorkouts WHERE ListID = ?", (list_id,))
-#             workout_details = [ {"workout_id": row[1],
-#                                  "workout_name": row[2],
-#                                  "equipment": row[3],
-#                                  "target_muscle_group": row[4],
-#                                  "secondary_muscles": row[5]} for row in cursor.fetchall() ]
-#             return workout_details
-        
-#     except Exception as e:
-#         return {"error": str(e)}, 500
-
 @db_bp.route('/api/saved_lists/<int:list_id>/exercises', methods=['GET'])
 def get_exercises_for_list(list_id):
     try:
@@ -234,43 +169,6 @@ def fetch_exercise_details_from_exercisedb(workout_id):
     else:
         print(f"Failed to fetch exercises: {response.status_code}")
         return None
-    
-
-# @db_bp.route('/saved_lists/add_workout', methods=['POST'])
-# def add_workout_to_saved_list():
-#     list_id = request.json.get('list_id')
-#     workout_id = request.json.get('workout_id')
-#     workout_name = request.json.get('workout_name')
-#     equipment = request.json.get('equipment')
-#     target_muscle_group = request.json.get('target_muscle_group')
-#     secondary_muscles = request.json.get('secondary_muscles')
-#     try:
-#         with get_conn() as conn:
-#             cursor = conn.cursor()
-#             cursor.execute("INSERT INTO SavedListWorkouts (ListID, WorkoutID, WorkoutName, Equipment, TargetMuscleGroup, SecondaryMuscles) VALUES (?, ?, ?, ?, ?, ?)", (list_id, workout_id, workout_name, equipment, target_muscle_group, secondary_muscles))
-#             conn.commit()
-#         return jsonify({"success": True, "message": "Workout added to saved list successfully."})
-#     except Exception as e:
-#         return jsonify({"success": False, "message": str(e)})
-    
-
-# @db_bp.route('/saved_lists/remove_workout', methods=['POST'])
-# def remove_workout_from_saved_list():
-#     data = request.get_json()
-#     list_id = data.get('list_id')
-#     workout_id = data.get('workout_id')
-#     if not list_id or not workout_id:
-#         return jsonify({"success": False, "message": "Missing list_id or workout_id"}), 400
-
-#     try:
-#         with get_conn() as conn:
-#             cursor = conn.cursor()
-#             cursor.execute("DELETE FROM SavedListWorkouts WHERE ListID = ? AND WorkoutID = ?", (list_id, workout_id))
-#             conn.commit()
-#         return jsonify({"success": True, "message": "Workout removed from saved list successfully."})
-#     except Exception as e:
-#         return jsonify({"success": False, "message": str(e)}), 500
-
 
 def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num_of_workouts, workouts):
     try:
@@ -296,13 +194,10 @@ def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num
         frequency_penalty=0,
         presence_penalty=0
         )
-
-        print(response) # to delete
         
         response_text = response.choices[0]['message']['content'].strip()
         workout_plan = parse_workout_plan(response_text)
 
-        print(workout_plan)  # to delete
         return workout_plan
 
     except openai.error.AuthenticationError as e:
@@ -312,7 +207,6 @@ def generate_workout_plan(fitness_goal, target_muscle_groups, fitness_level, num
     except openai.error.APIError as e:
         return jsonify({"error": "An error occurred with the OpenAI API.", "details": str(e)}), 500
     except Exception as e:
-        # Catch-all for any other exceptions
         return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
 
 def parse_workout_plan(text):
@@ -342,20 +236,21 @@ def parse_workout_plan(text):
 
     return workouts
 
-
 @db_bp.route('/workout_plan')
 def workout_plan():
     user_info = session.get('user')
-    user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
-    url = f"http://workout-management-microservice-dns.dpf4a3ayemg0b0fu.uksouth.azurecontainer.io:5000/api/users/{user_id}/saved_lists"
-    response  = requests.get(url)
-    if response.status_code == 200:
-        saved_lists = response.json()
+    if user_info:
+        user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
+        url = f"http://workout-management-microservice-dns.dpf4a3ayemg0b0fu.uksouth.azurecontainer.io:5000/api/users/{user_id}/saved_lists"
+        response  = requests.get(url)
+        if response.status_code == 200:
+            saved_lists = response.json()
+        else:
+            saved_lists = None
+        print(saved_lists)
+        return render_template("workout_plan.html", saved_lists=saved_lists)
     else:
-        saved_lists = None
-    print(saved_lists)
-    return render_template("workout_plan.html", saved_lists=saved_lists)
-
+        return authentication.login()
 
 @db_bp.route('/my_custom_workout_plan', methods=['POST'])
 def my_custom_workout_plan():
@@ -434,16 +329,12 @@ def my_custom_workout_plan():
     else:
         filtered_workouts = None
 
-    print(filtered_workouts) # to delete
-
     if len(filtered_workouts) < num_of_workouts:
         error_message = "There are not enough exercises in your saved list to meet the selected criteria."
         return render_template('error.html', error=error_message)
 
     workouts = generate_workout_plan(fitness_goal, target_muscles, fitness_level, num_of_workouts, filtered_workouts)
 
-    print(workouts)
-    # Ensure workout_plan is a dictionary before passing to render_template
     if isinstance(workouts, str):
         error_message = "No workout plan generated"
         return render_template('error.html', error=error_message)
@@ -473,15 +364,6 @@ def my_custom_workout_plan():
         4. Proper form is paramount in every exercise to prevent injuries and ensure effective training."""
 
     return render_template('custom_workout_plan.html', workouts=workouts, notes=notes)
-
-
-# def get_saved_lists_for_user(user_id):
-#     with get_conn() as conn:
-#         cursor = conn.cursor()
-#         cursor.execute("SELECT ListID, Name FROM SavedLists WHERE UserID = ?", (user_id,))
-#         lists = cursor.fetchall()
-#         return [{"list_id": row[0], "name": row[1]} for row in lists]
-
 
 def ad_hoc():
     conn = get_conn()

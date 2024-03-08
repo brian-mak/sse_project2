@@ -15,7 +15,7 @@
         <!-- <a href="#about">About</a> -->
         <a href="/meal_planner">Nutrition</a>
         <a href="/search_exercises">Search For Workouts</a>
-        <a href="/db/workout_plan">Generate Workout Plan</a>    
+        <a href="/db/workout_plan">Workout Planner</a>    
         <a href="/forum">Forum</a>
         <a href="/saved_lists">My Workout Lists</a>
         {% if session %}
@@ -25,16 +25,16 @@
         <a id href="/login">Login</a>
         {% endif %}
     </div>
+    <div id="header">
     
-    <br><br><br><br><br><br><br><br>
-    <h1>Forum</h1>
-    
-    <div class="tab">
-        <button class="tablinks" onclick="openTab(event, 'allPosts')" id="defaultOpen">All Posts</button>
-        <button class="tablinks" onclick="openTab(event, 'yourPosts')">Your Posts</button>
-        <!-- <button class="tablinks" onclick="openTab(event, 'savedPosts')">Saved Posts</button> -->
-        <button class="tablinks" onclick="openTab(event, 'createPost')">Create A Post</button>
-    </div>
+        <h1><b>Forum</b></h1>
+        
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'allPosts')" id="defaultOpen">All Posts</button>
+            <button class="tablinks" onclick="openTab(event, 'yourPosts')">Your Posts</button>
+            <!-- <button class="tablinks" onclick="openTab(event, 'savedPosts')">Saved Posts</button> -->
+            <button class="tablinks" onclick="openTab(event, 'createPost')">Create A Post</button>
+        </div>
 
     <div id="allPosts" class="tabcontent">
         <ul id="allPostsList" class="postList"></ul>
@@ -52,17 +52,17 @@
         <ul id="repliesList"></ul>
         <form action="/reply" method="POST" class="replyBox">
             <input type="hidden" id="postId" name="postId">
-            <label for="reply">Reply:</label><br>
-            <textarea id="reply" name="message" required></textarea><br>   
+            <label for="reply">Reply:</label><br><br>
+            <textarea id="reply" name="message" required></textarea><br><br>   
             <button type="submit" class="styled-button">Submit</button> 
         </form>
     </div>
 
     <div id="createPost" class="tabcontent" style="display:none;">
         <form action="/post" method="POST" class="createPost">
-            <label for="title">Title:</label>
+            <br><label for="title">Title:</label>
             <input type="text" id="postTitle" name="title" class="postTitleInput" required><br><br>
-            <label for="message">Message:</label><br>
+            <label for="message">Message:</label><br><br>
             <textarea id="message" name="message" required></textarea><br><br>
             <button type="submit" class="styled-button">Post</button>
         </form>

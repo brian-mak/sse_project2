@@ -1,11 +1,16 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 import requests
+import authentication
 
 app = Flask(__name__)
 
 # Landing page with form
 def index():
-    return render_template('meal_planner.html')
+    user_info = session.get('user')
+    if user_info:
+        return render_template('meal_planner.html')
+    else:
+        return authentication.login()
 
 def get_nutrition():
     if request.method == 'POST':

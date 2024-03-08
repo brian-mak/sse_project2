@@ -123,9 +123,24 @@
             max-width: 100%;
             height: auto;
         }
-        #navigation {
+        /* #navigation {
             position: absolute;
             top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            font-weight: normal;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            white-space: nowrap;
+        } */
+        #navigation {
+            background-color: black;
+            color: white;
+            width: 100%;
+            position: fixed; /* Change this from absolute to fixed */
+            top: 0;
             left: 50%;
             transform: translateX(-50%);
             font-size: 0.8rem; /* Adjusted font size for small navigation links */
@@ -134,6 +149,8 @@
             text-transform: uppercase;
             letter-spacing: 0.3rem;
             white-space: nowrap;
+            padding: 10px 10px 30px 10px;
+            z-index: 100;
         }
 
         #navigation a {
@@ -191,16 +208,18 @@
         <a href="/">Home</a>
         <!-- <a href="#about">About</a> -->
         <a href="/meal_planner">Nutrition</a>
-        <a href="/search_exercises">Search For Exercises</a>
+        <a href="/search_exercises">Search For Workouts</a>
+        <a href="/db/workout_plan">Workout Planner</a>    
         <a href="/forum">Forum</a>
-        <a href="/saved_lists">Saved Exercises</a>
-      </div>
+        <a href="/saved_lists">My Workout Lists</a>
+        {% if session %}
+        <a href="/logout">Logout</a>
+        <br><br>Welcome {{ session.user.userinfo.nickname }}
+        {% else %}
+        <a id href="/login">Login</a>
+        {% endif %}
+    </div>
     
-      {% if session %}
-          <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
-      {% else %}
-          <a id="login-button" href="/login">Log in</a>
-      {% endif %}
     <br><br><br><br><br><br><br>
       <header>
             <h1>Nutrition Analysis</h1>

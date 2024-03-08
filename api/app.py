@@ -3,8 +3,6 @@ import requests
 from dotenv import find_dotenv, load_dotenv
 from os import environ as env
 import os
-import openai
-import re
 from googleapiclient.discovery import build
 
 import forum
@@ -28,7 +26,6 @@ def get_rapid_api_key():
 
 def get_openai_api_key():
     return os.environ.get('OPENAI_KEY')
-
 
 def fetch_exercises(target_muscle_groups, available_equipment):
     api_key = get_rapid_api_key()
@@ -125,29 +122,38 @@ def home():
 
 @app.route('/search_exercises')
 def search_exercises():
-    return render_template("search_exercises.html")
+    user_info = session.get('user')
+    if user_info:
+        return render_template("search_exercises.html")
+    else:
+        return authentication.login()
 
 @app.route('/saved_lists')
 def saved_lists():
     user_info = session.get('user')
-    user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
-    return render_template("saved_lists.html", user_id=user_id)
+    if user_info:
+        user_id = user_info.get('userinfo', {}).get('sub')
+        return render_template("saved_lists.html", user_id=user_id)
+    else:
+        return authentication.login()
 
 @app.route('/exercises', methods=['POST'])
 def search_exercises_result():
-    # Retrieving user information from the session
     user_info = session.get('user')
-    user_id = user_info.get('userinfo', {}).get('sub') if user_info else None
+    if user_info:
+        user_id = user_info.get('userinfo', {}).get('sub')
 
-    data = request.form.to_dict(flat=True)
-    data['muscleGroups'] = request.form.getlist('muscleGroups')
-    data['equipment'] = request.form.getlist('equipment')
+        data = request.form.to_dict(flat=True)
+        data['muscleGroups'] = request.form.getlist('muscleGroups')
+        data['equipment'] = request.form.getlist('equipment')
 
-    target_muscle_groups = [muscle.lower() for muscle in data['muscleGroups']]
-    available_equipment = [equipment.lower() for equipment in data['equipment']]
+        target_muscle_groups = [muscle.lower() for muscle in data['muscleGroups']]
+        available_equipment = [equipment.lower() for equipment in data['equipment']]
 
-    exercises = fetch_exercises(target_muscle_groups, available_equipment)
-    return render_template("exercises.html", exercises=exercises, user_id=user_id)
+        exercises = fetch_exercises(target_muscle_groups, available_equipment)
+        return render_template("exercises.html", exercises=exercises, user_id=user_id)
+    else:
+        return authentication.login()
 
 @app.route('/search_youtube', methods=['GET'])
 def search_youtube():

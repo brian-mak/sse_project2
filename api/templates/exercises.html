@@ -257,16 +257,18 @@
     <a href="/">Home</a>
     <!-- <a href="#about">About</a> -->
     <a href="/meal_planner">Nutrition</a>
-    <a href="/search_exercises">Search For Exercises</a>
+    <a href="/search_exercises">Search For Workouts</a>
+    <a href="/db/workout_plan">Workout Planner</a>    
     <a href="/forum">Forum</a>
-    <a href="/saved_lists">Saved Exercises</a>
+    <a href="/saved_lists">My Workout Lists</a>
+    {% if session %}
+    <a href="/logout">Logout</a>
+    <br><br>Welcome {{ session.user.userinfo.nickname }}
+    {% else %}
+    <a id href="/login">Login</a>
+    {% endif %}
 </div>
 
-  {% if session %}
-      <a id="logout-button" href="/logout">Welcome {{ session.user.userinfo.name }}<br>Logout</a>
-  {% else %}
-      <a id="login-button" href="/login">Log in</a>
-  {% endif %}
 <!-- Header -->
 <div id="header">
     <center><h2>Workouts</h2></center>
