@@ -90,9 +90,10 @@ def fetch_exercises(target_muscle_groups, available_equipment):
     target_muscles = list(set(target_muscles))
     available_equipments = [equipment_mapping[equipment] for equipment in available_equipment if equipment in equipment_mapping]
     
-    response = requests.get(url, headers=headers, params={"limit": 1400})
-
-    if response.status_code == 200:
+    try:
+        response = requests.get(url, headers=headers, params={"limit": 1400})
+        response.raise_for_status()  # This will raise an exception for 4xx and 5xx errors
+        
         all_exercises = response.json()
 
         filtered_exercises = [
@@ -110,15 +111,18 @@ def fetch_exercises(target_muscle_groups, available_equipment):
             'instructions': exercise.get('instructions', 'Please refer to external sources for instructions'),
             'gifUrl': exercise.get('gifUrl', 'No GIF available')
         } for exercise in filtered_exercises]
+        
+        return details_of_exercises
 
-        if len(details_of_exercises)!=0:
-            return details_of_exercises
-        else:
-            error_message = "No workouts found based on input"
-            return render_template("error.html", error=error_message)
-    else:
-        error_message = f"Failed to fetch exercises: {response.status_code}"
-        return render_template("error.html", error=error_message)
+    except requests.RequestException as e:
+        print(f"Network or HTTP request failed: {e}")
+        return []
+    except ValueError:
+        print("Failed to decode JSON response")
+        return []
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return []
 
 @app.route('/')
 def home():
@@ -144,9 +148,10 @@ def saved_lists():
 @app.route('/exercises', methods=['POST'])
 def search_exercises_result():
     user_info = session.get('user')
-    if user_info:
+    if not user_info:
+        return authentication.login()
+    try:
         user_id = user_info.get('userinfo', {}).get('sub')
-
         data = request.form.to_dict(flat=True)
         data['muscleGroups'] = request.form.getlist('muscleGroups')
         data['equipment'] = request.form.getlist('equipment')
@@ -155,9 +160,14 @@ def search_exercises_result():
         available_equipment = [equipment.lower() for equipment in data['equipment']]
 
         exercises = fetch_exercises(target_muscle_groups, available_equipment)
-        return render_template("exercises.html", exercises=exercises, user_id=user_id)
-    else:
-        return authentication.login()
+        if exercises:
+            return render_template("exercises.html", exercises=exercises, user_id=user_id)
+        else:
+            error_message = "No workouts found for user input."
+            return render_template("error.html", error=error_message)
+    except Exception as e:
+        error_message = f"An unexpected error occurred: {str(e)}"
+        return render_template("error.html", error=error_message)
 
 @app.route('/search_youtube', methods=['GET'])
 def search_youtube():
