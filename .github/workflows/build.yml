@@ -106,7 +106,7 @@ jobs:
     
     - name: Test
       run: |
-        docker run --rm workout-buddy-main pytest test/forum_test.py
+        docker run --rm workout-buddy-main pytest test
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
