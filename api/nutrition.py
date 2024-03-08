@@ -13,7 +13,7 @@ def get_nutrition():
         query = request.form['query']
         print(query)
         # Split the input string based on new lines and commas
-        ingredients = [ingredient.strip() for line in query.split('\n') for ingredient in line.split(',') if ingredient.strip()]
+        ingredients = [ingredient.strip() for ingredient in query.split(',') if ingredient.strip()]
         
         # Call Edamam API to get nutrition analysis for each ingredient
         app_id = 'c1f66dde'
@@ -62,4 +62,5 @@ def get_nutrition():
         return render_template('error.html', error="Invalid request method")
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True)
+
