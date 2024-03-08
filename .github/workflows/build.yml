@@ -102,11 +102,11 @@ jobs:
         context: .
         load: true
         file: api/Dockerfile
-        tags: ${{ env.TEST_TAG }}
+        tags: workout-buddy-main
     
     - name: Test
       run: |
-        docker run --rm ${{ env.TEST_TAG }} pytest api/test/*_test.py
+        docker run --rm workout-buddy-main pytest api/test/*_test.py
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
