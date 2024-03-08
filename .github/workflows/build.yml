@@ -99,7 +99,7 @@ jobs:
     - name: Build and export to Docker
       uses: docker/build-push-action@v5
       with:
-        context: api/.
+        context: .
         load: true
         file: api/Dockerfile
         tags: ${{ env.TEST_TAG }}
