@@ -14,6 +14,26 @@ def create_saved_list_service(user_id, list_name):
         db.session.rollback()
         # Log the exception e here
         return {"success": False, "message": "Failed to create saved list due to a database error."}
+    
+def delete_saved_list_service(list_id):
+    """
+    Service to delete a saved list and all related workouts.
+    """
+    try:
+        # Attempt to delete all related workouts first
+        SavedListWorkout.query.filter_by(ListID=list_id).delete()
+        # Then delete the saved list itself
+        saved_list_to_delete = SavedList.query.filter_by(ListID=list_id).first()
+        if saved_list_to_delete:
+            db.session.delete(saved_list_to_delete)
+            db.session.commit()
+            return {"success": True, "message": "Saved list and related workouts deleted successfully."}
+        else:
+            return {"success": False, "message": "Saved list not found."}
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        # Log the exception e here
+        return {"success": False, "message": f"Database error, couldn't delete saved list and workouts: {e}"}
 
 def get_saved_lists_service(user_id):
     """

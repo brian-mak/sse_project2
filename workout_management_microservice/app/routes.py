@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from .services import (
     create_saved_list_service,
+    delete_saved_list_service,
     get_saved_lists_service,
     add_workout_to_saved_list_service,
     remove_workout_from_saved_list_service,
@@ -17,6 +18,11 @@ def create_saved_list(user_id):
     
     result = create_saved_list_service(user_id, list_name)
     return jsonify(result), 201 if result['success'] else 500
+
+@workout_blueprint.route('/saved_lists/<list_id>', methods=['DELETE'])
+def delete_saved_list(list_id):
+    result = delete_saved_list_service(list_id)
+    return jsonify(result), 200 if result['success'] else 404 if 'not found' in result['message'] else 500
 
 @workout_blueprint.route('/users/<user_id>/saved_lists', methods=['GET'])
 def get_saved_lists(user_id):
