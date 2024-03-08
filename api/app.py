@@ -111,10 +111,14 @@ def fetch_exercises(target_muscle_groups, available_equipment):
             'gifUrl': exercise.get('gifUrl', 'No GIF available')
         } for exercise in filtered_exercises]
 
-        return details_of_exercises
+        if len(details_of_exercises)!=0:
+            return details_of_exercises
+        else:
+            error_message = "No workouts found based on input"
+            return render_template("error.html", error=error_message)
     else:
-        print(f"Failed to fetch exercises: {response.status_code}")
-        return []
+        error_message = f"Failed to fetch exercises: {response.status_code}"
+        return render_template("error.html", error=error_message)
 
 @app.route('/')
 def home():
@@ -158,7 +162,7 @@ def search_exercises_result():
 @app.route('/search_youtube', methods=['GET'])
 def search_youtube():
     search_query = request.args.get('query')
-    max_videos = int(request.args.get('max', 10))  # Get the max number of videos to return, default is 5
+    max_videos = int(request.args.get('max', 10))
     youtube_api_key = os.environ.get('YOUTUBE_API_KEY')
 
     youtube = build('youtube', 'v3', developerKey=youtube_api_key)

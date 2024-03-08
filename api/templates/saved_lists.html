@@ -254,6 +254,9 @@
             cursor: pointer;
             text-align: right;
         }
+        .dropdown-option {
+            z-index: 10000;
+        }
     </style>
 </head>
 
@@ -285,7 +288,7 @@
     <div id="savedListsContainer" class="list-container">
     </div>
 
-    <div id="exercisesContainer" class="exercises-container">
+    <br><br><div id="exercisesContainer" class="exercises-container">
     </div>
 
     <div id="youtubeModal" class="modal">
@@ -400,6 +403,7 @@
         function handleListAction(listId, action) {
             if (action === 'select') {
                 fetchExercisesForList(listId);
+                removeDropdownMenu()
             } else if (action === 'delete') {
                 const confirmation = confirm('Are you sure you want to delete this saved list?');
                 if (confirmation) {
@@ -417,12 +421,20 @@
             .then(data => {
                 if (data.success) {
                     alert('Saved list deleted successfully!');
-                    fetchSavedLists();
+                    removeDropdownMenu();
+                    location.reload();
                 } else {
                     alert('Failed to delete saved list: ' + data.message);
                 }
             })
             .catch(error => console.error('Error:', error));
+        }
+
+        function removeDropdownMenu() {
+            const dropdown = document.querySelector('.dropdown-menu');
+            if (dropdown) {
+                dropdown.remove();
+            }
         }
 
         function makeListInteractive() {
@@ -455,6 +467,43 @@
 
             setTimeout(() => document.addEventListener('click', closeDropdown), 100);
         }
+
+        function showDropdownMenu(listElement, listId) {
+            // Close any existing dropdown to prevent duplicates
+            const existingDropdown = document.querySelector('.dropdown-menu');
+            if (existingDropdown) {
+                existingDropdown.remove();
+            }
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'dropdown-menu';
+            dropdown.innerHTML = `
+                <div class="dropdown-option" data-action="select" data-list-id="${listId}">Select</div>
+                <div class="dropdown-option" data-action="delete" data-list-id="${listId}">Delete</div>
+            `;
+            dropdown.style.position = 'absolute';
+            dropdown.style.left = `${listElement.getBoundingClientRect().left}px`;
+            dropdown.style.top = `${listElement.getBoundingClientRect().bottom}px`;
+            document.body.appendChild(dropdown);
+
+            // Setup to close dropdown when clicking outside
+            setTimeout(() => document.addEventListener('click', function closeDropdown(event) {
+                if (!dropdown.contains(event.target)) {
+                    dropdown.remove();
+                    document.removeEventListener('click', closeDropdown);
+                }
+            }), 100);
+        }
+
+        // Use event delegation for dropdown actions
+        document.body.addEventListener('click', function(event) {
+            if (event.target.matches('.dropdown-option')) {
+                const listId = event.target.getAttribute('data-list-id');
+                const action = event.target.getAttribute('data-action');
+                handleListAction(listId, action);
+            }
+        });
+
 
         function fetchSavedLists() {
             const userId = '{{ user_id }}';
