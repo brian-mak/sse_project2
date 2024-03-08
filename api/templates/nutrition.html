@@ -5,14 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nutrition Results</title>
     <style>
-        /* Your CSS styles here */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('/static/nutrition.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Changed to center the content vertically */
+            height: 100vh;
+            overflow: auto;
+        }
+
+        #navigation {
+            background-color: black;
+            color: white;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 100;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        #navigation a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            cursor: pointer;
+        }
+
+        #navigation img {
+            width: 200px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
         .nutrition-facts {
             border: 1px solid #ccc;
             padding: 20px;
-            margin: 20px;
             max-width: 400px;
             border-radius: 10px;
             background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: 80vh;
+            /* Removed margin-right as it's no longer necessary */
         }
 
         .nutrition-facts h2 {
@@ -27,9 +69,24 @@
         .nutrition-label p {
             margin: 5px 0;
         }
+
+        /* Removed back-button-container and back-button styles as they are no longer needed */
     </style>
 </head>
 <body>
+    <!-- Navigation Menu -->
+    <div id="navigation">
+        <img src="{{ url_for('static', filename='Logo.png') }}" alt="Workout Buddy Logo">
+        <a href="/">Home</a>
+        <a href="/meal_plan">Nutrition</a>
+        <a href="/search_exercises">Search For Workouts</a>
+        <a href="/db/workout_plan">Workout Planner</a>
+        <a href="/forum">Forum</a>
+        <a href="/saved_lists">My Workout Lists</a>
+        <!-- Session-related links -->
+    </div>
+
+    <!-- Centered nutrition-facts container -->
     <div class="nutrition-facts">
         <h2>Nutritional Facts</h2>
         {% for nutrient_info in nutrients_list %}

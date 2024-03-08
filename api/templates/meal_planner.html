@@ -125,14 +125,17 @@
     <!-- About Section -->
     <section id="about">
         <h2>About</h2>
-        <p>At Nutrition Analysis, we believe that understanding the nutritional content of the food you consume is essential for a healthy lifestyle...</p>
+        <p>At Nutrition Analysis, we believe that understanding the nutritional content of the food you consume is essential for a healthy lifestyle.</p>
+        <p>That why we crated this quick check tool for you. Type in any combination of foods to see their nutritional value!</p>
     </section>
 
     <!-- Analysis Section -->
     <section id="analysis">
         <h2>Nutrition Analysis</h2>
         <p>Please enter a food item or a list of food items that you enjoy eating with a quantity prior to find out its nutritional facts!</p>
-        <p>"Example: 500g of chicken and 3 bottles of coke"</p>
+        <p><em>Use words "and" or "with" to seperate ingredients</em></p>
+        <p><em>"a" or numerical values work just fine</em></p>
+        <p><em>"Example: 500g of chicken and 500 grams of steak with 30 grams butter"</em></p>
         <form action="/facts" method="POST">
             <label for="query">Enter ingredients:</label>
             <textarea id="query" name="query" required maxlength="300" rows="5" placeholder="Enter each ingredient followed by a comma"></textarea>
