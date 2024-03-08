@@ -98,7 +98,7 @@ jobs:
 
     - name: Build Docker image with arguments
       run: |
-        docker build \ 
+        docker build\ 
           --build-arg "AZURE_SQL_CONNECTIONSTRING=${{ secrets.AZURE_SQL_CONNECTIONSTRING }}" \
           --build-arg "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" \
           --build-arg "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" \
