@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Workout Plan</title>
+    <style>
+        html, header {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font-family: 'Roboto', sans-serif;
+            color: white;
+            text-decoration: none;
+            position: relative;
+            background-image: url("{{ url_for('static', filename='background4.png') }}");
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            color: #fff;
+            cursor: default;
+            height: 100vh
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)); /* Gradient from solid black to transparent */
+            pointer-events: none; /* Allows clicks to pass through to elements underneath */
+            z-index: -1;
+        }
+        body {
+            margin: 0;
+            padding: 8em 500px;
+            font-size: 150%;
+            font-family: 'Roboto', sans-serif;
+            /* margin: 20px; */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #navigation {
+            background-color: black;
+            color: white;
+            width: 100%;
+            position: fixed; /* Change this from absolute to fixed */
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem; /* Adjusted font size for small navigation links */
+            font-weight: normal;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            white-space: nowrap;
+            padding: 10px 10px 30px 10px;
+            z-index: 1000;
+        }
+        #navigation a {
+            color: white; /* Or any color you prefer */
+            text-decoration: none; /* Optional: Removes the underline from links */
+            margin: 0 10px; /* Adds space to the left and right of each link */
+        }
+        .recipe {
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+            padding: 40px 80px 80px 80px;
+            margin-bottom: 40px;
+            width: 50em;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+            z-index: 1;
+        }
+        .recipe h3, #p1 {
+            text-transform: capitalize;
+            z-index: 1;
+        }
+        h4 {
+            color: white; 
+            font-size: 18px;
+        }
+        .instructions li {
+            margin-bottom: 5px;
+            text-transform: none; /* Keep instructions as is */
+        }
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            /* background-color: rgb(0,0,0); */
+            /* background-color: rgba(0,0,0,0.4); */
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #df7366;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .container {
+            position: relative;
+            /* width: 100%; */
+            overflow-x: auto; /* Allows horizontal scrolling */
+            overflow-y: visible;
+            height: auto;
+            /*  display: flex; */
+            justify-content: center;
+            align-items: center;
+            /* background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 1.0)); */
+        }
+
+        .carousel-view {
+            display: flex;
+            height: auto;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 40px 10px;
+            overflow-y: visible;
+        }
+
+        .carousel-view .item-list {
+            /* max-width: 85em; */
+            width: 100vw;
+            height: auto;
+            padding: 0em 0em;
+            display: flex;
+            gap: 20px; /* May need to be adjusted */
+            scroll-behavior: smooth;
+            transition: all 0.25s ease-in;
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+            overflow-x: auto;
+            overflow-y: visible;
+            /*  scroll-snap-type: x mandatory; */
+            background-color: transparent;
+        }
+
+        /* New Hover Effect */
+        .carousel-view .item {
+            flex: 0 0 auto;
+            width: 500px; /* Adjust based on design */
+            margin: 0 0px; /* Optional, for spacing between items */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* .item {
+        scroll-snap-align: center;
+        } */
+
+        .carousel-view .item:hover {
+            transform: scale(1.1); */ /* Adjust the scale value as needed */
+        }
+
+        .item-list::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+        }
+
+        /* Style for carousel button */
+        .prev-btn, .next-btn {
+            height: 100px;
+            width: 100px;
+            padding: 10px 10px 150px 10px;
+            font-family: 'Arial Narrow', sans-serif;
+            font-size: 80px;
+            font-stretch: ultra-condensed;
+            background-color: transparent;
+            color: #fff;
+            border: transparent;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+            overflow-y: hidden;
+        }
+
+        /* Hover effect button */
+        .prev-btn:hover, .next-btn:hover {
+            background-color: transparent;
+            color: #df7366;
+            border-color: #333333;
+        }
+
+        button {
+            position: relative;
+            display: inline-block;
+            background: #df7366;
+            color: #fff;
+            text-align: center;
+            border-radius: 1.5em;
+            text-decoration: none;
+            padding: 0.65em 1.4em 0.65em 1.4em;
+            border: 0;
+            cursor: pointer;
+            outline: 0;
+            font-weight: 500;
+            font-size: medium;
+        }
+
+        select {
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.8em; /* Increases the font size */
+            padding: 0.65em 1.4em 0.65em 1.4em; /* Adds padding inside the dropdown to make it larger */
+            border-radius: 1.5em; /* Optional: Rounds the corners of the dropdown */
+            border: 0; /* Optional: Adds a border around the dropdown */
+            cursor: pointer; /* Changes the cursor to indicate it's clickable */
+        }
+
+        #login-button, #logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.8rem;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            white-space: nowrap;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            text-align: right;
+        }
+
+    </style>
+</head>
+<div id="navigation">
+    <center><img src="{{ url_for('static', filename='Logo.png')
+    }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
+    <a href="/">Home</a>
+    <!-- <a href="#about">About</a> -->
+    <a href="/meal_planner">Nutrition</a>
+    <a href="/search_exercises">Search For Workouts</a>
+    <a href="/db/workout_plan">Workout Planner</a>    
+    <a href="/forum">Forum</a>
+    <a href="/saved_lists">My Workout Lists</a>
+    {% if session %}
+    <a href="/logout">Logout</a>
+    <br><br>Welcome {{ session.user.userinfo.nickname }}
+    {% else %}
+    <a id href="/login">Login</a>
+    {% endif %}
+</div>
+
+<!-- Header -->
+<div id="header">
+    <center><h2>Recipes</h2></center>
+    <body>
+
+    {% for recipe in recipes %}
+    <div class="recipe">
+        <h3>{{ recipe.name | title }}</h3><br>
+        {% if recipe.image %}
+        <img src="{{ recipe.image }}" alt="{{ recipe.name }}" style="max-width: 100%; height: auto;"><br>
+        <p id="p1"><strong>Cuisine Type:</strong> {{ recipe.cuisine_type | title }}</p>
+        <p id="p1"><strong>Meal Type:</strong> {{ recipe.meal_type | title }}</p>
+        <p id="p1"><strong>Dish Type:</strong> {{ recipe.dish_type | title }}</p>
+        <!-- <p><strong>Calories Per 100g:</strong> {{ recipe.calories_per_serving }}</p> -->
+        <p><strong>Link for Detailed Nutritional Information: </strong></p><a href="url" style="color: #197ad4;" target="_blank">{{ recipe.nutritional_info_link }}</a>
+        <p><strong>Link for Recipe: </strong></p><a href="url" style="color: #197ad4;" target="_blank">{{ recipe.recipe_link }}</a><br>
+        {% endif %}
+    </div>
+    {% endfor %}
+</body>    
+</html>

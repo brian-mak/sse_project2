@@ -199,7 +199,8 @@ app.add_url_rule('/reply', 'reply', forum.reply, methods=['POST'])
 app.add_url_rule('/get_replies', 'get_replies', forum.get_replies)
 app.add_url_rule('/delete_post', 'delete_post', forum.delete_post, methods=['POST'])
 app.add_url_rule('/meal_planner', 'meal_planner', nutrition.index)
-app.add_url_rule('/nutrition', 'nutrition', nutrition.get_nutrition, methods=['POST'])
+# app.add_url_rule('/nutrition', 'nutrition', nutrition.get_nutrition, methods=['POST'])
+app.add_url_rule('/meal_planning', 'meal_planning', nutrition.meal_planning, methods=['POST'])
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Plan Preferences</title>
+    <style>
+        html, header {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font-family: 'Roboto', sans-serif;
+            color: white;
+            text-decoration: none;
+            position: relative;
+            background-image: url("{{ url_for('static', filename='background4.png') }}");
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            color: #fff;
+            cursor: default;
+            height: 100vh
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)); /* Gradient from solid black to transparent */
+            pointer-events: none; /* Allows clicks to pass through to elements underneath */
+            z-index: -1;
+        }
+        body {
+            margin: 0;
+            padding: 8em 500px;
+            font-size: 150%
+        }
+        #navigation, #username {
+            background-color: black;
+            color: white;
+            width: 100%;
+            position: fixed; /* Change this from absolute to fixed */
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem; /* Adjusted font size for small navigation links */
+            font-weight: normal;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            white-space: nowrap;
+            padding: 10px 10px 30px 10px;
+            z-index: 1000;
+        }
+        #navigation a {
+            color: white; /* Or any color you prefer */
+            text-decoration: none; /* Optional: Removes the underline from links */
+            margin: 0 10px; /* Adds space to the left and right of each link */
+        }
+        /* Submit Button */
+        button, input[type="submit"]{
+            position: relative;
+            display: inline-block;
+            background: #df7366;
+            color: #fff;
+            text-align: center;
+            border-radius: 1.5em;
+            text-decoration: none;
+            padding: 0.65em 1.5em 0.65em 1.5em;
+            border: 0;
+            cursor: pointer;
+            outline: 0;
+            font-weight: 500;
+            font-size: x-large;
+            -moz-transition: background-color 0.35s ease-in-out, color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
+            -webkit-transition: background-color 0.35s ease-in-out, color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
+            -ms-transition: background-color 0.35s ease-in-out, color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
+            transition: background-color 0.35s ease-in-out, color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
+        }
+        input[type="checkbox"] {
+            transform: scale(1.5); /* Increase the size of the checkboxes */
+            margin-right: 5px; /* Add some space between the checkboxes and labels */
+        }
+
+        /* Adjust the size of the labels */
+        label {
+            vertical-align: middle; /* Align the labels vertically with the checkboxes */
+        }
+
+        input[type="number"] {
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.7em; /* Increases the font size */
+            padding: 0.2em 0.2em 0.2em 0.8em; /* Adds padding inside the dropdown to make it larger */
+            border-radius: 0.5em; /* Optional: Rounds the corners of the dropdown */
+            border: 0; /* Optional: Adds a border around the dropdown */
+            cursor: pointer; /* Changes the cursor to indicate it's clickable */
+        }
+
+    </style>
+</head>
+<body>
+    <div id="navigation">
+        <center><img src="{{ url_for('static', filename='Logo.png')
+        }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
+        <a href="/">Home</a>
+        <!-- <a href="#about">About</a> -->
+        <a href="/meal_planner">Nutrition</a>
+        <a href="/search_exercises">Search For Workouts</a>
+        <a href="/db/workout_plan">Workout Planner</a>    
+        <a href="/forum">Forum</a>
+        <a href="/saved_lists">My Workout Lists</a>
+        {% if session %}
+        <a href="/logout">Logout</a>
+        <br><br>Welcome {{ session.user.userinfo.nickname }}
+        {% else %}
+        <a id href="/login">Login</a>
+        {% endif %}
+    </div>
+
+<!-- Header -->
+<div id="header">
+    <body> 
+        <center><h2>Search For Recipes</h1></center>
+        <form id="preferencesForm" method="POST" action="/meal_planning">
+            <fieldset>
+            <legend>Cuisine Type:</legend>
+            {% for cuisine in cuisines %}
+                <label><input type="checkbox" name="cuisine_type" value="{{ cuisine }}"> {{ cuisine }}</label><br>
+            {% endfor %}
+            </fieldset><br>
+        
+            <fieldset>
+            <legend>Meal Type:</legend>
+            {% for meal in meal_types %}
+                <label><input type="checkbox" name="meal_type" value="{{ meal }}"> {{ meal }}</label><br>
+            {% endfor %}
+            </fieldset><br>
+            
+            <fieldset>
+            <legend>Dish Type:</legend>
+            {% for dish in dish_types %}
+                <label><input type="checkbox" name="dish_type" value="{{ dish }}"> {{ dish }}</label><br>
+            {% endfor %}
+            </fieldset><br>
+        
+            <fieldset>
+            </legend>Calories:</legend><br><br>
+            <label for="min_calories">Min:</label>
+            <input type="number" id="min_calories" name="min_calories" required>
+            <label for="max_calories">   Max:</label>
+            <input type="number" id="max_calories" name="max_calories" required>
+            </fieldset><br>
+        
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('form').on('submit', function(e){
+                var flag = true;
+                $('fieldset').each(function(){
+                    if($(this).find('input:checked').length === 0){
+                        flag = false;
+                        return false; // breaks the loop
+                    }
+                });
+                if(!flag){
+                    e.preventDefault(); // stops the form submission
+                    alert('Please check at least one checkbox in each group');
+                }
+            });
+        });
+    </script>  -->
+</html>

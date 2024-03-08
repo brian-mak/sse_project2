@@ -19,7 +19,7 @@
         <a href="/db/workout_plan">Workout Planner</a>    
         <a href="/forum">Forum</a>
         <a href="/saved_lists">My Workout Lists</a>
-        {% if session %}
+        {% if session.user %}
         <a href="/logout">Logout</a>
         <br><br>Welcome {{ session.user.userinfo.nickname }}
         {% else %}
