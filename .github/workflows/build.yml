@@ -96,12 +96,17 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    # - name: Build Docker image
-    #   working-directory: ./api/forum_api
-    #   run: docker build -t fitness-planner-forum .
-      
-    # - name: Run PyTest
-    #   run: docker run fitness-planner-forum pytest app_test.py
+    - name: Build and export to Docker
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        load: true
+        file: api/Dockerfile
+        tags: workout-buddy-main
+    
+    - name: Test
+      run: |
+        docker run --rm workout-buddy-main pytest api/test/*_test.py
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
