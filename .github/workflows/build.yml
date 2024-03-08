@@ -99,13 +99,14 @@ jobs:
     - name: Build and export to Docker
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: ./api
         load: true
+        file: api/Dockerfile
         tags: ${{ env.TEST_TAG }}
     
     - name: Test
       run: |
-        docker run --rm ${{ env.TEST_TAG }}
+        docker run --rm ${{ env.TEST_TAG }} pytest api/test/*_test.py
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
