@@ -66,10 +66,10 @@ jobs:
         run: python -m pip install --upgrade pip
       
       - name: Install all
-        run: pip install -r workout_management_service/requirements.txt
+        run: pip install -r workout_management_microservice/requirements.txt
 # add this below
       - name: Run routes unit tests
-        run: pytest workout_management_service/tests/test_routes.py
+        run: pytest workout_management_microservice/tests/test_routes.py
 
   run-microservice-test:
     name: Test Connectivity of Microservices 
