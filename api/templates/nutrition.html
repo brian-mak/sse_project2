@@ -5,27 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nutrition Results</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-image: url('/static/nutrition.jpg');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-        
-        }
-
+        /* Your CSS styles here */
         .nutrition-facts {
             border: 1px solid #ccc;
             padding: 20px;
             margin: 20px;
             max-width: 400px;
             border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.8); /* Set background color for better readability */
+            background-color: rgba(255, 255, 255, 0.8);
         }
 
         .nutrition-facts h2 {
@@ -40,66 +27,27 @@
         .nutrition-label p {
             margin: 5px 0;
         }
-        #navigation {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem; /* Adjusted font size for small navigation links */
-            font-weight: normal;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.3rem;
-            white-space: nowrap;
-        }
-
-        #navigation a {
-            color: black;
-            text-decoration: none;
-            margin: 0 20px;
-            cursor: pointer;
-        }
-        
     </style>
 </head>
 <body>
-    <div id="navigation">
-        <center><img src="{{ url_for('static', filename='Logo.png')
-        }}" alt="Workout Buddy Logo" width="400" height = "100"></center>
-        <a href="/">Home</a>
-        <!-- <a href="#about">About</a> -->
-        <a href="/meal_planner">Nutrition</a>
-        <a href="/search_exercises">Search For Workouts</a>
-        <a href="/db/workout_plan">Workout Planner</a>    
-        <a href="/forum">Forum</a>
-        <a href="/saved_lists">My Workout Lists</a>
-        {% if session %}
-        <a href="/logout">Logout</a>
-        <br><br>Welcome {{ session.user.userinfo.nickname }}
-        {% else %}
-        <a id href="/login">Login</a>
-        {% endif %}
-    </div>
-    
     <div class="nutrition-facts">
         <h2>Nutritional Facts</h2>
-        <div class="nutrition-label">
-            <p>Ingredient: {{ query }}</p>
-            <p>Calories: {{ calories }}</p>
-            <p>Protein: {{ protein }} g</p>
-            <p>Fat: {{ fat }} g</p>
-            <p>Carbohydrates: {{ carbs }} g</p>
-            <p>Saturated Fat: {{ nutrients['Saturated Fat'] }} g</p>
-            <p>Trans Fat: {{ nutrients['Trans Fat'] }} g</p>
-            <p>Cholesterol: {{ nutrients['Cholesterol'] }} mg</p>
-            <p>Sodium: {{ nutrients['Sodium'] }} mg</p>
-            <p>Dietary Fiber: {{ nutrients['Dietary Fiber'] }} g</p>
-            <p>Total Sugars: {{ nutrients['Total Sugars'] }} g</p>
-            <p>Vitamin D: {{ nutrients['Vitamin D'] }} IU</p>
-            <p>Calcium: {{ nutrients['Calcium'] }} mg</p>
-            <p>Iron: {{ nutrients['Iron'] }} mg</p>
-            <p>Potassium: {{ nutrients['Potassium'] }} mg</p>
-        </div>
+        {% for nutrient_info in nutrients_list %}
+            <div class="nutrition-label">
+                <h3>{{ nutrient_info['name'] | capitalize }}</h3>
+                <p>Calories: {{ nutrient_info['calories'] }}</p>
+                <p>Protein: {{ nutrient_info['protein_g'] }} g</p>
+                <p>Total Fat: {{ nutrient_info['fat_total_g'] }} g</p>
+                <p>Saturated Fat: {{ nutrient_info['fat_saturated_g'] }} g</p>
+                <p>Sodium: {{ nutrient_info['sodium_mg'] }} mg</p>
+                <p>Potassium: {{ nutrient_info['potassium_mg'] }} mg</p>
+                <p>Cholesterol: {{ nutrient_info['cholesterol_mg'] }} mg</p>
+                <p>Total Carbohydrates: {{ nutrient_info['carbohydrates_total_g'] }} g</p>
+                <p>Fiber: {{ nutrient_info['fiber_g'] }} g</p>
+                <p>Sugar: {{ nutrient_info['sugar_g'] }} g</p>
+                <!-- Add more nutrient fields as needed -->
+            </div>
+        {% endfor %}
     </div>
 </body>
 </html>
